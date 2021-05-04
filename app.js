@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const PORT = 80;
+var path = require("path");
 
 app.use(express.static("public"));
 
@@ -9,7 +10,7 @@ app.listen(PORT, () => {
 });
 
 app.get('/', function (req, res) {
-    res.send('yoyo');
+    res.sendFile(path.join(__dirname + '/authentication/login.html'));
 });
 
 // https://stackoverflow.com/a/6059938
