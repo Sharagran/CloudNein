@@ -1,12 +1,17 @@
-var express = require("express");
-var app = express();
+const express = require("express");
+const app = express();
+const PORT = 80;
 
 app.use(express.static("public"));
 
-app.listen(80, () => {
-    console.log("app listening at port 80");
+app.listen(PORT, () => {
+    console.log(`app listening at ${PORT}`);
 });
 
 app.get('/', (req, res) => {
-    res.send('yo');
+    res.send('yoyo');
+});
+
+app.get('*', (req, res) => {
+    res.send('Error 404 page not found.', 404);
 });
