@@ -12,9 +12,22 @@ app.get('/', function (req, res) {
     res.send('yoyo');
 });
 
-app.get('/upload', function (req, res) {
-    res.send("upload")
+// https://stackoverflow.com/a/6059938
+app.post('/upload', function (req, res) {
+    // upload
 });
+
+app.get(['/myfiles', '/myfiles/:path'], function (req, res) {
+    // download
+    var path = req.params.path;
+
+    if(path) {
+        res.send(path);
+    } else {
+        res.send("myfiles");
+    }
+    
+})
 
 app.get('*', function (req, res) {
     res.send('Error 404 page not found.', 404);
