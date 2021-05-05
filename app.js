@@ -27,7 +27,10 @@ app.get('/', function (req, res) {
 });
 
 // https://stackoverflow.com/a/6059938
-app.post('/upload', function (req, res) {
+app.route('/upload')
+.get(function (req, res) {
+    res.sendFile(__dirname + "/public/upload.html");
+}).post(function (req, res) {
     // upload
     if(req.files) {
         let file = req.files.file;
@@ -43,8 +46,8 @@ app.post('/upload', function (req, res) {
     } else {
         res.send("No files uplaoded");
     }
-    
 });
+
 
 app.get(['/myfiles', '/myfiles/:path'], function (req, res) {
     // download
@@ -53,8 +56,7 @@ app.get(['/myfiles', '/myfiles/:path'], function (req, res) {
     if(path) {
         res.send(path);
     } else {
-        //res.send("myfiles");
-        res.sendFile(__dirname + "/public/upload.html")
+        res.send("myfiles");
     }
     
 })
