@@ -23,7 +23,7 @@ app.listen(PORT, () => {
 */
 
 app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname + '/authentication/login.html'));
+    res.sendFile(path.join(__dirname + '/public/login.html'));
 });
 
 // https://stackoverflow.com/a/6059938
