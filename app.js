@@ -4,6 +4,10 @@ const path = require("path");
 const fileUpload = require('express-fileupload'); //https://www.npmjs.com/package/express-fileupload
 const db = require("./Database");
 const parser = require("body-parser");
+const { hash_password } = require("./Authentication");
+
+
+
 
 const PORT = 80;
 
@@ -33,10 +37,24 @@ app.post('/login', (req, res) => {
   });
   
   //Verarbeitet die empfangenen Daten beim Registrieren
-  app.post('/register', (req, res) => {
-  
-    console.log(`${req.body.username} ${req.body.password} ${req.body.confirm_password} ${req.body.mail}`);
-    // Passwort 1 und 2 überprüfen usw. Dann Passwort hashen und die Daten in die DB schreiben
+app.post('/register', (req, res) => {
+
+    //prüfen, ob Name und Email vorhanden sind, wen nicht dann hashen und speichern
+    db.readData("User", {Email:req.body.mail}, (error, result) => {
+        if(error) {
+            throw error;
+        }else if(result.length >0) {
+            console.log("Username or Email ist already taken");
+        }else {
+            hash_password(req.body.password, (err, hash) => {
+                if(error) throw error;
+                db.createData("User", [{Username:req.body.username, Password:hash, Email:req.body.mail}], (error, result) => {
+                    if(error) throw error;
+                    console.log(result);
+                }); 
+            });
+        }
+    });
   });
 
 app.get('/', function (req, res) {

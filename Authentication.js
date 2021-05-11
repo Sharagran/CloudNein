@@ -1,28 +1,25 @@
 const bcrypt = require('bcrypt');
-var password = "";
-var hashFromDB = "";
 
-function hash_password(password) {
-    if (password.length >= 6) {
-        bcrypt.hash(password, 10, function(err, hash) {
-            if (err) {
-              throw err;
+exports.hash_password = function (password, callback) {
+        bcrypt.hash(password, 10, function(error, hash) {
+            if (error) {
+              throw error;
             }
-            hashFromDB = hash;
             console.log('Your hash: ', hash);
+            callback(error, hash);
           });
-    }else {
-        console.log('Password is to weak');
-    };
+
 };
 
-function compare_hash(password, hashFromDB) {
-    bcrypt.compare(password, hashFromDB, function(err, matches) {
-        if (err)
+
+exports.compare_hash= function (password, hashFromDB, callback) {
+    bcrypt.compare(password, hashFromDB, function(error, matches) {
+        if (error)
           console.log('Error while checking password');
         else if (matches)
           console.log('The password matches!');
         else
           console.log('The password does NOT match!');
       });
+      callback(error, machtes);
 };

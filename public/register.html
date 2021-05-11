@@ -9,8 +9,8 @@
 	<body>
 		<div class="register-form">
 			<h1>Register</h1>
-			<form action="http://localhost:80/register" method="POST">
-				<input type="text" name="username" placeholder="Username" required>
+			<form action="/register" method="POST">
+				<input type="text" name="username" placeholder="Username (6 characters minimum)" minlength="6" required>
                 <input type="text" name="mail" placeholder="E-Mail" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
 				<input id="password"type="password" name="password" placeholder="Password (6 characters minimum)" minlength="6" required>
                 <input id="confirm_password" type="password" name="confirm_password" placeholder="Confirm password" onkeyup='check();' minlength="6" required> 
