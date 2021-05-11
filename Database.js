@@ -8,7 +8,7 @@ exports.connect = () => {
     });
 }
 
-exports.createData = (collectionName, data, callback) => {
+exports.createData = (collectionName, data, callback = defaultCallBack) => {
     var collection = db.collection(collectionName);
     if (!Array.isArray(data)) {
         collection.insertOne(data, (error, result) => {
@@ -24,10 +24,31 @@ exports.createData = (collectionName, data, callback) => {
     }
 }
 
-exports.readData = function (collectionName, query = {}, callback) {
+exports.readData = (collectionName, query = {}, callback = defaultCallBack, limit = 0, sort = {}) => {
     collection = db.collection(collectionName);
-    collection.find(query).toArray(function (error, result) {
+    collection.find(query).limit(0).sort(sort).toArray(function (error, result) {
         if (error) throw error;
         callback(error, result);
     });
+}
+
+exports.updateData = (collectionName, query = {}, values = {}, callback = defaultCallBack) => {
+    collection = db.collection(collectionName);
+    collection.updateMany(query, values, (error, result) => {
+        if (error) throw error;
+        callback(error, result)
+    });
+}
+
+exports.deleteData = (collectionName, query = {}, callback = defaultCallBack) => {
+    collection = db.collection(collectionName);
+    collection.deleteMany(query, (error, result) => {
+        if (error) throw error;
+        callback(error,result);
+    });
+}
+
+function defaultCallBack(error, result) {
+    if(error) throw error;
+    console.log("default callback: " + result);
 }
