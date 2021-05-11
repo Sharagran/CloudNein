@@ -3,6 +3,7 @@ const app = express();
 const path = require("path");
 const fileUpload = require('express-fileupload'); //https://www.npmjs.com/package/express-fileupload
 const db = require("./Database");
+const parser = require("body-parser");
 
 const PORT = 80;
 
@@ -11,6 +12,8 @@ app.use(fileUpload({
     //limits: { fileSize: 50 * 1024 * 1024 }    //upload limit in bytes für alle files
 }));
 app.use(express.static("public"));
+
+app.use(parser.urlencoded({ extended: false })); 
 
 app.listen(PORT, () => {
     console.log(`app listening at ${PORT}`);
@@ -23,6 +26,18 @@ app.listen(PORT, () => {
 * save sessionID on server (database?)
 * send sessionID to client
 */
+
+app.post('/login', (req, res) => {
+    //res.send(`Full name is:${req.body.username} ${req.body.password}.`);
+    console.log(`${req.body.username} ${req.body.password}`);
+  });
+  
+  //Verarbeitet die empfangenen Daten beim Registrieren
+  app.post('/register', (req, res) => {
+  
+    console.log(`${req.body.username} ${req.body.password} ${req.body.confirm_password} ${req.body.mail}`);
+    // Passwort 1 und 2 überprüfen usw. Dann Passwort hashen und die Daten in die DB schreiben
+  });
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/public/login.html'));
