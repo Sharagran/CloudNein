@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const fileUpload = require('express-fileupload'); //https://www.npmjs.com/package/express-fileupload
+const db = require("./Database");
 
 const PORT = 80;
 
@@ -13,6 +14,7 @@ app.use(express.static("public"));
 
 app.listen(PORT, () => {
     console.log(`app listening at ${PORT}`);
+    db.connect();
 });
 
 
@@ -24,6 +26,12 @@ app.listen(PORT, () => {
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/public/login.html'));
+});
+
+app.get('/dbtest', function (req, res) {
+    db.readData("test", {value1:"test1"}, (error, result) => {
+        console.log(result);
+    });
 });
 
 // https://stackoverflow.com/a/6059938
