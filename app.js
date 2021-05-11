@@ -58,8 +58,11 @@ app.get(['/myfiles', '/myfiles/:path'], function (req, res) {
     } else {
         res.send("myfiles");
     }
+});
+
+app.get('/files/:id', function (req, res) {
     
-})
+});
 
 app.get('*', function (req, res) {
     res.status(404).sendFile(__dirname + '/public/error.html');
