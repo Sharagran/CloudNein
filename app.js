@@ -4,7 +4,7 @@ const path = require("path");
 const fileUpload = require('express-fileupload'); //https://www.npmjs.com/package/express-fileupload
 const db = require("./Database");
 const parser = require("body-parser");
-const { hash_password } = require("./Authentication");
+const { hash_password, compare_hash } = require("./Authentication");
 
 
 
@@ -33,12 +33,23 @@ app.listen(PORT, () => {
 
 app.post('/login', (req, res) => {
     //res.send(`Full name is:${req.body.username} ${req.body.password}.`);
-    console.log(`${req.body.username} ${req.body.password}`);
+    db.readData("User", {Username:req.body.username}, (error, result) =>{
+        if(error) {
+            console.log("User nicht gefunden");
+            throw error;
+        } else if (result.length > 0)
+            compare_hash(req.body.password, result[0].Password, (error, match) => {
+                if(error) {
+                    throw error;
+                }else {
+                    console.log("Matching password: " + match);
+                }
+            })
+    });
   });
   
   //Verarbeitet die empfangenen Daten beim Registrieren
 app.post('/register', (req, res) => {
-
     //prüfen, ob Name und Email vorhanden sind, wen nicht dann hashen und speichern
     db.readData("User", {Email:req.body.mail}, (error, result) => {
         if(error) {
@@ -48,7 +59,7 @@ app.post('/register', (req, res) => {
         }else {
             hash_password(req.body.password, (err, hash) => {
                 if(error) throw error;
-                db.createData("User", [{Username:req.body.username, Password:hash, Email:req.body.mail}], (error, result) => {
+                db.createData("User", [{Username:req.body.username, Password:hash, Email:req.body.email}], (error, result) => {
                     if(error) throw error;
                     console.log(result);
                 }); 
