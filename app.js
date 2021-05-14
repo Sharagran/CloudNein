@@ -4,7 +4,8 @@ const path = require("path");
 const fileUpload = require('express-fileupload'); //https://www.npmjs.com/package/express-fileupload
 const db = require("./Database");
 const parser = require("body-parser");
-const { hash_password, compare_hash } = require("./Authentication");
+const { hash_password, compare_hash, sendNewPassword, generatePassword} = require("./Authentication");
+
 
 
 
@@ -35,38 +36,66 @@ app.post('/login', (req, res) => {
     //res.send(`Full name is:${req.body.username} ${req.body.password}.`);
     db.readData("User", {Username:req.body.username}, (error, result) =>{
         if(error) {
-            console.log("User nicht gefunden");
             throw error;
-        } else if (result.length > 0)
+        }else if (result.length > 0)
             compare_hash(req.body.password, result[0].Password, (error, match) => {
                 if(error) {
                     throw error;
                 }else {
                     console.log("Matching password: " + match);
-                }
-            })
+                };
+            });
+        else{
+            console.log("Login fehlgeschlagen");
+        };
     });
-  });
+});
   
-  //Verarbeitet die empfangenen Daten beim Registrieren
+//Verarbeitet die empfangenen Daten beim Registrieren
 app.post('/register', (req, res) => {
     //prüfen, ob Name und Email vorhanden sind, wen nicht dann hashen und speichern
-    db.readData("User", {Email:req.body.mail}, (error, result) => {
+    console.log(req.body.mail);
+    db.readData("User", {Username:req.body.username, Email:req.body.mail}, (error, result) => {
         if(error) {
             throw error;
-        }else if(result.length >0) {
+        }else if(result.length > 0) {
             console.log("Username or Email ist already taken");
         }else {
-            hash_password(req.body.password, (err, hash) => {
+            console.log(result);
+            hash_password(req.body.password, (error, hash) => {
                 if(error) throw error;
-                db.createData("User", [{Username:req.body.username, Password:hash, Email:req.body.email}], (error, result) => {
+                db.createData("User", [{Username:req.body.username, Password:hash, Email:req.body.mail}], (error, result) => {
                     if(error) throw error;
                     console.log(result);
                 }); 
             });
-        }
+        };
     });
-  });
+});
+
+//Erzeugt ein neues Passwort, updatet dies in der DB und sendet eine Mail an den User
+app.post('/forgotPassword', (req, res) =>{
+    db.readData('User', {Email:req.body.email}, (error, result) => {
+        if(error) {
+            throw error;
+        }else if(result.length < 1) {
+            console.log("Email nicht gefunden");
+        }else {
+            newPassword = generatePassword();
+            hash_password(newPassword, (error,hash) =>{
+                if(error) throw error;
+                db.updateData("User",{Email:req.body.email}, { $set:{ Password:hash}}, (error,result) => {
+                    if(error) throw error;
+                    console.log(result);
+                })
+                sendNewPassword(result[0].Email, newPassword, (error, info) =>{
+                    if(error) throw error;
+                });
+            })
+        };
+    });
+});
+  
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/public/login.html'));

@@ -22,8 +22,9 @@
     box-sizing:border-box;
 }
 .login-form input[type="submit"],
-.register-form input[type="submit"]
-,#register-btn {
+.register-form input[type="submit"],
+#register-btn,
+#forgotPassword-btn {
     width: 100%;
     padding: 15px;
     background-color: #535b63;
