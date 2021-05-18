@@ -2,9 +2,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch Webserver",
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "cwd": "${workspaceFolder}/client",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [ "start" ],
+            "port": 9228
+        },
+        {
+            "name": "Launch Server",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/server",
             "runtimeExecutable": "npm",
             "runtimeArgs": [ "start" ],
             "port": 9229
