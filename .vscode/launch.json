@@ -8,7 +8,7 @@
             "cwd": "${workspaceFolder}/client",
             "runtimeExecutable": "npm",
             "runtimeArgs": [ "start" ],
-            "port": 9228
+            "port": 5858
         },
         {
             "name": "Launch Server",
@@ -17,7 +17,13 @@
             "cwd": "${workspaceFolder}/server",
             "runtimeExecutable": "npm",
             "runtimeArgs": [ "start" ],
-            "port": 9229
+            "port": 5859
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Server & Webserver",
+            "configurations": ["Launch Server", "Launch Webserver"]
         }
     ]
 }
