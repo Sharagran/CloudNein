@@ -7,6 +7,7 @@ const parser = require("body-parser");
 const { hash_password, compare_hash, sendNewPassword, generatePassword} = require("./Authentication");
 const { fstat } = require("fs"); // ???
 const fs = require("fs");
+const cors = require("cors");
 
 var upload = multer({dest: `${__dirname}/../UserFiles/`});
 
@@ -16,9 +17,9 @@ const PORT = 80;
 
 // Middleware
 app.use(express.static("public"));
-
+app.use(cors());
 app.use(parser.urlencoded({ extended: false })); 
-
+app.use(express.json())
 app.listen(PORT, () => {
     console.log(`app listening at ${PORT}`);
     db.connect();
@@ -32,12 +33,11 @@ app.listen(PORT, () => {
 */
 
 app.post('/login', (req, res) => {
-    //res.send(`Full name is:${req.body.username} ${req.body.password}.`);
-    db.readData("User", {Username:req.body.username}, (error, result) =>{
+    db.readData("User", {Username:req.body.user.username}, (error, result) =>{
         if(error) {
             throw error;
         }else if (result.length > 0)
-            compare_hash(req.body.password, result[0].Password, (error, match) => {
+            compare_hash(req.body.user.password, result[0].Password, (error, match) => {
                 if(error) {
                     throw error;
                 }else {
@@ -45,6 +45,7 @@ app.post('/login', (req, res) => {
                 };
             });
         else{
+            console.log(req.body.user.password, req.body.user.username);
             console.log("Login fehlgeschlagen");
         };
     });
