@@ -1,21 +1,20 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-const fileUpload = require('express-fileupload'); //https://www.npmjs.com/package/express-fileupload
+const multer = require('multer');
 const db = require("./Database");
 const parser = require("body-parser");
 const { hash_password, compare_hash, sendNewPassword, generatePassword} = require("./Authentication");
+const { fstat } = require("fs"); // ???
+const fs = require("fs");
 
-
+var upload = multer({dest: `${__dirname}/../UserFiles/`});
 
 
 
 const PORT = 80;
 
 // Middleware
-app.use(fileUpload({
-    //limits: { fileSize: 50 * 1024 * 1024 }    //upload limit in bytes für alle files
-}));
 app.use(express.static("public"));
 
 app.use(parser.urlencoded({ extended: false })); 
@@ -108,25 +107,22 @@ app.get('/dbtest', function (req, res) {
 });
 
 // https://stackoverflow.com/a/6059938
-app.route('/upload')
-.get(function (req, res) {
+app.get('/upload', function (req, res) {
     res.sendFile(__dirname + "/public/upload.html");
-}).post(function (req, res) {
-    // upload
-    if(req.files) {
-        let file = req.files.file;
-        //req.query.uploadPath
-        let uploadPath = __dirname + '/UserFiles/' + file.name;
-        
-        file.mv(uploadPath, function(err) {
-            if (err) {
-                return res.status(500).send(err);
-            }
-            res.send('File uploaded!');
-          });
-    } else {
-        res.send("No files uplaoded");
+});
+app.post('/upload', upload.array("files"), function (req, res) {
+    for (const key in req.files) {
+        const file = req.files[key];
+
+        fs.rename(file.path, file.destination+file.originalname, function (error) {
+            if(error)
+                throw error;
+        });
     }
+    var responseJSON = {
+        message: req.files.length + ' files uploaded successfully'
+    };
+    res.end(JSON.stringify(responseJSON));
 });
 
 
