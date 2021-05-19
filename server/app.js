@@ -54,17 +54,17 @@ app.post('/login', (req, res) => {
 //Verarbeitet die empfangenen Daten beim Registrieren
 app.post('/register', (req, res) => {
     //prüfen, ob Name und Email vorhanden sind, wen nicht dann hashen und speichern
-    console.log(req.body.mail);
-    db.readData("User", {Username:req.body.username, Email:req.body.mail}, (error, result) => {
+    console.log(req.body.user.mail);
+    db.readData("User", {Username:req.body.user.username, Email:req.body.user.mail}, (error, result) => {
         if(error) {
             throw error;
         }else if(result.length > 0) {
             console.log("Username or Email ist already taken");
         }else {
             console.log(result);
-            hash_password(req.body.password, (error, hash) => {
+            hash_password(req.body.user.password, (error, hash) => {
                 if(error) throw error;
-                db.createData("User", [{Username:req.body.username, Password:hash, Email:req.body.mail}], (error, result) => {
+                db.createData("User", [{Username:req.body.user.username, Password:hash, Email:req.body.user.mail}], (error, result) => {
                     if(error) throw error;
                     console.log(result);
                 }); 
@@ -75,7 +75,8 @@ app.post('/register', (req, res) => {
 
 //Erzeugt ein neues Passwort, updatet dies in der DB und sendet eine Mail an den User
 app.post('/forgotPassword', (req, res) =>{
-    db.readData('User', {Email:req.body.email}, (error, result) => {
+    console.log(req.body.email.mail);
+    db.readData('User', {Email:req.body.email.email}, (error, result) => {
         if(error) {
             throw error;
         }else if(result.length < 1) {
@@ -84,7 +85,7 @@ app.post('/forgotPassword', (req, res) =>{
             newPassword = generatePassword();
             hash_password(newPassword, (error,hash) =>{
                 if(error) throw error;
-                db.updateData("User",{Email:req.body.email}, { $set:{ Password:hash}}, (error,result) => {
+                db.updateData("User",{Email:req.body.email.email}, { $set:{ Password:hash}}, (error,result) => {
                     if(error) throw error;
                     console.log(result);
                 })
