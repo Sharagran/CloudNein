@@ -19,6 +19,7 @@
   "homepage": "https://github.com/Sharagran/CloudNein#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "generate-password": "^1.6.0",
     "mongodb": "^3.6.6",
