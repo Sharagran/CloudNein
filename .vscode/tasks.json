@@ -1,0 +1,35 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "install",
+			"path": "server/",
+			"problemMatcher": [],
+			"label": "npm: install - server",
+			"detail": "install dependencies from package",
+			"group": "build"
+		},
+		{
+			"type": "npm",
+			"script": "install",
+			"path": "client/",
+			"problemMatcher": [],
+			"label": "npm: install - client",
+			"detail": "install dependencies from package",
+			"group": "build"
+		},
+		{
+			"label": "npm install client + server",
+			"dependsOn": [
+				"npm: install - server",
+				"npm: install - client"
+			],
+			"problemMatcher": [],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}
