@@ -2,16 +2,11 @@ const path = require("path");
 const multer = require('multer');
 const db = require("./Database");
 const { hash_password, compare_hash, sendNewPassword, generatePassword } = require("./Authentication");
-const fs = require("fs");
+const fm = require('./FileManager');
 
 var upload = multer({ dest: `${__dirname}/../UserFiles/` });
 
 module.exports = function (app) {
-
-
-    app.get('/', function (req, res) {
-        res.sendFile(path.join(__dirname + '/public/login.html'));
-    });
 
     app.post('/login', (req, res) => {
         db.readData("User", { Username: req.body.user.username }, (error, result) => {
@@ -78,31 +73,26 @@ module.exports = function (app) {
         });
     });
 
+    app.post('/upload', upload.array("files"), function (req, res) {
+        var responseJSON = fm.uploadFiles(req);
+        res.end(JSON.stringify(responseJSON));
+    });
+
+
+    // FIXME: Debug only (all get routes should be handled with react)
+    app.get('/', function (req, res) {
+        res.sendFile(path.join(__dirname + '/public/login.html'));
+    });
+
     app.get('/dbtest', function (req, res) {
         db.readData("test", { value1: "test1" }, (error, result) => {
             console.log(result);
         });
     });
 
-    // https://stackoverflow.com/a/6059938
     app.get('/upload', function (req, res) {
         res.sendFile(__dirname + "/public/upload.html");
     });
-    app.post('/upload', upload.array("files"), function (req, res) {
-        for (const key in req.files) {
-            const file = req.files[key];
-
-            fs.rename(file.path, file.destination + file.originalname, function (error) {
-                if (error)
-                    throw error;
-            });
-        }
-        var responseJSON = {
-            message: req.files.length + ' files uploaded successfully'
-        };
-        res.end(JSON.stringify(responseJSON));
-    });
-
 
     app.get(['/myfiles', '/myfiles/:path'], function (req, res) {
         // download

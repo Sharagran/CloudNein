@@ -20,6 +20,6 @@ app.listen(PORT, () => {
     db.connect();
 });
 
-
+// FIXME: ersetzen durch router mit app.use(routes)
 routes(app);
 
