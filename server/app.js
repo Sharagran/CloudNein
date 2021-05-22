@@ -14,7 +14,7 @@ app.use(cors());
 app.use(parser.urlencoded({ extended: false })); 
 app.use(express.json())
 
-app.use(routes);
+app.use('/', routes);
 
 // handles all code errors (error middleware must be the last middleware)
 app.use(function (err, req, res, next) {
