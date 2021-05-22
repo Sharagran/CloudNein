@@ -14,6 +14,14 @@ app.use(cors());
 app.use(parser.urlencoded({ extended: false })); 
 app.use(express.json())
 
+// FIXME: debug only
+// logging all request (debug mode)
+app.use(function (req, res, next) {
+    console.log(`${req.ip} ${req.method} ${req.url}`);
+    console.log(req.headers)
+    next()
+})
+
 app.use('/', routes);
 
 // handles all code errors (error middleware must be the last middleware)
