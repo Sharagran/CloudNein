@@ -20,7 +20,12 @@ app.use('/', routes);
 app.use(function (err, req, res, next) {
     console.error(err.stack)
     res.status(500);
-    res.send('Something broke!');
+
+    var responseJSON = {
+        code: 500,
+        message: `Error: ${err.message}`
+    };
+    res.end(JSON.stringify(responseJSON));
     //next(err) // falls keine response gesendet wird kümmert sich express darum mit next(error)
 });
 
