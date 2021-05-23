@@ -2,8 +2,11 @@ import React, { Component } from "react";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
+
+
 export default class Login extends Component {
   // This is the constructor that stores the data.
+
   constructor(props) {
     super(props);
 
@@ -64,8 +67,8 @@ export default class Login extends Component {
                 </form>
             </div>
             <div class="login-form">
-            <Link to="/Registration"><button id="register-btn" type="submit" >Create Account</button></Link>
-			<Link to="/ForgotPassword"><button id="forgotPassword-btn" type="submit" >Forgot Password?</button></Link>
+              <Link to="/Registration"><button id="register-btn" type="submit" >Create Account</button></Link> 
+              <Link to="/ForgotPassword"><button id="forgotPassword-btn" type="submit" >Forgot Password?</button></Link>
             </div>
         </>
     );
