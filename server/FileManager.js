@@ -55,10 +55,11 @@ function moveFile(oldPath, newPath) {
     });
 }
 
+// react route https://ncoughlin.com/posts/react-router-variable-route-parameters/
 function shareFile(file, expires = -1, usages = -1) {
     throw {name : "NotImplementedError", message : "too lazy to implement"};
 
-    const shareLink = uuidv4();
+    const shareLink = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
 
     //TODO: add db entry
 
