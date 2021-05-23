@@ -1,5 +1,6 @@
 const fs = require("fs");
 const db = require("./Database");
+import { v4 as uuidv4 } from 'uuid';
 
 function uploadFiles(req, userID) {
     for (const key in req.files) {
@@ -54,10 +55,14 @@ function moveFile(oldPath, newPath) {
     });
 }
 
-function shareFile() {
+function shareFile(file, expires = -1, usages = -1) {
     throw {name : "NotImplementedError", message : "too lazy to implement"};
 
-    //TODO: modify file access & create share link
+    const shareLink = uuidv4();
+
+    //TODO: add db entry
+
+    return shareLink;
 }
 
 module.exports = {
