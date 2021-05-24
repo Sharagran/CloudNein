@@ -7,13 +7,13 @@ export default class Settings extends Component {
     super(props);
 
     this.onChangeUsername = this.onChangeUsername.bind(this);
-	this.onChangeMail = this.onChangeMail.bind(this);
+	  this.onChangeMail = this.onChangeMail.bind(this);
     this.onSubmitUsername = this.onSubmitUsername.bind(this);
     this.onSubmitMail = this.onSubmitMail.bind(this);
 
     this.state = {
       username: "",
-	  mail: ""
+	    mail: ""
     };
   }
 
@@ -47,7 +47,7 @@ export default class Settings extends Component {
     // We will empty the state after posting the data to the database
     this.setState({
       username: "",
-	  mail: ""
+	    mail: ""
     });
   }
 
@@ -58,7 +58,7 @@ export default class Settings extends Component {
     const user = {
       mail: this.state.mail,
     };
-
+    
     axios
       .post("http://localhost:80/settings", {user})
       .then((res) => console.log(res.data));
@@ -66,7 +66,7 @@ export default class Settings extends Component {
     // We will empty the state after posting the data to the database
     this.setState({
       username: "",
-	  mail: ""
+	    mail: ""
     });
   }
 
