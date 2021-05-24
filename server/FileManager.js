@@ -1,6 +1,6 @@
 const fs = require("fs");
 const db = require("./Database");
-import { v4 as uuidv4 } from 'uuid';
+const uuidv4 = require('uuid').v4;
 
 function uploadFiles(req, userID) {
     for (const key in req.files) {
@@ -61,6 +61,7 @@ function shareFile(file, expires = -1, usages = -1) {
 
     const shareLink = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
 
+    db.createData("User", { Username: req.body.user.username, Password: hash, Email: req.body.user.mail });
     //TODO: add db entry
 
     return shareLink;
