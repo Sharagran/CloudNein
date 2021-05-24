@@ -56,18 +56,32 @@ function moveFile(oldPath, newPath) {
 }
 
 // react route https://ncoughlin.com/posts/react-router-variable-route-parameters/
-function shareFile(file, expires = -1, usages = -1) {
-    throw {name : "NotImplementedError", message : "too lazy to implement"};
+function shareFile(path, expires = -1, usages = -1, callback) {
+    // check if file exists
+    fs.stat(path, function (error, stats) {
+        if(error)
+            callback({message: "Path does not exist"}, null);
 
-    const shareLink = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
+        if(stats.isFile() && !stats.isSymbolicLink()) {
+            const shareLink = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
+            //TODO: add db entry
+            db.createData("sharedFiles", { shareID: shareLink, file: path, expires: expires, usages: usages }, function () {
+                callback(null, shareLink);
+                //TODO: create route to file in react
+            });
+            
+        } else {
+            callback({message: "Not a file"}, null);
+        }
 
-    db.createData("User", { Username: req.body.user.username, Password: hash, Email: req.body.user.mail });
-    //TODO: add db entry
-
-    return shareLink;
+    });
 }
 
 module.exports = {
     uploadFiles: uploadFiles,
-    getFiles: getFiles
+    getFiles: getFiles,
+    commentFile: commentFile,
+    editFile: editFile,
+    moveFile: moveFile,
+    shareFile: shareFile
 }

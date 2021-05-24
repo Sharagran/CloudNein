@@ -114,6 +114,14 @@ router.get('/error', function (req, res) {
     fghfghfg.error();
 })
 
+router.get('/test', function (req, res) {
+    fm.shareFile("../UserFiles/Sharangran-hinten.png", 3000, 10, function (error, link) {
+        if(error)
+            console.log(error.message);
+        console.log(link);
+    });
+})
+
 router.get('*', function (req, res) {
     res.status(404).sendFile(__dirname + '/public/error.html');
 });
