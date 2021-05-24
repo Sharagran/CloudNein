@@ -6,7 +6,6 @@ const fm = require('./FileManager');
 const express = require("express");
 
 var upload = multer({ dest: `${__dirname}/../UserFiles/` });
-
 var router = express.Router();
 
 router.post('/login', (req, res) => {
@@ -73,6 +72,37 @@ router.post('/forgotPassword', (req, res) => {
         };
     });
 });
+
+router.post('/settings', (req, res) => {
+    //Daten des User erfragen, wie? Per Session?
+    db.readData("User", { Username: "Andre14"},  (error, result) =>{
+        if (error) {
+            throw error;}
+            if(req.body.user.username == undefined){
+                db.readData("User", { Email: req.body.user.mail },  (error, result) => {
+                    if (error) {
+                        throw error;
+                    }else if(result.length == 0){
+                        db.updateData("User", { Username: "Andre14" }, { $set: { Email: req.body.user.mail } }, (error, result) => {
+                            if (error) throw error;
+                            console.log("Mail updated");
+                        })
+                    }
+                })
+            }else if (req.body.user.mail == undefined) {
+                db.readData("User", { Username: req.body.user.username },  (error, result) => {
+                    if (error) {
+                        throw error;
+                    }else if(result.length == 0){
+                        db.updateData("User", { Username: "Andre14" }, { $set: { Username: req.body.user.username } }, (error, result) => {
+                            if (error) throw error;
+                            console.log("Username updated");
+                        })
+                    }
+                })
+            }
+    })
+})
 
 router.post('/upload', upload.array("files"), function (req, res) {
     var responseJSON = fm.uploadFiles(req);
