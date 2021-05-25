@@ -5,7 +5,7 @@ const parser = require("body-parser");
 const cors = require("cors");
 const routes = require('./routes')
 const expressJwt = require('express-jwt');
-const config = require('config.json');  // generate secret: require('crypto').randomBytes(64).toString('hex')
+const config = require('./config.json');  // generate secret: require('crypto').randomBytes(64).toString('hex')
 const errorHandler = require('./error_handler');
 
 const PORT = 80;

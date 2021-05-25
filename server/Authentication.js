@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const nodemailer = require("nodemailer");
 const generator = require('generate-password');
 
-const config = require('config.json');
+const config = require('./config.json');
 const jwt = require('jsonwebtoken');
 
 //Hasht das Passwort
@@ -113,6 +113,14 @@ function forgotPassword(email) {
           })
       };
   });
+}
+
+function signIn(username) {
+  const 
+}
+
+function verify() {
+  
 }
 
 module.exports = {
