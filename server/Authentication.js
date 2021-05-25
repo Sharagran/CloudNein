@@ -53,18 +53,24 @@ function generatePassword() {
 
 
 
-function login(username, password) {
+function login(username, password, callback) {
   db.readData("User", { Username: username }, (error, result) => {
     if (error) {
       throw error;
-    } else if (result.length > 0)
-      compare_hash(password, result[0].Password, (error, match) => {
-        if (error) {
+    } else if (result.length > 0) {
+      var user = result[0];
+      compare_hash(password, user.Password, (error, match) => {
+        if (error)
           throw error;
+
+        if (match) {
+          console.log("Matching password: " + match);
+          signIn(user, callback);
         } else {
           console.log("Matching password: " + match);
         };
       });
+    }
     else {
       console.log(password, username);
       console.log("Login fehlgeschlagen");
@@ -73,63 +79,64 @@ function login(username, password) {
 }
 
 function register(email, username, password) {
-      //prüfen, ob Name und Email vorhanden sind, wen nicht dann hashen und speichern
-      console.log(email);
-      db.readData("User", { Username: username, Email: email }, (error, result) => {
-          if (error) {
-              throw error;
-          } else if (result.length > 0) {
-              console.log("Username or Email ist already taken");
-          } else {
-              console.log(result);
-              hash_password(password, (error, hash) => {
-                  if (error) throw error;
-                  db.createData("User", [{ Username: username, Password: hash, Email: email }], (error, result) => {
-                      if (error) throw error;
-                      console.log(result);
-                  });
-              });
-          };
+  //prüfen, ob Name und Email vorhanden sind, wen nicht dann hashen und speichern
+  console.log(email);
+  db.readData("User", { Username: username, Email: email }, (error, result) => {
+    if (error) {
+      throw error;
+    } else if (result.length > 0) {
+      console.log("Username or Email ist already taken");
+    } else {
+      console.log(result);
+      hash_password(password, (error, hash) => {
+        if (error) throw error;
+        db.createData("User", [{ Username: username, Password: hash, Email: email }], (error, result) => {
+          if (error) throw error;
+          console.log(result);
+        });
       });
+    };
+  });
 }
 
 function forgotPassword(email) {
   console.log(email);
   db.readData('User', { Email: email }, (error, result) => {
-      if (error) {
-          throw error;
-      } else if (result.length < 1) {
-          console.log("Email nicht gefunden");
-      } else {
-          newPassword = generatePassword();
-          hash_password(newPassword, (error, hash) => {
-              if (error) throw error;
-              db.updateData("User", { Email: email }, { $set: { Password: hash } }, (error, result) => {
-                  if (error) throw error;
-                  console.log(result);
-              })
-              sendNewPassword(result[0].Email, newPassword, (error, info) => {
-                  if (error) throw error;
-              });
-          })
-      };
+    if (error) {
+      throw error;
+    } else if (result.length < 1) {
+      console.log("Email nicht gefunden");
+    } else {
+      newPassword = generatePassword();
+      hash_password(newPassword, (error, hash) => {
+        if (error) throw error;
+        db.updateData("User", { Email: email }, { $set: { Password: hash } }, (error, result) => {
+          if (error) throw error;
+          console.log(result);
+        })
+        sendNewPassword(result[0].Email, newPassword, (error, info) => {
+          if (error) throw error;
+        });
+      })
+    };
   });
 }
 
-function signIn(username) {
+function signIn(user, callback) {
+  const payload = { username: user.Username, email: user.Email };
+  const token = jwt.sign(payload, config.secret, { expiresIn: '1m' }); //FIXME: expiresIn
 
-  const payload;
-  const 
-
-  const token = jwt.sign(payload, config.secret, options);
+  callback(token);
 }
 
-function verify() {
-  
+function verify(token) {
+  var data = jwt.verify(token, config.secret);
+  console.log(data);
 }
 
 module.exports = {
   login: login,
   register: register,
-  forgotPassword: forgotPassword
+  forgotPassword: forgotPassword,
+  verify: verify
 }
