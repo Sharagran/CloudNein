@@ -4,6 +4,9 @@ const db = require("./Database");
 const parser = require("body-parser");
 const cors = require("cors");
 const routes = require('./routes')
+const expressJwt = require('express-jwt');
+const config = require('config.json');  // generate secret: require('crypto').randomBytes(64).toString('hex')
+const errorHandler = require('./error_handler');
 
 const PORT = 80;
 
@@ -22,20 +25,24 @@ app.use(function (req, res, next) {
     next()
 })
 
+app.use(expressJwt({ secret: config.secret, algorithms: ['HS256'] }).unless({
+    path: [
+        // public routes that don't require authentication
+        '/',
+        '/login',
+        '/register',
+        '/forgotPassword',
+
+        '/dbtest',
+        '/test',
+        '/error'
+    ]
+}));
+
 app.use('/', routes);
 
 // handles all code errors (error middleware must be the last middleware)
-app.use(function (err, req, res, next) {
-    console.error(err.stack)
-    res.status(500);
-
-    var responseJSON = {
-        code: 500,
-        message: `Error: ${err.message}`
-    };
-    res.end(JSON.stringify(responseJSON));
-    //next(err) // falls keine response gesendet wird kümmert sich express darum mit next(error)
-});
+app.use(errorHandler);
 
 
 app.listen(PORT, () => {
