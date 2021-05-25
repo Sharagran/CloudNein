@@ -8,6 +8,9 @@
             "cwd": "${workspaceFolder}/client",
             "runtimeExecutable": "npm",
             "runtimeArgs": [ "start" ],
+            "env": {
+                "HTTPS": "true"
+            },
             "port": 5858
         },
         {
