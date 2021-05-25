@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const nodemailer = require("nodemailer");
 const generator = require('generate-password');
+const db = require("./Database");
 
 const config = require('./config.json');
 const jwt = require('jsonwebtoken');
@@ -116,7 +117,11 @@ function forgotPassword(email) {
 }
 
 function signIn(username) {
+
+  const payload;
   const 
+
+  const token = jwt.sign(payload, config.secret, options);
 }
 
 function verify() {
