@@ -10,7 +10,7 @@ export default class Home extends Component {
 		<>
             <div class="login-form">
               <h1>Home</h1>
-              <Link to="/Home"><button id="register-btn" type="submit" >Storage</button></Link> 
+              <Link to="/Storage"><button id="forgotPassword-btn" type="submit" >Storage</button></Link>
               <Link to="/Settings"><button id="forgotPassword-btn" type="submit" >Settings</button></Link>
             </div>
     </>
