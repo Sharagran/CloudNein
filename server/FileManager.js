@@ -2,7 +2,8 @@ const fs = require("fs");
 const db = require("./Database");
 const uuidv4 = require('uuid').v4;
 
-function uploadFiles(req, userID) {
+// tags = keywords
+function uploadFiles(req, tags, userID,) {
     for (const key in req.files) {
         const file = req.files[key];
 
@@ -12,6 +13,7 @@ function uploadFiles(req, userID) {
                 throw error;
 
             //TODO: save file metadata in db
+            db.createData("files", { shareID: shareLink, file: path, expires: expires, usages: usages });
 
         });
     }
