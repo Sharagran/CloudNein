@@ -6,6 +6,9 @@ import Home from './pages/Home';
 import Settings from './pages/Settings';
 import Record from './pages/Record';
 import Photo from './pages/Photo';
+import Failed from './pages/Failed';
+import Success from './pages/Success';
+import SendEmail from './pages/SendEmail';
 
 function App() {
   return (
@@ -18,6 +21,9 @@ function App() {
         <Route path="/Settings" component={Settings} />
         <Route path="/Record" component={Record} />
         <Route path="/Photo" component={Photo} />
+        <Route path="/Failed" component={Failed} />
+        <Route path="/Success" component={Success} />
+        <Route path="/SendEmail" component={SendEmail} />
       </Switch>
     </BrowserRouter>
 

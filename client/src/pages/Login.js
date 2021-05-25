@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 
-
 export default class Login extends Component {
   // This is the constructor that stores the data.
 
@@ -45,13 +44,13 @@ export default class Login extends Component {
 
     axios
       .post("http://localhost:80/login", {user})
-      .then((res) => console.log(res.data));
-
-    // We will empty the state after posting the data to the database
-    this.setState({
-      username: "",
-      password: "",
-    });
+      .then((res) => {
+        if (res.data === true){
+          this.props.history.push('/home')
+        }else{
+          this.props.history.push('/failed')
+        }
+      });
   }
 
   // This following section will display the form that takes the input from the user.
