@@ -35,5 +35,5 @@ function updateHeader(token) {
     if (token)
         axios.defaults.headers.common = { 'Authorization': `Bearer ${token}` };
     else
-        throw new Error("No token specified");
+        console.info("No token specified");
 }
