@@ -53,11 +53,13 @@ export default class Login extends Component {
 
         if(res.data.user.Username === "Admin"){
           setToken(res.data.token);
+          GlobalVal.loginState = true;
           this.props.history.push('/Admin')
         }else if (res.data.user.Username !== undefined){
           setToken(res.data.token);
           GlobalVal.username = res.data.user.Username;
           GlobalVal.email = res.data.user.Email;
+          GlobalVal.loginState = true;
           this.props.history.push('/home')
         }else{
           this.props.history.push('/failed')
@@ -69,6 +71,7 @@ export default class Login extends Component {
   // This following section will display the form that takes the input from the user.
   render() {
     return (
+
         <>
             <div class="login-form">
                 <h1>Login</h1>

@@ -4,6 +4,7 @@ const db = require("./Database");
 const auth = require("./Authentication");
 const fm = require('./FileManager');
 const express = require("express");
+const fs = require("fs");
 
 var upload = multer({ dest: `${__dirname}/../UserFiles/` });
 var router = express.Router();
@@ -29,8 +30,6 @@ router.post('/forgotPassword', (req, res) => {
 router.post('/settings', (req, res) => {
     //Daten des User erfragen, wie? Per Session?
 
-    console.log(req.body.user.previousMail);
-    console.log(req.body.user.mail);
     db.readData("User", { Username: req.body.user.previousUsername},  (error, result) =>{
         if (error) {
             throw error;}
@@ -42,7 +41,6 @@ router.post('/settings', (req, res) => {
                     }else if(result.length == 0){
                         db.updateData("User", { Email: req.body.user.previousMail }, { $set: { Email: req.body.user.mail } }, (error, result) => {
                             if (error) throw error;
-                            
                             console.log("Mail updated");
                         })
                     }
@@ -55,6 +53,13 @@ router.post('/settings', (req, res) => {
                         db.updateData("User", { Username: req.body.user.previousUsername }, { $set: { Username: req.body.user.username } }, (error, result) => {
                             if (error) throw error;
                             console.log("Username updated");
+                            fs.rename("../UserFiles/"+ req.body.user.previousUsername, "../UserFiles/"+ req.body.user.username, function(err) {
+                                if (err) {
+                                  console.log(err)
+                                } else {
+                                  console.log("Successfully renamed the directory.")
+                                }
+                              })
                         })
                     }
                 })

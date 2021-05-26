@@ -1,4 +1,5 @@
 export default {
     username: null,
-    email: null
+    email: null,
+    loginState: null
 };
