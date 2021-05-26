@@ -64,14 +64,16 @@ export default class Registration extends Component {
 
     axios
       .post("http://localhost:80/register", {user})
-      .then((res) => console.log(res.data));
+      .then((res) => {
+        if (res.data === true){
+          this.props.history.push('/home')
+        }else{
+          this.props.history.push('/failed')
+        }
+      });
 
     // We will empty the state after posting the data to the database
-    this.setState({
-      username: "",
-      password: "",
-	  mail: ""
-    });
+
   }
 
   // This following section will display the form that takes the input from the user.
