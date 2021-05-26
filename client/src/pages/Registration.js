@@ -86,7 +86,6 @@ export default class Registration extends Component {
 					<input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
 					<input type="text" name="mail" placeholder="E-Mail" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeMail} required ></input>
 					<input id="password"type="password" name="password" placeholder="Password (6 characters minimum)" minLength="6" onChange={this.onChangePassword} required ></input>
-					<input id="confirm_password" type="password" name="confirm_password" placeholder="Confirm password" minLength="6" required></input>
 					<input type="submit" value="Create Account" onClick={this.onSubmit}></input>
 				</form>
 			</div>

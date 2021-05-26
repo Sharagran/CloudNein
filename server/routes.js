@@ -12,7 +12,7 @@ router.post('/login', async (req, res) => {
     var user = await auth.login(req.body.user.username, req.body.user.password);
     var token = auth.signIn(user);
     //auth.verify(token); //FIXME: DEBUG ONLY
-    res.send({token: token});
+    res.send({token: token, user: user});
 });
 
 
@@ -28,16 +28,21 @@ router.post('/forgotPassword', (req, res) => {
 
 router.post('/settings', (req, res) => {
     //Daten des User erfragen, wie? Per Session?
-    db.readData("User", { Username: "Andre14"},  (error, result) =>{
+
+    console.log(req.body.user.previousMail);
+    console.log(req.body.user.mail);
+    db.readData("User", { Username: req.body.user.previousUsername},  (error, result) =>{
         if (error) {
             throw error;}
             if(req.body.user.username == undefined){
                 db.readData("User", { Email: req.body.user.mail },  (error, result) => {
+                    console.log(result);
                     if (error) {
                         throw error;
                     }else if(result.length == 0){
-                        db.updateData("User", { Username: "Andre14" }, { $set: { Email: req.body.user.mail } }, (error, result) => {
+                        db.updateData("User", { Email: req.body.user.previousMail }, { $set: { Email: req.body.user.mail } }, (error, result) => {
                             if (error) throw error;
+                            
                             console.log("Mail updated");
                         })
                     }
@@ -47,7 +52,7 @@ router.post('/settings', (req, res) => {
                     if (error) {
                         throw error;
                     }else if(result.length == 0){
-                        db.updateData("User", { Username: "Andre14" }, { $set: { Username: req.body.user.username } }, (error, result) => {
+                        db.updateData("User", { Username: req.body.user.previousUsername }, { $set: { Username: req.body.user.username } }, (error, result) => {
                             if (error) throw error;
                             console.log("Username updated");
                         })

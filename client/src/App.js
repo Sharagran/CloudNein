@@ -10,6 +10,7 @@ import Failed from './pages/Failed';
 import Success from './pages/Success';
 import SendEmail from './pages/SendEmail';
 import Storage from './pages/Storage';
+import Admin from './pages/Admin';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/Success" component={Success} />
         <Route path="/SendEmail" component={SendEmail} />
         <Route path="/Storage" component={Storage} />
+        <Route path="/Admin" component={Admin} />
       </Switch>
     </BrowserRouter>
 
