@@ -8,11 +8,13 @@ const express = require("express");
 var upload = multer({ dest: `${__dirname}/../UserFiles/` });
 var router = express.Router();
 
-router.post('/login', (req, res) => {
-    auth.login(req.body.user.username, req.body.user.password, function (token) {
-        res.send({token: token});
-    });
+router.post('/login', async (req, res) => {
+    var user = await auth.login(req.body.user.username, req.body.user.password);
+    var token = auth.signIn(user);
+    //auth.verify(token); //FIXME: DEBUG ONLY
+    res.send({token: token});
 });
+
 
 //Verarbeitet die empfangenen Daten beim Registrieren
 router.post('/register', (req, res) => {

@@ -5,6 +5,11 @@ const db = require("./Database");
 
 const config = require('./config.json');
 const jwt = require('jsonwebtoken');
+const util = require('util');
+
+//TODO: alle callbacks durch promises ersetzen
+const readData = util.promisify(db.readData);
+const comp_hash = util.promisify(compare_hash);
 
 //Hasht das Passwort
 function hash_password(password, callback) {
@@ -53,29 +58,30 @@ function generatePassword() {
 
 
 
-function login(username, password, callback) {
-  db.readData("User", { Username: username }, (error, result) => {
-    if (error) {
-      throw error;
-    } else if (result.length > 0) {
-      var user = result[0];
-      compare_hash(password, user.Password, (error, match) => {
-        if (error)
-          throw error;
+async function login(username, password) {
+  var error, result = await readData("User", { Username: username });
 
-        if (match) {
-          console.log("Matching password: " + match);
-          signIn(user, callback);
-        } else {
-          console.log("Matching password: " + match);
-        };
-      });
-    }
-    else {
-      console.log(password, username);
-      console.log("Login fehlgeschlagen");
+  if (error)
+    throw error;
+
+  if (result.length > 0) {
+    var user = result[0];
+
+    var error, match = await comp_hash(password, user.Password);
+    if (error)
+      throw error;
+
+    if (match) {
+      console.log("Matching password: true");
+      return user;
+    } else {
+      console.log("Matching password: false");
     };
-  });
+  }
+  else {
+    console.log(password, username);
+    console.log("Login fehlgeschlagen");
+  }
 }
 
 function register(email, username, password) {
@@ -122,21 +128,22 @@ function forgotPassword(email) {
   });
 }
 
-function signIn(user, callback) {
+function signIn(user) {
   const payload = { username: user.Username, email: user.Email };
   const token = jwt.sign(payload, config.secret, { expiresIn: '1m' }); //FIXME: expiresIn
 
-  callback(token);
+  return token;
 }
 
 function verify(token) {
   var data = jwt.verify(token, config.secret);
-  console.log(data);
+  console.log(data);  //FIXME: debug only
 }
 
 module.exports = {
   login: login,
   register: register,
   forgotPassword: forgotPassword,
+  signIn: signIn,
   verify: verify
 }
