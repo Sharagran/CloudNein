@@ -7,6 +7,7 @@ const routes = require('./routes')
 const expressJwt = require('express-jwt');
 const config = require('./config.json');  // generate secret: require('crypto').randomBytes(64).toString('hex')
 const errorHandler = require('./error_handler');
+const verifier = require('./jwt_verifier');
 
 const PORT = 80;
 
@@ -39,7 +40,15 @@ app.use(expressJwt({ secret: config.secret, algorithms: ['HS256'] }).unless({
     ]
 }));
 
+app.use(verifier);
+
 app.use('/', routes);
+
+
+//FIXME: debug only
+app.use(function (req, res, next) {
+    console.log(req.user);
+});
 
 // handles all code errors (error middleware must be the last middleware)
 app.use(errorHandler);
