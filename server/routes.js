@@ -10,7 +10,7 @@ var router = express.Router();
 
 router.post('/login', async (req, res) => {
     var user = await auth.login(req.body.user.username, req.body.user.password);
-    var token = auth.signIn(user);
+    var token = auth.sign(user);
     //auth.verify(token); //FIXME: DEBUG ONLY
     res.send({token: token});
 });

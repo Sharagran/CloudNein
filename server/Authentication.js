@@ -128,7 +128,7 @@ function forgotPassword(email) {
   });
 }
 
-function signIn(user) {
+function sign(user) {
   const payload = { username: user.Username, email: user.Email };
   const token = jwt.sign(payload, config.secret, { expiresIn: '1m' }); //FIXME: expiresIn
 
@@ -137,13 +137,13 @@ function signIn(user) {
 
 function verify(token) {
   var data = jwt.verify(token, config.secret);
-  console.log(data);  //FIXME: debug only
+  return data;
 }
 
 module.exports = {
   login: login,
   register: register,
   forgotPassword: forgotPassword,
-  signIn: signIn,
+  sign: sign,
   verify: verify
 }
