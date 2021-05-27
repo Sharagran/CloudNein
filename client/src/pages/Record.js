@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import {Recorder} from 'react-voice-recorder'
-import './css/recorder.css'
+//import './css/recorder.css'
 
 export default class Record extends Component {
 

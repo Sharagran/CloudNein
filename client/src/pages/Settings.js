@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import axios from 'axios';
+import GlobalVal from "./GlobalVal";
 
 export default class Settings extends Component {
 
@@ -13,7 +14,9 @@ export default class Settings extends Component {
 
     this.state = {
       username: "",
-	    mail: ""
+	    mail: "", 
+      previousUsername: GlobalVal.username,
+      previousMail: GlobalVal.email
     };
   }
 
@@ -38,17 +41,16 @@ export default class Settings extends Component {
     // When post request is sent to the create url, axios will add a new record(user) to the database.
     const user = {
       username: this.state.username,
+      previousUsername: GlobalVal.username
     };
 
     axios
       .post("http://localhost:80/settings", {user})
       .then((res) => console.log(res.data));
 
-    // We will empty the state after posting the data to the database
-    this.setState({
-      username: "",
-	    mail: ""
-    });
+  
+    GlobalVal.username = user.username; 
+    console.log(GlobalVal.username)
   }
 
   onSubmitMail(e) {
@@ -57,17 +59,15 @@ export default class Settings extends Component {
     // When post request is sent to the create url, axios will add a new record(user) to the database.
     const user = {
       mail: this.state.mail,
+      previousMail: GlobalVal.email
     };
     
     axios
       .post("http://localhost:80/settings", {user})
       .then((res) => console.log(res.data));
 
-    // We will empty the state after posting the data to the database
-    this.setState({
-      username: "",
-	    mail: ""
-    });
+
+    GlobalVal.email = user.mail; 
   }
 
   // This following section will display the form that takes the input from the user.

@@ -1,11 +1,16 @@
 import React, { Component } from "react";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { setToken } from "../Authenticator";
+import GlobalVal from "./GlobalVal";
+
 
 
 export default class Login extends Component {
   // This is the constructor that stores the data.
 
+
+  
   constructor(props) {
     super(props);
 
@@ -45,17 +50,28 @@ export default class Login extends Component {
     axios
       .post("http://localhost:80/login", {user})
       .then((res) => {
-        if (res.data === true){
+
+        if(res.data.user.Username === "Admin"){
+          setToken(res.data.token);
+          GlobalVal.loginState = true;
+          this.props.history.push('/Admin')
+        }else if (res.data.user.Username !== undefined){
+          setToken(res.data.token);
+          GlobalVal.username = res.data.user.Username;
+          GlobalVal.email = res.data.user.Email;
+          GlobalVal.loginState = true;
           this.props.history.push('/home')
         }else{
           this.props.history.push('/failed')
         }
+        
       });
   }
 
   // This following section will display the form that takes the input from the user.
   render() {
     return (
+
         <>
             <div class="login-form">
                 <h1>Login</h1>

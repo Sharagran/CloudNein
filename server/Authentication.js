@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const nodemailer = require("nodemailer");
 const generator = require('generate-password');
 const db = require("./Database");
-
+const fs = require("fs");
 const config = require('./config.json');
 const jwt = require('jsonwebtoken');
 const util = require('util');
@@ -99,6 +99,13 @@ function register(email, username, password) {
         db.createData("User", [{ Username: username, Password: hash, Email: email }], (error, result) => {
           if (error) throw error;
           console.log(result);
+          fs.mkdir("../UserFiles/"+ username, function(err) {
+            if (err) {
+              console.log(err)
+            } else {
+              console.log("New directory successfully created.")
+            }
+          })
         });
       });
     };
