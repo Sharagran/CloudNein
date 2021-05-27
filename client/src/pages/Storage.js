@@ -3,44 +3,51 @@ import axios from 'axios';
 
 export default class Storage extends Component {
 
-  constructor(props) {
-    super(props);
-      this.state = {
-        selectedFile: null
-      }
-  }
+  state = {
+    // Initially, no file is selected
+    selectedFile: null
+  };
+  
+  // On file select (from the pop up)
+  onFileChange = event => {
+  
+    // Update the state
+    this.setState({ selectedFile: event.target.files});
+  
+  };
+  
+  // On file upload (click the upload button)
+  onFileUpload = () => {
+  
+    // Create an object of formData
+    const formData = new FormData();
 
-  onChangeHandler=event=>{
-    this.setState({
-     selectedFile: event.target.files,
-    })
-  }
-
-  onClickHandler = () => {
-    const data = new FormData()
-    for(var x = 0; x<this.state.selectedFile.length; x++) {
-        data.append('file', this.state.selectedFile[x])
-       
+    for(var x = 0; x < this.state.selectedFile.length; x++){
+      formData.append("files", this.state.selectedFile[x])
     }
-    console.log(data)
-  axios.post("http://localhost:80/upload", data, { 
-  }).then(res => { // then print response status
-    console.log(res.statusText)
-  })
-  }
+  
+    // Details of the uploaded file
+    console.log(this.state.selectedFile);
+    console.log()
+    // Request made to the backend api
+    // Send formData object
+    axios.post("http://localhost:80/upload", formData);
+  };
 
   // This following section will display the form that takes the input from the user.
   render() {
     return (
         <>
-            <h1>Storage</h1>
-
-            <form action="/upload" methode="post" encType="multipart/form-data">
-              <label >Select files:</label>
-              <input type="file"  name="files" multiple required></input>
-              <input type="submit" onClick={this.onClickHandler}></input>
-            </form>
+          <div>
+              <h1>Upload</h1>
+              <div>
+                <input type="file" name="files" onChange={this.onFileChange} multiple/>
+                <input type="submit" onClick={this.onFileUpload}></input>
+              </div>
+            </div>
         </>
     );
   }
 }
+
+

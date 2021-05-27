@@ -13,7 +13,7 @@ function uploadFiles(req, tags, userID,) {
                 throw error;
 
             //TODO: save file metadata in db
-            db.createData("files", { shareID: shareLink, file: path, expires: expires, usages: usages });
+            //db.createData("files", { shareID: shareLink, file: path, expires: expires, usages: usages });
 
         });
     }
@@ -78,6 +78,8 @@ function shareFile(path, expires = -1, usages = -1, callback) {
 
     });
 }
+
+
 
 module.exports = {
     uploadFiles: uploadFiles,
