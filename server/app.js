@@ -23,32 +23,37 @@ app.use(express.json())
 app.use(function (req, res, next) {
     console.log(`${req.ip} ${req.method} ${req.url}`);
     console.log(req.headers)
-    next()
+    next();
 })
 
-app.use(expressJwt({ secret: config.secret, algorithms: ['HS256'] }).unless({
-    path: [
-        // public routes that don't require authentication
-        '/',
-        '/login',
-        '/register',
-        '/forgotPassword',
+// FIXME: Wahrscheinlich überflüssig da Frontend von react gehandelt wird.
+// Wird vieleicht später nützlich wenn react über express gehostet wird und nicht mehr über den development server (nach dem build)
 
-        '/dbtest',
-        '/test',
-        '/error'
-    ]
-}));
+// app.use(expressJwt({ secret: config.secret, algorithms: ['HS256'] }).unless({
+//     path: [
+//         // public routes that don't require authentication
+//         '/',
+//         '/login',
+//         '/register',
+//         '/forgotPassword',
+
+//         '/dbtest',
+//         '/test',
+//         '/error'
+//     ]
+// }));
 
 app.use(verifier);
 
-app.use('/', routes);
-
-
 //FIXME: debug only
 app.use(function (req, res, next) {
+    console.log("Middleware:");
     console.log(req.user);
+    next();
 });
+
+app.use('/', routes);
+
 
 // handles all code errors (error middleware must be the last middleware)
 app.use(errorHandler);

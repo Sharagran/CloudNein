@@ -12,7 +12,6 @@ var router = express.Router();
 router.post('/login', async (req, res) => {
     var user = await auth.login(req.body.user.username, req.body.user.password);
     var token = auth.sign(user);
-    //auth.verify(token); //FIXME: DEBUG ONLY
     res.send({token: token, user: user});
 });
 
@@ -108,11 +107,15 @@ router.get('/error', function (req, res) {
 })
 
 router.get('/test', function (req, res) {
-    fm.shareFile("../UserFiles/Sharangran-hinten.png", 3000, 10, function (error, link) {
-        if(error)
-            console.log(error.message);
-        console.log(link);
-    });
+    console.log("/test ");
+    console.log(req.user);
+    res.send(req.user);
+
+    // fm.shareFile("../UserFiles/Sharangran-hinten.png", 3000, 10, function (error, link) {
+    //     if(error)
+    //         console.log(error.message);
+    //     console.log(link);
+    // });
 })
 
 router.get('*', function (req, res) {

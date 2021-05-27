@@ -11,14 +11,15 @@ function authenticateJWT (req, res, next) {
 
         jwt.verify(token, config.secret, (err, user) => {
             if (err) {
-                return res.sendStatus(403);
+                console.log(err);
+                return res.sendStatus(403); //TODO: Forbidden: Tokens laufen ab nach server restart
             }
 
             req.user = user;
-            next();
         });
     } else {
         console.log('No token specified');
         //res.sendStatus(401);
     }
+    next();
 };
