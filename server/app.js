@@ -10,12 +10,23 @@ const errorHandler = require('./error_handler');
 const verifier = require('./jwt_verifier');
 
 const PORT = 80;
+const excluded_urls = [
+    // public routes that don't require authentication
+    '/',
+    '/login',
+    '/register',
+    '/forgotPassword',
+
+    '/dbtest',
+    '/test',
+    '/error'
+];
 
 
 // Middleware
 app.use(express.static("public"));
 app.use(cors());
-app.use(parser.urlencoded({ extended: false })); 
+app.use(parser.urlencoded({ extended: false }));
 app.use(express.json())
 
 // FIXME: debug only
@@ -30,34 +41,16 @@ app.use(function (req, res, next) {
 // Wird vieleicht später nützlich wenn react über express gehostet wird und nicht mehr über den development server (nach dem build)
 
 // app.use(expressJwt({ secret: config.secret, algorithms: ['HS256'] }).unless({
-//     path: [
-//         // public routes that don't require authentication
-//         '/',
-//         '/login',
-//         '/register',
-//         '/forgotPassword',
-
-//         '/dbtest',
-//         '/test',
-//         '/error'
-//     ]
+//     path: excluded_urls
 // }));
 
-app.use(verifier);
-
-//FIXME: debug only
-app.use(function (req, res, next) {
-    console.log("Middleware:");
-    console.log(req.user);
-    next();
-});
+app.use(verifier(excluded_urls));
 
 app.use('/', routes);
 
 
 // handles all code errors (error middleware must be the last middleware)
 app.use(errorHandler);
-
 
 app.listen(PORT, () => {
     console.log(`app listening at ${PORT}`);

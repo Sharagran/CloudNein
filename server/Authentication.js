@@ -41,7 +41,7 @@ function sendNewPassword(receiver, newPassword, callback) {
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-      console.log(error);
+      console.error(error);
       throw error;
     } else {
       console.log('Email sent: ' + info.response);
@@ -101,7 +101,7 @@ function register(email, username, password) {
           console.log(result);
           fs.mkdir("../UserFiles/"+ username, function(err) {
             if (err) {
-              console.log(err)
+              console.error(err)
             } else {
               console.log("New directory successfully created.")
             }
@@ -137,7 +137,7 @@ function forgotPassword(email) {
 
 function sign(user) {
   const payload = { username: user.Username, email: user.Email };
-  const token = jwt.sign(payload, config.secret, { expiresIn: '1m' }); //FIXME: expiresIn
+  const token = jwt.sign(payload, config.secret, { expiresIn: '30m' }); //FIXME: expiresIn
 
   return token;
 }

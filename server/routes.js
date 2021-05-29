@@ -54,7 +54,7 @@ router.post('/settings', (req, res) => {
                             console.log("Username updated");
                             fs.rename("../UserFiles/"+ req.body.user.previousUsername, "../UserFiles/"+ req.body.user.username, function(err) {
                                 if (err) {
-                                  console.log(err)
+                                  console.error(err)
                                 } else {
                                   console.log("Successfully renamed the directory.")
                                 }
@@ -107,13 +107,13 @@ router.get('/error', function (req, res) {
 })
 
 router.get('/test', function (req, res) {
-    console.log("/test ");
+    console.log("/test");
     console.log(req.user);
     res.send(req.user);
 
     // fm.shareFile("../UserFiles/Sharangran-hinten.png", 3000, 10, function (error, link) {
     //     if(error)
-    //         console.log(error.message);
+    //         console.error(error.message);
     //     console.log(link);
     // });
 })
