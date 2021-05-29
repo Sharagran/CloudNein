@@ -26,9 +26,17 @@ function uploadFiles(req, tags, userID,) {
 }
 
 function getFiles(userID) {
-    throw {name : "NotImplementedError", message : "too lazy to implement"};
+    //throw {name : "NotImplementedError", message : "too lazy to implement"};
 
     //TODO: get all user files
+    var res = [];
+    fs.readdir("../UserFiles/" + userID, function(err, files) {
+        if(err) throw err;
+        files.forEach(function(file) {
+            res.push(file);
+        })
+    })
+    return res;
 }
 
 function commentFile() {
@@ -78,8 +86,6 @@ function shareFile(path, expires = -1, usages = -1, callback) {
 
     });
 }
-
-
 
 module.exports = {
     uploadFiles: uploadFiles,

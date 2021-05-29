@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {Recorder} from 'react-voice-recorder'
 //import './css/recorder.css'
+import GlobalVal from "./GlobalVal";
 
 export default class Record extends Component {
 
@@ -45,6 +46,15 @@ export default class Record extends Component {
     }
 
     render() {
+        if(GlobalVal.username == null){
+            return (
+              <>
+                      <div class="login-form">
+                        no Permission
+                      </div>
+              </>
+              );
+          }
         return (
             <>
                 <Recorder

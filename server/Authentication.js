@@ -86,30 +86,34 @@ async function login(username, password) {
 
 function register(email, username, password) {
   //prüfen, ob Name und Email vorhanden sind, wen nicht dann hashen und speichern
-  console.log(email);
-  db.readData("User", { Username: username, Email: email }, (error, result) => {
-    if (error) {
-      throw error;
-    } else if (result.length > 0) {
-      console.log("Username or Email ist already taken");
+
+  db.readData("User", { Username: username}, (error, result) => {
+    if (error) throw error;
+    if (result.length > 0) {
+      console.log("Username already taken");
     } else {
-      console.log(result);
-      hash_password(password, (error, hash) => {
+      db.readData("User", {Email: email }, (error, result) => {
         if (error) throw error;
-        db.createData("User", [{ Username: username, Password: hash, Email: email }], (error, result) => {
-          if (error) throw error;
-          console.log(result);
-          fs.mkdir("../UserFiles/"+ username, function(err) {
-            if (err) {
-              console.error(err)
-            } else {
-              console.log("New directory successfully created.")
-            }
-          })
-        });
-      });
-    };
-  });
+        if (result.length > 0) {
+           console.log("Mail already taken");
+        }else{
+          hash_password(password, (error, hash) => {
+            if (error) throw error;
+            db.createData("User", [{ Username: username, Password: hash, Email: email }], (error, result) => {
+              if (error) throw error;
+              fs.mkdir("../UserFiles/"+ username, function(err) {
+                if (err) {
+                  console.log(err)
+                } else {
+                  console.log("New directory successfully created.")
+                }
+              })
+            });
+          });
+        }
+      })
+    }
+  })
 }
 
 function forgotPassword(email) {

@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import axios from 'axios';
 import GlobalVal from "./GlobalVal";
 
+
 export default class Settings extends Component {
+
 
   constructor(props) {
     super(props);
@@ -11,6 +13,7 @@ export default class Settings extends Component {
 	  this.onChangeMail = this.onChangeMail.bind(this);
     this.onSubmitUsername = this.onSubmitUsername.bind(this);
     this.onSubmitMail = this.onSubmitMail.bind(this);
+    this.goBack = this.goBack.bind(this)
 
     this.state = {
       username: "",
@@ -33,6 +36,10 @@ export default class Settings extends Component {
 	});  
   }
 
+  goBack(e){
+    e.preventDefault();
+    this.props.history.goBack();
+  }
 
 // This function will handle the submission.
   onSubmitUsername(e) {
@@ -72,10 +79,19 @@ export default class Settings extends Component {
 
   // This following section will display the form that takes the input from the user.
   render() {
+    if(GlobalVal.username == null){
+      return (
+        <>
+                <div class="login-form">
+                  no Permission
+                </div>
+        </>
+        );
+    }
     return (
 			<>
 			<div class="register-form">
-				<h1>Settings</h1>
+				<h1>Settings</h1> <button onClick={this.goBack}>zurück</button>
 				<form action="/" method="POST">
 					<input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
                     <input type="submit" value="Update Username" onClick={this.onSubmitUsername}></input>

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {Camera} from 'react-html5-camera-photo'
 import 'react-html5-camera-photo/build/css/index.css';
+import GlobalVal from "./GlobalVal";
 
 export default class Photo extends Component {
 
@@ -15,6 +16,15 @@ export default class Photo extends Component {
     }
 
     render() {
+        if(GlobalVal.username == null){
+            return (
+              <>
+                      <div class="login-form">
+                        no Permission
+                      </div>
+              </>
+              );
+          }
         return (
             <>
                 <Camera

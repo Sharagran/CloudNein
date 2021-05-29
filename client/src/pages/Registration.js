@@ -27,7 +27,7 @@ export default class Registration extends Component {
     this.state = {
       username: "",
       password: "",
-	  mail: ""
+	    mail: ""
     };
   }
 
@@ -66,7 +66,7 @@ export default class Registration extends Component {
       .post("http://localhost:80/register", {user})
       .then((res) => {
         if (res.data === true){
-          this.props.history.push('/home')
+          this.props.history.push('/success')
         }else{
           this.props.history.push('/failed')
         }

@@ -6,6 +6,7 @@ const fm = require('./FileManager');
 const express = require("express");
 const fs = require("fs");
 
+
 var upload = multer({ dest: `${__dirname}/../UserFiles/` });
 var router = express.Router();
 
@@ -19,6 +20,7 @@ router.post('/login', async (req, res) => {
 //Verarbeitet die empfangenen Daten beim Registrieren
 router.post('/register', (req, res) => {
     auth.register(req.body.user.mail, req.body.user.username, req.body.user.password);
+    res.send(true);
 });
 
 //Erzeugt ein neues Passwort, updatet dies in der DB und sendet eine Mail an den User
@@ -69,6 +71,12 @@ router.post('/settings', (req, res) => {
 router.post('/upload', upload.array("files"), function (req, res) {
     var responseJSON = fm.uploadFiles(req);
     res.end(JSON.stringify(responseJSON));
+});
+
+router.post('/storage', function(req, res) {
+    var files = fm.getFiles(req.body.user.username);
+    files = ["apfel", "birne", "baum"]
+    res.send(files);
 });
 
 

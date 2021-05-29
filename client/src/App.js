@@ -9,8 +9,9 @@ import Photo from './pages/Photo';
 import Failed from './pages/Failed';
 import Success from './pages/Success';
 import SendEmail from './pages/SendEmail';
-import Storage from './pages/Storage';
+import Upload from './pages/Upload';
 import Admin from './pages/Admin';
+import Storage from './pages/Storage';
 
 function App() {
   return (
@@ -26,8 +27,9 @@ function App() {
         <Route path="/Failed" component={Failed} />
         <Route path="/Success" component={Success} />
         <Route path="/SendEmail" component={SendEmail} />
-        <Route path="/Storage" component={Storage} />
+        <Route path="/Upload" component={Upload} />
         <Route path="/Admin" component={Admin} />
+        <Route path="/Storage" component={Storage} />
       </Switch>
     </BrowserRouter>
 

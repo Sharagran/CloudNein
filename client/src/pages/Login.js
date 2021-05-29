@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { setToken } from "../Authenticator";
+import { getToken, setToken } from "../Authenticator";
 import GlobalVal from "./GlobalVal";
 
 
@@ -47,12 +47,16 @@ export default class Login extends Component {
       password: this.state.password,
     };
 
+    //getToken()
+
     axios
       .post("http://localhost:80/login", {user})
       .then((res) => {
 
         if(res.data.user.Username === "Admin"){
-          setToken(res.data.token);
+          //setToken(res.data.token);
+          GlobalVal.username = res.data.user.Username;
+          GlobalVal.email = res.data.user.Email;
           GlobalVal.loginState = true;
           this.props.history.push('/Admin')
         }else if (res.data.user.Username !== undefined){
@@ -64,7 +68,6 @@ export default class Login extends Component {
         }else{
           this.props.history.push('/failed')
         }
-        
       });
   }
 
