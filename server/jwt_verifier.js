@@ -20,6 +20,7 @@ function jwt_verifier(exluded_urls) {
 
 }
 
+//TODO: error handeling inside app.js? no responses in this file to avoid long stacks? (router.use(verifier))
 function authenticate (req, res, next) {
     const authHeader = req.headers.authorization;
 

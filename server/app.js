@@ -10,8 +10,8 @@ const errorHandler = require('./error_handler');
 const verifier = require('./jwt_verifier');
 
 const PORT = 80;
+// public routes that don't require authentication
 const excluded_urls = [
-    // public routes that don't require authentication
     '/',
     '/login',
     '/register',

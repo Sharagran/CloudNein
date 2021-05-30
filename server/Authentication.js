@@ -99,6 +99,7 @@ function register(email, username, password) {
         }else{
           hash_password(password, (error, hash) => {
             if (error) throw error;
+            //TODO: update user to look like model
             db.createData("User", [{ Username: username, Password: hash, Email: email }], (error, result) => {
               if (error) throw error;
               fs.mkdir("../UserFiles/"+ username, function(err) {

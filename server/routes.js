@@ -73,6 +73,11 @@ router.post('/upload', upload.array("files"), function (req, res) {
     res.end(JSON.stringify(responseJSON));
 });
 
+router.get('/download/:id', function (req, res) {
+    var path = fm.getPath(req.params.id); 
+    res.download(path);
+ });
+
 router.post('/storage', function(req, res) {
     var files = fm.getFiles(req.body.user.username);
     files = ["apfel", "birne", "baum"]
@@ -119,7 +124,7 @@ router.get('/test', function (req, res) {
     console.log(req.user);
     res.send(req.user);
 
-    // fm.shareFile("../UserFiles/Sharangran-hinten.png", 3000, 10, function (error, link) {
+    // fm.share("../UserFiles/Sharangran-hinten.png", 3000, 10, function (error, link) {
     //     if(error)
     //         console.error(error.message);
     //     console.log(link);

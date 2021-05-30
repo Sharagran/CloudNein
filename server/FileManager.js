@@ -1,6 +1,9 @@
 const fs = require("fs");
 const db = require("./Database");
 const uuidv4 = require('uuid').v4;
+const util = require('util');
+
+const readdir = util.promisify(fs.readdir);
 
 // tags = keywords
 function uploadFiles(req, tags, userID,) {
@@ -8,12 +11,24 @@ function uploadFiles(req, tags, userID,) {
         const file = req.files[key];
 
         // save file to disk
-        fs.rename(file.path, file.destination + file.originalname, function (error) {
+        const savePath = file.destination + file.originalname;
+        fs.rename(file.path, savePath, function (error) {
             if (error)
                 throw error;
 
             //TODO: save file metadata in db
-            //db.createData("files", { shareID: shareLink, file: path, expires: expires, usages: usages });
+            const id = uuidv4();
+            db.createData("File", {
+                id: id,
+                path: savePath,
+                owner: userID,
+                tags: tags,
+                fileSize: file.size,    //FIXME: might be wrong format
+                // expires: null,
+                // comments: [
+                //     { author: authorID, text: text },
+                // ]
+            });
 
         });
     }
@@ -23,6 +38,11 @@ function uploadFiles(req, tags, userID,) {
         message: req.files.length + ' files uploaded successfully'
     };
     return responseJSON;
+}
+
+function getPath(id) {
+    var path; //get file path
+    return path;
 }
 
 function getFiles(userID) {
@@ -39,13 +59,13 @@ function getFiles(userID) {
     return res;
 }
 
-function commentFile() {
+function commentFile(fileID, userID, comment) {
     throw {name : "NotImplementedError", message : "too lazy to implement"};
 
     //TODO: add new comment db entry
 }
 
-function editFile(file, newContent) {
+function editFile(fileID, newContent) {
     throw {name : "NotImplementedError", message : "too lazy to implement"};
 
     fs.writeFile(file, newContent, function (error) {
@@ -66,17 +86,22 @@ function moveFile(oldPath, newPath) {
 }
 
 // react route https://ncoughlin.com/posts/react-router-variable-route-parameters/
-function shareFile(path, expires = -1, usages = -1, callback) {
+function share(path, expires = -1, deleteAfter = false, callback) {
     // check if file exists
     fs.stat(path, function (error, stats) {
         if(error)
             callback({message: "Path does not exist"}, null);
 
         if(stats.isFile() && !stats.isSymbolicLink()) {
-            const shareLink = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
+            const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
             //TODO: add db entry
-            db.createData("sharedFiles", { shareID: shareLink, file: path, expires: expires, usages: usages }, function () {
-                callback(null, shareLink);
+            db.createData("share", {
+                shareID: shareID,
+                sharedItem: path,
+                deleteAfter: deleteAfter,
+                expires: expires
+            }, function () {
+                callback(null, shareID);
                 //TODO: create route to file in react
             });
             
@@ -89,9 +114,10 @@ function shareFile(path, expires = -1, usages = -1, callback) {
 
 module.exports = {
     uploadFiles: uploadFiles,
+    getPath: getPath,
     getFiles: getFiles,
     commentFile: commentFile,
     editFile: editFile,
     moveFile: moveFile,
-    shareFile: shareFile
+    share: share
 }
