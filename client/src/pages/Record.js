@@ -36,8 +36,9 @@ export default class Record extends Component {
         var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
         var time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
         var dateTime = date + "@" + time;
+        
         const formData = new FormData();
-        formData.append("files", file, dateTime +".webm")
+        formData.append("files", file, "Audio-" + dateTime +".webm")
         // Request made to the backend api
         // Send formData object
         axios.post("http://localhost:80/upload", formData);
