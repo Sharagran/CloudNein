@@ -50,11 +50,9 @@ function getFiles(userID) {
 
     //TODO: get all user files
     var res = [];
-    fs.readdir("../UserFiles/" + userID, function(err, files) {
-        if(err) throw err;
-        files.forEach(function(file) {
-            res.push(file);
-        })
+    var files = fs.readdirSync("../UserFiles/" + userID)
+    files.forEach(function (file) {
+        res.push(file);
     })
     return res;
 }
@@ -69,15 +67,15 @@ function editFile(fileID, newContent) {
     throw {name : "NotImplementedError", message : "too lazy to implement"};
 
     fs.writeFile(file, newContent, function (error) {
-        
+
     });
 }
 
 function moveFile(oldPath, newPath) {
-    throw {name : "NotImplementedError", message : "too lazy to implement"};
+    throw { name: "NotImplementedError", message: "too lazy to implement" };
 
     fs.rename(oldPath, newPath, function (error) {
-        if(error)
+        if (error)
             throw error;
 
         //TODO: update file metadata in db
@@ -89,8 +87,8 @@ function moveFile(oldPath, newPath) {
 function share(path, expires = -1, deleteAfter = false, callback) {
     // check if file exists
     fs.stat(path, function (error, stats) {
-        if(error)
-            callback({message: "Path does not exist"}, null);
+        if (error)
+            callback({ message: "Path does not exist" }, null);
 
         if(stats.isFile() && !stats.isSymbolicLink()) {
             const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
@@ -104,9 +102,9 @@ function share(path, expires = -1, deleteAfter = false, callback) {
                 callback(null, shareID);
                 //TODO: create route to file in react
             });
-            
+
         } else {
-            callback({message: "Not a file"}, null);
+            callback({ message: "Not a file" }, null);
         }
 
     });

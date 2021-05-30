@@ -2,17 +2,42 @@ import React, { Component } from "react";
 import {Camera} from 'react-html5-camera-photo'
 import 'react-html5-camera-photo/build/css/index.css';
 import GlobalVal from "./GlobalVal";
+import axios from 'axios';
 
 export default class Photo extends Component {
 
     constructor(props) {
         super(props);
+        this.goBack = this.goBack.bind(this)
+        this.handleTakePhoto = this.handleTakePhoto.bind(this)
     }
 
     handleTakePhoto (dataUri) {
-        //FIXME: Do stuff with the photo.
-        console.log('photo taken');
-        console.log(dataUri);
+
+        var today = new Date();
+        var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+        var time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
+        var dateTime = date + "@" + time;
+   
+
+        var binary = atob(dataUri.split(',')[1]);
+        var array = [];
+        for(var i = 0; i < binary.length; i++) {
+            array.push(binary.charCodeAt(i));
+        }
+        var photo = new Blob([new Uint8Array(array)], {type: 'image/png'});
+
+ 
+        const formData = new FormData();
+        formData.append("files", photo, "Photo-"+ dateTime +".png")
+        axios.post("http://localhost:80/upload", formData )
+    }
+
+
+
+    goBack(e){
+        e.preventDefault();
+        this.props.history.goBack();
     }
 
     render() {
@@ -27,6 +52,8 @@ export default class Photo extends Component {
           }
         return (
             <>
+            <h1>Take Photo</h1>
+            <button onClick={this.goBack}>zurück</button>
                 <Camera
                     onTakePhoto = { (dataUri) => { this.handleTakePhoto(dataUri); } }
                 />
