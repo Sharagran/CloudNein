@@ -157,6 +157,25 @@ function addTag(fileID, tag) {
         });
 }
 
+
+function checkUploadLimit(userID){
+    var limit = 100000000; //TODO:  Wert in in DB speichern dort auslesen und verändern
+    var size = 0;
+    db.readData("file", { owner: userID}, (error, result) => {
+        if (error) throw error;
+        for(var i = 0; i < result.length; i++){
+            size += result[i].fileSize
+        }
+        if(size > limit){
+            console.log("Not enough space");
+        }{
+            console.log("Regular upload");
+        }
+    })
+}
+
+
+
 module.exports = {
     uploadFiles: uploadFiles,
     getPath: getPath,
@@ -164,5 +183,6 @@ module.exports = {
     commentFile: commentFile,
     editFile: editFile,
     moveFile: moveFile,
-    share: share
+    share: share,
+    checkUploadLimit: checkUploadLimit
 }
