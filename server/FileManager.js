@@ -18,7 +18,7 @@ function uploadFiles(req, tags, userID,) {
 
             //TODO: save file metadata in db
             const id = uuidv4();
-            db.createData("File", {
+            db.createData("file", {
                 id: id,
                 path: savePath,
                 owner: userID,
@@ -50,9 +50,9 @@ function getFiles(userID) {
 
     //TODO: get all user files
     var res = [];
-    fs.readdir("../UserFiles/" + userID, function(err, files) {
-        if(err) throw err;
-        files.forEach(function(file) {
+    fs.readdir("../UserFiles/" + userID, function (err, files) {
+        if (err) throw err;
+        files.forEach(function (file) {
             res.push(file);
         })
     })
@@ -60,24 +60,24 @@ function getFiles(userID) {
 }
 
 function commentFile(fileID, userID, comment) {
-    throw {name : "NotImplementedError", message : "too lazy to implement"};
+    throw { name: "NotImplementedError", message: "too lazy to implement" };
 
     //TODO: add new comment db entry
 }
 
 function editFile(fileID, newContent) {
-    throw {name : "NotImplementedError", message : "too lazy to implement"};
+    throw { name: "NotImplementedError", message: "too lazy to implement" };
 
     fs.writeFile(file, newContent, function (error) {
-        
+
     });
 }
 
 function moveFile(oldPath, newPath) {
-    throw {name : "NotImplementedError", message : "too lazy to implement"};
+    throw { name: "NotImplementedError", message: "too lazy to implement" };
 
     fs.rename(oldPath, newPath, function (error) {
-        if(error)
+        if (error)
             throw error;
 
         //TODO: update file metadata in db
@@ -89,10 +89,10 @@ function moveFile(oldPath, newPath) {
 function share(path, expires = -1, deleteAfter = false, callback) {
     // check if file exists
     fs.stat(path, function (error, stats) {
-        if(error)
-            callback({message: "Path does not exist"}, null);
+        if (error)
+            callback({ message: "Path does not exist" }, null);
 
-        if(stats.isFile() && !stats.isSymbolicLink()) {
+        if (stats.isFile() && !stats.isSymbolicLink()) {
             const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
             //TODO: add db entry
             db.createData("share", {
@@ -104,12 +104,59 @@ function share(path, expires = -1, deleteAfter = false, callback) {
                 callback(null, shareID);
                 //TODO: create route to file in react
             });
-            
+
         } else {
-            callback({message: "Not a file"}, null);
+            callback({ message: "Not a file" }, null);
         }
 
     });
+}
+
+function addTag(fileID, tag) {
+    //TODO: test if this function works
+    //TODO: fix callback hell & remove useless callbacks
+    var tagExists;
+
+    db.readData('tag', { name: tag },
+        (error, result) => {
+            if (error)
+                console.error(error);
+
+            tagExists = result.length > 0;
+        });
+
+    if (tagExists) {
+        db.updateData('tag', { name: tag }, { $push: { files: fileID } },
+            (error, result) => {
+                console.log("updating tag");
+                if (error)
+                    console.error(error);
+
+                console.log(result);
+            });
+    } else {
+        // If tag doesnt exist
+        db.createData('tag', {
+            name: tag,
+            files: [fileID]
+        }, (error, result) => {
+            console.log("creating tag");
+            if (error)
+                console.error(error);
+
+            console.log(result);
+        });
+    }
+
+    // update file tags
+    db.updateData('file', { id: fileID }, { $push: { tags: tag } },
+        (error, result) => {
+            console.log("updating file tags");
+            if (error)
+                console.error(error);
+
+            console.log(result);
+        });
 }
 
 module.exports = {
