@@ -8,6 +8,7 @@ export default class ForgotPassword extends Component {
 
 	this.onChangeEmail = this.onChangeEmail.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.goBack = this.goBack.bind(this)
 
     this.state = {
       email: ""
@@ -21,6 +22,10 @@ export default class ForgotPassword extends Component {
     });
   }
 
+  goBack(e){
+    e.preventDefault();
+    this.props.history.goBack();
+  }      
 
 
 // This function will handle the submission.
@@ -50,7 +55,7 @@ export default class ForgotPassword extends Component {
     return (
 		<>
 		<div class="login-form">
-			<h1>Forgot Password</h1>
+			<h1>Forgot Password</h1> <button onClick={this.goBack}>zurück</button>
 			<form action="/forgotPassword" method="POST">
                 <input type="text" name="email" placeholder="Email" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"  onChange={this.onChangeEmail} required></input>
 				<input type="submit" value="Submit" onClick={this.onSubmit}></input>

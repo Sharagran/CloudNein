@@ -80,7 +80,6 @@ router.get('/download/:id', function (req, res) {
 
 router.post('/storage', function(req, res) {
     var files = fm.getFiles(req.body.user.username);
-    files = ["apfel", "birne", "baum"]
     res.send(files);
 });
 

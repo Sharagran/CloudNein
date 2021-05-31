@@ -4,25 +4,14 @@ import axios from 'axios';
 export default class Registration extends Component {
   // This is the constructor that stores the data.
 
-  /** 
-    check() {
-	if (document.getElementById('password').value === document.getElementById('confirm_password').value) {
-	  document.getElementById('confirm_password').style.color = 'green';
-	  //document.getElementById('message').innerHTML = 'matching';
-	} else {
-	  document.getElementById('confirm_password').style.color = 'red';
-	  //document.getElementById('message').innerHTML = 'not matching';
-	}
-  }
-   * */ 
-
   constructor(props) {
     super(props);
 
     this.onChangeUsername = this.onChangeUsername.bind(this);
     this.onChangePassword = this.onChangePassword.bind(this);
-	this.onChangeMail = this.onChangeMail.bind(this);
+	  this.onChangeMail = this.onChangeMail.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.goBack = this.goBack.bind(this)
 
     this.state = {
       username: "",
@@ -49,7 +38,10 @@ export default class Registration extends Component {
     });
   }
 
-
+  goBack(e){
+    e.preventDefault();
+    this.props.history.goBack();
+  }
 
 // This function will handle the submission.
   onSubmit(e) {
@@ -59,7 +51,7 @@ export default class Registration extends Component {
     const user = {
       username: this.state.username,
       password: this.state.password,
-	  mail: this.state.mail
+	    mail: this.state.mail
     };
 
     axios
@@ -80,9 +72,10 @@ export default class Registration extends Component {
   render() {
     return (
 			<>
-			<div class="register-form">
-				<h1>Registration</h1>
+			<div class="register-form"> 
+				<h1>Registration</h1> <button onClick={this.goBack}>zurück</button>
 				<form action="/Registration" method="POST">
+
 					<input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
 					<input type="text" name="mail" placeholder="E-Mail" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeMail} required ></input>
 					<input id="password"type="password" name="password" placeholder="Password (6 characters minimum)" minLength="6" onChange={this.onChangePassword} required ></input>

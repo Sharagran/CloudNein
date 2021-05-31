@@ -57,6 +57,7 @@ export default class Storage extends Component {
               <button onClick={this.goBack}>zurück</button>
               <div id="storageData">
               </div>
+              <input type="submit" value="Download" onClick={this.onSubmitMail}></input>
             </div>
         </>
     );

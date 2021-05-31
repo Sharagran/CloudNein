@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from 'axios';
 import GlobalVal from "./GlobalVal";
+import { Link } from 'react-router-dom';
 
 export default class Upload extends Component {
 
@@ -15,10 +16,8 @@ export default class Upload extends Component {
   
   // On file select (from the pop up)
   onFileChange = event => {
-  
     // Update the state
     this.setState({ selectedFile: event.target.files});
-  
   };
 
   goBack(e){
@@ -61,7 +60,9 @@ export default class Upload extends Component {
               <h1>Upload</h1> <button onClick={this.goBack}>zurück</button>
               <div>
                 <input type="file" name="files" onChange={this.onFileChange} multiple/>
-                <input type="submit" onClick={this.onFileUpload}></input>
+                <input type="submit" value="Upload "onClick={this.onFileUpload}></input>
+                <Link to="/Photo"><button id="forgotPassword-btn" type="submit" >Take Photo</button></Link>
+                <Link to="/Record"><button id="forgotPassword-btn" type="submit" >Record Audio</button></Link>
               </div>
             </div>
         </>

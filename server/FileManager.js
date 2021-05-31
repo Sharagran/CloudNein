@@ -50,11 +50,9 @@ function getFiles(userID) {
 
     //TODO: get all user files
     var res = [];
-    fs.readdir("../UserFiles/" + userID, function (err, files) {
-        if (err) throw err;
-        files.forEach(function (file) {
-            res.push(file);
-        })
+    var files = fs.readdirSync("../UserFiles/" + userID)
+    files.forEach(function (file) {
+        res.push(file);
     })
     return res;
 }
