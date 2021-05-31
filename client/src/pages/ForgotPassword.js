@@ -55,7 +55,7 @@ export default class ForgotPassword extends Component {
     return (
 		<>
 		<div class="login-form">
-			<h1>Forgot Password</h1> <button onClick={this.goBack}>zurück</button>
+			<h1>Forgot Password</h1> <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
 			<form action="/forgotPassword" method="POST">
                 <input type="text" name="email" placeholder="Email" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"  onChange={this.onChangeEmail} required></input>
 				<input type="submit" value="Submit" onClick={this.onSubmit}></input>

@@ -35,7 +35,7 @@ export default class Admin extends Component {
     return (
         
         <>
-            <h1>Admin</h1> <button onClick={this.goBack}>zurück</button>
+            <h1>Admin</h1> <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
             <table>
                 <tr>
                     <th>Datenmenge aktuell in MB</th>

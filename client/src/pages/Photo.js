@@ -53,7 +53,7 @@ export default class Photo extends Component {
         return (
             <>
             <h1>Take Photo</h1>
-            <button onClick={this.goBack}>zurück</button>
+            <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
                 <Camera
                     onTakePhoto = { (dataUri) => { this.handleTakePhoto(dataUri); } }
                 />

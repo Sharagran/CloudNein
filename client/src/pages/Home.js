@@ -31,7 +31,7 @@ export default class Home extends Component {
     return (
 		<>
             <div class="login-form">
-              <h1>Home</h1>  <button onClick={this.goBack}>Logout</button>
+              <h1>Home</h1>  <button class="logoutLblPos" onClick={this.goBack}>Logout</button>
               <Link to="/Storage"><button id="forgotPassword-btn" type="submit" >Storage</button></Link>
               <Link to="/Upload"><button id="forgotPassword-btn" type="submit" >Upload</button></Link>
               <Link to="/Settings"><button id="forgotPassword-btn" type="submit" >Settings</button></Link>

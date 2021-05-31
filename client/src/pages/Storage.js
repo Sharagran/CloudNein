@@ -54,7 +54,7 @@ export default class Storage extends Component {
         <>
             <div class="login-form">
               <h1>Storage</h1> 
-              <button onClick={this.goBack}>zurück</button>
+              <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
               <div id="storageData">
               </div>
               <input type="submit" value="Download" onClick={this.onSubmitMail}></input>
