@@ -157,21 +157,46 @@ function addTag(fileID, tag) {
         });
 }
 
-
-function checkUploadLimit(userID){
-    var limit = 100000000; //TODO:  Wert in in DB speichern dort auslesen und verändern
-    var size = 0;
-    db.readData("file", { owner: userID}, (error, result) => {
-        if (error) throw error;
-        for(var i = 0; i < result.length; i++){
-            size += result[i].fileSize
-        }
-        if(size > limit){
-            console.log("Not enough space");
-        }{
-            console.log("Regular upload");
+function createUploadSettings(){
+    db.readData('settings', {User: "Admin"}, (error, result) => {
+        if(error) throw error;
+        if(result.length == 0){
+            db.createData('settings', { User: "Admin", limit: 100000000})
+        }else{
+            console.log("Settings are already available");
         }
     })
+}
+
+async function getSettings(){
+    var error, result = await db.readDataPromise('settings', {User : "Admin"});
+    return result[0].limit/1000000
+}
+
+async function setSettings(limit){
+    var error, result = await db.updateDataPromise('settings', {User : "Admin"}, { $set: { limit: limit }});
+    console.log("Settings updated");
+}
+
+
+async function checkUploadLimit(userID){
+    var size = 0;
+    var error, resultRead = await db.readDataPromise('settings', {User : "Admin"});
+    var limit = resultRead[0]. limit 
+
+    console.log(limit);
+
+    var error, result = await db.readDataPromise('file', { owner: userID});
+    console.log(result);
+    for(var i = 0; i < result.length; i++){
+        size += result[i].fileSize
+    }
+
+    if(size > limit){
+        console.log("Not enough space");
+    }{
+        console.log("Regular upload");
+    }
 }
 
 
@@ -184,5 +209,8 @@ module.exports = {
     editFile: editFile,
     moveFile: moveFile,
     share: share,
-    checkUploadLimit: checkUploadLimit
+    checkUploadLimit: checkUploadLimit,
+    createUploadSettings: createUploadSettings,
+    getSettings: getSettings,
+    setSettings: setSettings
 }

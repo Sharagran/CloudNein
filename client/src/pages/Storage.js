@@ -18,11 +18,10 @@ export default class Storage extends Component {
       }      
 
      componentWillMount(){
-        setTimeout(() => { 
           const user = {
             username: GlobalVal.username,
           };
-   
+  
           axios
             .post("http://localhost:80/storage", {user})
             .then((res) => {
@@ -36,10 +35,7 @@ export default class Storage extends Component {
                 li.innerHTML += item;
               });
             });
-        }, 1)
 
-
-        
     }
 
     onSubmit(e) {
