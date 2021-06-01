@@ -171,6 +171,7 @@ function createUploadSettings(){
 async function getSettings(){
     var error, result = await db.readDataPromise('settings', {User : "Admin"});
     return result[0].limit/1000000
+    console.log("Send settings");
 }
 
 async function setSettings(limit){

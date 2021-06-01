@@ -15,14 +15,18 @@ router.post('/login', async (req, res) => {
     var user = await auth.login(req.body.user.username, req.body.user.password);
     var token = auth.sign(user);
     res.send({token: token, user: user});
-    fm.checkUploadLimit("Andre14")
 });
 
 
 //Verarbeitet die empfangenen Daten beim Registrieren
-router.post('/register', (req, res) => {
-    auth.register(req.body.user.mail, req.body.user.username, req.body.user.password);
-    res.send(true);
+router.post('/register', async (req, res) => {
+    var success = await auth.register(req.body.user.mail, req.body.user.username, req.body.user.password);
+    console.log(success);
+    if(success === true){
+        res.send(true)
+    }else {
+        res.send(false)
+    }
 });
 
 //Erzeugt ein neues Passwort, updatet dies in der DB und sendet eine Mail an den User

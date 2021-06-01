@@ -6,6 +6,7 @@ const fs = require("fs");
 const config = require('./config.json');
 const jwt = require('jsonwebtoken');
 const util = require('util');
+const { readDataPromise } = require('./Database');
 
 //TODO: alle callbacks durch promises ersetzen
 const readData = util.promisify(db.readData);
@@ -84,37 +85,33 @@ async function login(username, password) {
   }
 }
 
-function register(email, username, password) {
+async function register(email, username, password) {
   //prüfen, ob Name und Email vorhanden sind, wen nicht dann hashen und speichern
-
-  db.readData("User", { Username: username}, (error, result) => {
-    if (error) throw error;
-    if (result.length > 0) {
+    var error, resultUsername = await db.readDataPromise("User", { Username: username});
+    if(resultUsername.length >0 ){
       console.log("Username already taken");
-    } else {
-      db.readData("User", {Email: email }, (error, result) => {
-        if (error) throw error;
-        if (result.length > 0) {
-           console.log("Mail already taken");
-        }else{
-          hash_password(password, (error, hash) => {
-            if (error) throw error;
-            //TODO: update user to look like model
-            db.createData("User", [{ Username: username, Password: hash, Email: email }], (error, result) => {
-              if (error) throw error;
-              fs.mkdir("../UserFiles/"+ username, function(err) {
-                if (err) {
-                  console.log(err)
-                } else {
-                  console.log("New directory successfully created.")
-                }
-              })
-            });
-          });
-        }
+      return false
+    }else {
+      var error, resultEmail = await readDataPromise("User", {Email: email });
+      if(resultEmail.length > 0){
+        console.log("Mail already taken");
+        return false
+      }else{
+        hash_password(password, (error, hash) => {
+          if (error) throw error;
+          db.createDataPromise('User',[{ Username: username, Password: hash, Email: email }])
+          fs.mkdirSync("../UserFiles/"+ username, function(err) {
+            if (err) {
+              console.log(err)
+            } else {
+              console.log("New directory successfully created.")
+              return true; //TODO: Gibt true nicht zurück
+            }
+          })
       })
+      return true
     }
-  })
+  }
 }
 
 function forgotPassword(email) {
