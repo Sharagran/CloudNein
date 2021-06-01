@@ -7,6 +7,7 @@ const config = require('./config.json');
 const jwt = require('jsonwebtoken');
 const util = require('util');
 const { readDataPromise } = require('./Database');
+const fm = require('./FileManager');
 
 //TODO: alle callbacks durch promises ersetzen
 const readData = util.promisify(db.readData);
@@ -100,14 +101,17 @@ async function register(email, username, password) {
         hash_password(password, (error, hash) => {
           if (error) throw error;
           db.createDataPromise('User',[{ Username: username, Password: hash, Email: email }])
-          fs.mkdirSync("../UserFiles/"+ username, function(err) {
-            if (err) {
-              console.log(err)
-            } else {
-              console.log("New directory successfully created.")
-              return true; //TODO: Gibt true nicht zurück
-            }
-          })
+          // fs.mkdirSync("../UserFiles/"+ username, function(err) {
+          //   if (err) {
+          //     console.log(err)
+          //   } else {
+          //     console.log("New directory successfully created.")
+          //     return true; //TODO: Gibt true nicht zurück
+          //   }
+          // })
+
+          //TODO: test me
+          fm.createFolder(username);
       })
       return true
     }

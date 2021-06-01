@@ -6,7 +6,7 @@ const util = require('util');
 const readdir = util.promisify(fs.readdir);
 
 // tags = keywords
-function uploadFiles(req, tags, userID,) {
+function uploadFiles(req, tags = [], userID,) {
     for (const key in req.files) {
         const file = req.files[key];
 
@@ -38,6 +38,20 @@ function uploadFiles(req, tags, userID,) {
         message: req.files.length + ' files uploaded successfully'
     };
     return responseJSON;
+}
+
+async function createFolder(Path) {
+    //TODO: test if function works
+    var folderPath = path.join(__dirname, '../UserFiles', Path);
+
+    fs.mkdirSync(folderPath);
+
+    await db.createDataPromise('folder', {
+        name: folderPath,
+        files: []
+    });
+
+    return true;
 }
 
 function getPath(id) {
@@ -110,92 +124,80 @@ function share(path, expires = -1, deleteAfter = false, callback) {
     });
 }
 
-function addTag(fileID, tag) {
-    //TODO: test if this function works
+async function addTag(fileID, tag) {
     //TODO: fix callback hell & remove useless callbacks
-    var tagExists;
 
-    db.readData('tag', { name: tag },
-        (error, result) => {
-            if (error)
-                console.error(error);
+    var error, result = await db.readDataPromise('tag', { name: tag });
+    if (error)
+        console.error(error);
 
-            tagExists = result.length > 0;
-        });
+    var tagExists = result.length > 0;
 
     if (tagExists) {
-        db.updateData('tag', { name: tag }, { $push: { files: fileID } },
-            (error, result) => {
-                console.log("updating tag");
-                if (error)
-                    console.error(error);
+        var error, result = await db.updateDataPromise('tag', { name: tag }, { $push: { files: fileID } });
+        if (error)
+            console.error(error);
 
-                console.log(result);
-            });
+        console.log("tag updated");
     } else {
         // If tag doesnt exist
-        db.createData('tag', {
+        var error, result = await db.createDataPromise('tag', {
             name: tag,
             files: [fileID]
-        }, (error, result) => {
-            console.log("creating tag");
-            if (error)
-                console.error(error);
-
-            console.log(result);
         });
+        if (error)
+            console.error(error);
+
+        console.log("tag created");
     }
 
     // update file tags
-    db.updateData('file', { id: fileID }, { $push: { tags: tag } },
-        (error, result) => {
-            console.log("updating file tags");
-            if (error)
-                console.error(error);
+    var error, result = await db.updateData('file', { id: fileID }, { $push: { tags: tag } });
+    if (error)
+        console.error(error);
 
-            console.log(result);
-        });
+    console.log("file tags updated");
 }
 
-function createUploadSettings(){
-    db.readData('settings', {User: "Admin"}, (error, result) => {
-        if(error) throw error;
-        if(result.length == 0){
-            db.createData('settings', { User: "Admin", limit: 100000000})
-        }else{
+function createUploadSettings() {
+    db.readData('settings', { User: "Admin" }, (error, result) => {
+        if (error) throw error;
+        if (result.length == 0) {
+            db.createData('settings', { User: "Admin", limit: 100000000 })
+        } else {
             console.log("Settings are already available");
         }
     })
 }
 
-async function getSettings(){
-    var error, result = await db.readDataPromise('settings', {User : "Admin"});
-    return result[0].limit/1000000
+async function getSettings() {
+    var error, result = await db.readDataPromise('settings', { User: "Admin" });
+    return result[0].limit / 1000000
     console.log("Send settings");
 }
 
-async function setSettings(limit){
-    var error, result = await db.updateDataPromise('settings', {User : "Admin"}, { $set: { limit: limit }});
+async function setSettings(limit) {
+    var error, result = await db.updateDataPromise('settings', { User: "Admin" }, { $set: { limit: limit } });
     console.log("Settings updated");
 }
 
 
-async function checkUploadLimit(userID){
+async function checkUploadLimit(userID) {
     var size = 0;
-    var error, resultRead = await db.readDataPromise('settings', {User : "Admin"});
-    var limit = resultRead[0]. limit 
+    var error, resultRead = await db.readDataPromise('settings', { User: "Admin" });
+    var limit = resultRead[0].limit
 
     console.log(limit);
 
-    var error, result = await db.readDataPromise('file', { owner: userID});
+    var error, result = await db.readDataPromise('file', { owner: userID });
     console.log(result);
-    for(var i = 0; i < result.length; i++){
+    for (var i = 0; i < result.length; i++) {
         size += result[i].fileSize
     }
 
-    if(size > limit){
+    if (size > limit) {
         console.log("Not enough space");
-    }{
+    } {
         console.log("Regular upload");
     }
 }
@@ -204,6 +206,8 @@ async function checkUploadLimit(userID){
 
 module.exports = {
     uploadFiles: uploadFiles,
+    createFolder: createFolder,
+    addTag: addTag,
     getPath: getPath,
     getFiles: getFiles,
     commentFile: commentFile,

@@ -105,9 +105,12 @@ router.get('/', function (req, res) {
 });
 
 router.get('/dbtest', function (req, res) {
-    db.readData("test", { value1: "test1" }, (error, result) => {
-        console.log(result);
-    });
+    // db.readData("test", { value1: "test1" }, (error, result) => {
+    //     console.log(result);
+    // });
+
+    fm.addTag('3fcc3d79-29dd-4d39-9b67-3238aeab5fd8', 'tag2');
+    res.send(200);
 });
 
 router.get('/upload', function (req, res) {
