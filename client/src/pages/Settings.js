@@ -91,7 +91,7 @@ export default class Settings extends Component {
     return (
 			<>
 			<div class="register-form">
-				<h1>Settings</h1> <button onClick={this.goBack}>zurück</button>
+				<h1>Settings</h1> <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
 				<form action="/" method="POST">
 					<input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
                     <input type="submit" value="Update Username" onClick={this.onSubmitUsername}></input>

@@ -73,7 +73,7 @@ export default class Registration extends Component {
     return (
 			<>
 			<div class="register-form"> 
-				<h1>Registration</h1> <button onClick={this.goBack}>zurück</button>
+				<h1>Registration</h1> <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
 				<form action="/Registration" method="POST">
 
 					<input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>

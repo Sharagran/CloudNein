@@ -49,10 +49,7 @@ export default class Login extends Component {
 
     //getToken()
 
-    axios
-      .post("http://localhost:80/login", {user})
-      .then((res) => {
-
+    axios.post("http://localhost:80/login", {user}).then((res) => {
         if(res.data.user.Username === "Admin"){
           //setToken(res.data.token);
           GlobalVal.username = res.data.user.Username;

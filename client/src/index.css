@@ -49,3 +49,9 @@ code {
     color: #ffffff;
     margin-bottom: 15px;
 }
+.logoutLblPos{
+
+  position:fixed;
+  right:10px;
+  top:5px;
+}
