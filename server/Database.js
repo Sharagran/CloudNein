@@ -58,7 +58,7 @@ function defaultCallBack(result) {
     console.log("default callback: " + result);
 }
 
-async function createDataSync(collectionName, data) {
+async function createDataPromise(collectionName, data) {
     try {
         return await create(collectionName, data);
     } catch (error) {
@@ -67,7 +67,7 @@ async function createDataSync(collectionName, data) {
     
 }
 
-async function readDataSync(collectionName, query = {}) {
+async function readDataPromise(collectionName, query = {}) {
     try {
         return await read(collectionName, query);
     } catch (error) {
@@ -75,7 +75,7 @@ async function readDataSync(collectionName, query = {}) {
     }
 }
 
-async function updateDataSync(collectionName, query = {}, values = {}) {
+async function updateDataPromise(collectionName, query = {}, values = {}) {
     try {
         return await update(collectionName, query, values);
     } catch (error) {
@@ -83,7 +83,7 @@ async function updateDataSync(collectionName, query = {}, values = {}) {
     }
 }
 
-async function deleteDataSync(collectionName, query = {}) {
+async function deleteDataPromise(collectionName, query = {}) {
     try {
         return await _delete(collectionName, query);
     } catch (error) {
@@ -99,9 +99,9 @@ module.exports = {
     updateData: updateData,
     deleteData: deleteData,
 
-    createDataSync: createDataSync,
-    readDataSync: readDataSync,
-    updateDataSync: updateDataSync,
-    deleteDataSync: deleteDataSync
+    createDataPromise: createDataPromise,
+    readDataPromise: readDataPromise,
+    updateDataPromise: updateDataPromise,
+    deleteDataPromise: deleteDataPromise
 }
 
