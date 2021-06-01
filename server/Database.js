@@ -71,7 +71,7 @@ async function updateDataSync(collectionName, query = {}, values = {}) {
 }
 
 async function deleteDataSync(collectionName, query = {}) {
-    return await deleteData(collectionName, query);
+    return await _delete(collectionName, query);
 }
 
 module.exports = {
