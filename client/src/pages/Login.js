@@ -50,16 +50,16 @@ export default class Login extends Component {
     //getToken()
 
     axios.post("http://localhost:80/login", {user}).then((res) => {
-        if(res.data.user.Username === "Admin"){
+        if(res.data.user.username === "Admin"){
           //setToken(res.data.token);
-          GlobalVal.username = res.data.user.Username;
-          GlobalVal.email = res.data.user.Email;
+          GlobalVal.username = res.data.user.username;
+          GlobalVal.email = res.data.user.email;
           GlobalVal.loginState = true;
           this.props.history.push('/Admin')
-        }else if (res.data.user.Username !== undefined){
+        }else if (res.data.user.username !== undefined){
           setToken(res.data.token);
-          GlobalVal.username = res.data.user.Username;
-          GlobalVal.email = res.data.user.Email;
+          GlobalVal.username = res.data.user.username;
+          GlobalVal.email = res.data.user.email;
           GlobalVal.loginState = true;
           this.props.history.push('/home')
         }else{

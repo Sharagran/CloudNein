@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const util = require('util');
 const { readDataPromise } = require('./Database');
 const fm = require('./FileManager');
+const uuidv4 = require('uuid').v4;
 
 //TODO: alle callbacks durch promises ersetzen
 const readData = util.promisify(db.readData);
@@ -61,7 +62,7 @@ function generatePassword() {
 
 
 async function login(username, password) {
-  var error, result = await readData("User", { Username: username });
+  var error, result = await readData("user", { username: username });
 
   if (error)
     throw error;
@@ -69,7 +70,7 @@ async function login(username, password) {
   if (result.length > 0) {
     var user = result[0];
 
-    var error, match = await comp_hash(password, user.Password);
+    var error, match = await comp_hash(password, user.password);
     if (error)
       throw error;
 
@@ -88,19 +89,20 @@ async function login(username, password) {
 
 async function register(email, username, password) {
   //prüfen, ob Name und Email vorhanden sind, wen nicht dann hashen und speichern
-    var error, resultUsername = await db.readDataPromise("User", { Username: username});
+    var error, resultUsername = await db.readDataPromise("user", { username: username});
     if(resultUsername.length >0 ){
       console.log("Username already taken");
       return false
     }else {
-      var error, resultEmail = await readDataPromise("User", {Email: email });
+      var error, resultEmail = await readDataPromise("user", {email: email });
       if(resultEmail.length > 0){
         console.log("Mail already taken");
         return false
       }else{
         hash_password(password, (error, hash) => {
           if (error) throw error;
-          db.createDataPromise('User',[{ Username: username, Password: hash, Email: email }])
+          const id = uuidv4();
+          db.createDataPromise('user',[{id: id, username: username, password: hash, email: email }])
           // fs.mkdirSync("../UserFiles/"+ username, function(err) {
           //   if (err) {
           //     console.log(err)

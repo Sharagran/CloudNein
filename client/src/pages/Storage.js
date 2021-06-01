@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from 'axios';
 import GlobalVal from "./GlobalVal";
 
+var fileID;
 var data;
 
 export default class Storage extends Component {
@@ -41,7 +42,19 @@ export default class Storage extends Component {
     onSubmit(e) {
       e.preventDefault();
         // When post request is sent to the create url, axios will add a new record(user) to the database.
-
+        axios({
+          url: 'http://localhost:80/download/'+ fileID,
+          method: 'GET',
+          responseType: 'blob',
+        }).then((response) => {
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          console.log(url)
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'Test-file'); //TODO: Dateiname abhängig von der fileID machen
+          document.body.appendChild(link);
+          link.click();
+        });
   }
 
   // This following section will display the form that takes the input from the user.
