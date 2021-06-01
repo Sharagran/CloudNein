@@ -19,13 +19,13 @@ function createData (collectionName, data, callback = defaultCallBack) {
     if (!Array.isArray(data)) {
         collection.insertOne(data, (error, result) => {
             if (error) throw error;
-            callback(result);
+            callback(error, result);
         });
     }
     else {
         collection.insertMany(data, (error, result) => {
             if (error) throw error;
-            callback(result);
+            callback(error, result);
         });
     }
 }
@@ -34,7 +34,7 @@ function readData (collectionName, query = {}, callback = defaultCallBack, limit
     collection = db.collection(collectionName);
     collection.find(query).limit(0).sort(sort).toArray(function (error, result) {
         if (error) throw error;
-        callback(result);
+        callback(error, result);
     });
 }
 
@@ -42,7 +42,7 @@ function updateData (collectionName, query = {}, values = {}, callback = default
     collection = db.collection(collectionName);
     collection.updateMany(query, values, (error, result) => {
         if (error) throw error;
-        callback(result)
+        callback(error, result)
     });
 }
 
@@ -50,7 +50,7 @@ function deleteData (collectionName, query = {}, callback = defaultCallBack) {
     collection = db.collection(collectionName);
     collection.deleteMany(query, (error, result) => {
         if (error) throw error;
-        callback(result);
+        callback(error, result);
     });
 }
 
