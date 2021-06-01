@@ -32,6 +32,7 @@ router.post('/register', async (req, res) => {
 //Erzeugt ein neues Passwort, updatet dies in der DB und sendet eine Mail an den User
 router.post('/forgotPassword', (req, res) => {
     auth.forgotPassword(req.body.email.email);
+    res.send(true);
 });
 
 router.post('/getDataLimit', async (req, res) => {
@@ -46,27 +47,27 @@ router.post('/setDataLimit', async (req, res) => {
 router.post('/settings', (req, res) => {
     //Daten des User erfragen, wie? Per Session?
 
-    db.readData("User", { Username: req.body.user.previousUsername},  (error, result) =>{
+    db.readData("user", { username: req.body.user.previousUsername},  (error, result) =>{
         if (error) {
             throw error;}
             if(req.body.user.username == undefined){
-                db.readData("User", { Email: req.body.user.mail },  (error, result) => {
+                db.readData("user", { email: req.body.user.mail },  (error, result) => {
                     console.log(result);
                     if (error) {
                         throw error;
                     }else if(result.length == 0){
-                        db.updateData("User", { Email: req.body.user.previousMail }, { $set: { Email: req.body.user.mail } }, (error, result) => {
+                        db.updateData("user", { email: req.body.user.previousMail }, { $set: { email: req.body.user.mail } }, (error, result) => {
                             if (error) throw error;
                             console.log("Mail updated");
                         })
                     }
                 })
             }else if (req.body.user.mail == undefined) {
-                db.readData("User", { Username: req.body.user.username },  (error, result) => {
+                db.readData("user", { username: req.body.user.username },  (error, result) => {
                     if (error) {
                         throw error;
                     }else if(result.length == 0){
-                        db.updateData("User", { Username: req.body.user.previousUsername }, { $set: { Username: req.body.user.username } }, (error, result) => {
+                        db.updateData("user", { username: req.body.user.previousUsername }, { $set: { username: req.body.user.username } }, (error, result) => {
                             if (error) throw error;
                             console.log("Username updated");
                             fs.rename("../UserFiles/"+ req.body.user.previousUsername, "../UserFiles/"+ req.body.user.username, function(err) {

@@ -122,7 +122,7 @@ async function register(email, username, password) {
 
 function forgotPassword(email) {
   console.log(email);
-  db.readData('User', { Email: email }, (error, result) => {
+  db.readData('user', { email: email }, (error, result) => {
     if (error) {
       throw error;
     } else if (result.length < 1) {
@@ -131,12 +131,13 @@ function forgotPassword(email) {
       newPassword = generatePassword();
       hash_password(newPassword, (error, hash) => {
         if (error) throw error;
-        db.updateData("User", { Email: email }, { $set: { Password: hash } }, (error, result) => {
+        db.updateData("user", { email: email }, { $set: { password: hash } }, (error, result) => {
           if (error) throw error;
           console.log(result);
         })
-        sendNewPassword(result[0].Email, newPassword, (error, info) => {
+        sendNewPassword(result[0].email, newPassword, (error, info) => {
           if (error) throw error;
+          return true;
         });
       })
     };
@@ -144,7 +145,7 @@ function forgotPassword(email) {
 }
 
 function sign(user) {
-  const payload = { username: user.Username, email: user.Email };
+  const payload = { username: user.username, email: user.email };
   const token = jwt.sign(payload, config.secret, { expiresIn: '30m' }); //FIXME: expiresIn
 
   return token;

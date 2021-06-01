@@ -41,7 +41,7 @@ export default class ForgotPassword extends Component {
       .post("http://localhost:80/forgotPassword", {email})
       .then((res) => {
         if (res.data === true){
-          this.props.history.push('/')
+          this.props.history.push('/sendEmail')
         }else{
           this.props.history.push('/failed')
         }
