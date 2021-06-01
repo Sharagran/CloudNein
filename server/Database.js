@@ -59,19 +59,36 @@ function defaultCallBack(result) {
 }
 
 async function createDataSync(collectionName, data) {
-    return await create(collectionName, data);
+    try {
+        return await create(collectionName, data);
+    } catch (error) {
+        throw error;
+    }
+    
 }
 
 async function readDataSync(collectionName, query = {}) {
-    return await read(collectionName, query);
+    try {
+        return await read(collectionName, query);
+    } catch (error) {
+        throw error;
+    }
 }
 
 async function updateDataSync(collectionName, query = {}, values = {}) {
-    return await update(collectionName, query, values);
+    try {
+        return await update(collectionName, query, values);
+    } catch (error) {
+        throw error;
+    }
 }
 
 async function deleteDataSync(collectionName, query = {}) {
-    return await _delete(collectionName, query);
+    try {
+        return await _delete(collectionName, query);
+    } catch (error) {
+        throw error;
+    }
 }
 
 module.exports = {
