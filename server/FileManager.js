@@ -2,6 +2,7 @@ const fs = require("fs");
 const db = require("./Database");
 const uuidv4 = require('uuid').v4;
 const util = require('util');
+const path = require('path')
 
 const readdir = util.promisify(fs.readdir);
 

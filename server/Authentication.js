@@ -89,8 +89,8 @@ async function login(username, password) {
 
 async function register(email, username, password) {
   //prüfen, ob Name und Email vorhanden sind, wen nicht dann hashen und speichern
-    var error, resultUsername = await db.readDataPromise("user", { username: username});
-    if(resultUsername.length >0 ){
+    var error, resultUsername =  db.readDataPromise("user", { username: username});
+    if(resultUsername.length > 0){
       console.log("Username already taken");
       return false
     }else {
