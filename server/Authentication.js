@@ -145,7 +145,7 @@ function forgotPassword(email) {
 }
 
 function sign(user) {
-  const payload = { username: user.username, email: user.email };
+  const payload = {id: user.id, username: user.username, email: user.email };
   const token = jwt.sign(payload, config.secret, { expiresIn: '30m' }); //FIXME: expiresIn
 
   return token;

@@ -55,12 +55,14 @@ export default class Login extends Component {
           GlobalVal.username = res.data.user.username;
           GlobalVal.email = res.data.user.email;
           GlobalVal.loginState = true;
+          GlobalVal.id = res.data.user.id;
           this.props.history.push('/Admin')
         }else if (res.data.user.username !== undefined){
           setToken(res.data.token);
           GlobalVal.username = res.data.user.username;
           GlobalVal.email = res.data.user.email;
           GlobalVal.loginState = true;
+          GlobalVal.id = res.data.user.id;
           this.props.history.push('/home')
         }else{
           this.props.history.push('/failed')
