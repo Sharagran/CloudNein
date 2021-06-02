@@ -12,11 +12,11 @@ function uploadFiles(req, tags = [], userID,) {
         const file = req.files[key];
 
         // save file to disk
-        const savePath = file.destination + file.originalname;
+        const savePath = file.destination+"Andre14/" + file.originalname;
         fs.rename(file.path, savePath, function (error) {
             if (error)
                 throw error;
-
+            console.log(file.destination)
             //TODO: save file metadata in db
             const id = uuidv4();
             db.createData("file", {
