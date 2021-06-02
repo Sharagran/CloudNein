@@ -89,14 +89,14 @@ router.post('/upload', upload.array("files"), function (req, res) {
     res.end(JSON.stringify(responseJSON));
 });
 
-router.get('/download/:id', function (req, res) {
-    var path = fm.getPath(req.params.id); 
-    res.download(path);
+router.get('/download/:id', async function (req, res) {
+    var path = await fm.getPath(req.params.id); 
+    res.download(path[0].path);
  });
 
-router.post('/storage', function(req, res) {
-    var files = fm.getFiles(req.body.user.username);
-    res.send(files);
+router.post('/storage', async function(req, res) {
+    var files = await fm.getFiles(req.user.id);
+    res.json(files);
 });
 
 

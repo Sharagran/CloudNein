@@ -14,6 +14,10 @@ export default class Home extends Component {
   goBack(e){
     e.preventDefault();
     this.props.history.goBack();
+    GlobalVal.username = null;
+    GlobalVal.password = null;
+    GlobalVal.loginState = null;
+    GlobalVal.id= null;
 
   }
 

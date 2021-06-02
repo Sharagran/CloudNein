@@ -55,21 +55,19 @@ async function createFolder(Path) {
     return true;
 }
 
-function getPath(id) {
-    var path; //get file path
+async function getPath(id) {
+    var path = await db.readDataPromise('file', {id: id})
     return path;
 }
 
-function getFiles(userID) {
+async function getFiles(userID) {
     //throw {name : "NotImplementedError", message : "too lazy to implement"};
 
     //TODO: get all user files
     var res = [];
-    var files = fs.readdirSync("../UserFiles/" + userID)
-    files.forEach(function (file) {
-        res.push(file);
-    })
-    return res;
+    var error, files = await db.readDataPromise('file',{owner: userID})
+    return files;
+    
 }
 
 function commentFile(fileID, userID, comment) {
