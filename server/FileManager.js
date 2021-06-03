@@ -7,12 +7,12 @@ const path = require('path')
 const readdir = util.promisify(fs.readdir);
 
 // tags = keywords
-function uploadFiles(req, tags = [], userID,) {
+function uploadFiles(req, tags = [], userID, username) {
     for (const key in req.files) {
         const file = req.files[key];
 
         // save file to disk
-        const savePath = file.destination+"Andre14/" + file.originalname;
+        const savePath = file.destination + username + "/" + file.originalname;
         fs.rename(file.path, savePath, function (error) {
             if (error)
                 throw error;
