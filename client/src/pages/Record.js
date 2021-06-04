@@ -3,6 +3,7 @@ import {Recorder} from 'react-voice-recorder'
 import './css/recorder.css'
 import GlobalVal from "./GlobalVal";
 import axios from 'axios';
+import { getToken } from "../Authenticator";
 
 
 export default class Record extends Component {
@@ -38,7 +39,7 @@ export default class Record extends Component {
         var dateTime = date + "@" + time;
         
         const formData = new FormData();
-        formData.append("files", file, "Audio-" + dateTime +".webm")
+        formData.append("files", file, dateTime +".webm")
         // Request made to the backend api
         // Send formData object
         axios.post("http://localhost:80/upload", formData);
@@ -60,11 +61,11 @@ export default class Record extends Component {
 
     goBack(e){
       e.preventDefault();
-      this.props.history.goBack();
+      this.props.history.push("/upload");
     }
 
     render() {
-        if(GlobalVal.username == null){
+        if(getToken() === ""){
             return (
               <>
                       <div class="login-form">

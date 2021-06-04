@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from 'axios';
 import GlobalVal from "./GlobalVal";
 import { Link } from 'react-router-dom';
+import { getToken } from "../Authenticator";
 
 export default class Upload extends Component {
 
@@ -22,7 +23,7 @@ export default class Upload extends Component {
 
   goBack(e){
     e.preventDefault();
-    this.props.history.goBack();
+    this.props.history.push("/home");
   }
   
   // On file upload (click the upload button)
@@ -45,7 +46,7 @@ export default class Upload extends Component {
 
   // This following section will display the form that takes the input from the user.
   render() {
-    if(GlobalVal.username == null){
+    if(getToken() === "") {
       return (
         <>
                 <div class="login-form">

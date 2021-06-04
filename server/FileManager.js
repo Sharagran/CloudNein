@@ -46,7 +46,6 @@ async function createFolder(Path) {
     var folderPath = path.join(__dirname, '../UserFiles', Path);
 
     fs.mkdirSync(folderPath);
-
     await db.createDataPromise('folder', {
         name: folderPath,
         files: []
@@ -61,13 +60,8 @@ async function getPath(id) {
 }
 
 async function getFiles(userID) {
-    //throw {name : "NotImplementedError", message : "too lazy to implement"};
-
-    //TODO: get all user files
-    var res = [];
     var error, files = await db.readDataPromise('file',{owner: userID})
     return files;
-    
 }
 
 function commentFile(fileID, userID, comment) {

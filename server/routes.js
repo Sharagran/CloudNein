@@ -100,6 +100,27 @@ router.post('/storage', async function(req, res) {
 });
 
 
+router.post('/updateFileInformation', (req, res) => {
+  var tag = req.body.fileInforamtion.tag;
+  var comment = req.body.fileInforamtion.comment;
+  var fileID = req.body.fileInforamtion.fileID
+//TODO: Muss getestet werden
+  /*
+    if(tag === "" && comment === ""){
+        console.log("beides leer");
+    }else if(comment === ""){
+        fm.addTag(fileID, tag);
+    }else if (tag === ""){
+        console.log("tag leer");
+        fm.commentFile(fileID, req.user.id, comment)
+    }else{
+        fm.addTag(fileID, tag);
+        fm.commentFile(fileID, req.user.id, comment)
+    }
+    */
+})
+
+
 // FIXME: Debug only (all get routes should be handled with react)
 router.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/public/login.html'));

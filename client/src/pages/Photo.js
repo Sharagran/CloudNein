@@ -3,6 +3,7 @@ import {Camera} from 'react-html5-camera-photo'
 import 'react-html5-camera-photo/build/css/index.css';
 import GlobalVal from "./GlobalVal";
 import axios from 'axios';
+import { getToken } from "../Authenticator";
 
 export default class Photo extends Component {
 
@@ -29,19 +30,18 @@ export default class Photo extends Component {
 
  
         const formData = new FormData();
-        formData.append("files", photo, "Photo-"+ dateTime +".png")
+        formData.append("files", photo, dateTime +".png")
         axios.post("http://localhost:80/upload", formData )
     }
 
 
-
     goBack(e){
         e.preventDefault();
-        this.props.history.goBack();
+        this.props.history.push("/upload");
     }
 
     render() {
-        if(GlobalVal.username == null){
+        if(getToken() === ""){
             return (
               <>
                       <div class="login-form">

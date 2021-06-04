@@ -47,11 +47,9 @@ export default class Login extends Component {
       password: this.state.password,
     };
 
-    //getToken()
-
     axios.post("http://localhost:80/login", {user}).then((res) => {
         if(res.data.user.username === "Admin"){
-          //setToken(res.data.token);
+          setToken(res.data.token);
           GlobalVal.username = res.data.user.username;
           GlobalVal.email = res.data.user.email;
           GlobalVal.loginState = true;
@@ -72,8 +70,8 @@ export default class Login extends Component {
 
   // This following section will display the form that takes the input from the user.
   render() {
-    return (
-
+    if(getToken() === ""){
+      return (
         <>
             <div class="login-form">
                 <h1>Login</h1>
@@ -88,6 +86,12 @@ export default class Login extends Component {
               <Link to="/ForgotPassword"><button id="forgotPassword-btn" type="submit" >Forgot Password?</button></Link>
             </div>
         </>
+        );
+    }
+    return (
+      <>
+        {this.props.history.push('/home')}
+      </>
     );
   }
 }

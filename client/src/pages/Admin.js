@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import GlobalVal from "./GlobalVal";
 import axios from 'axios';
-
+import { getToken } from "../Authenticator";
 
 export default class Admin extends Component {
 
@@ -52,7 +52,7 @@ export default class Admin extends Component {
 
   // This following section will display the form that takes the input from the user.
   render() {
-    if(GlobalVal.username == null){
+    if(getToken() === ""){
         return (
           <>
                   <div class="login-form">

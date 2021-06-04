@@ -10,6 +10,7 @@ export function setToken(token) {
 export function getToken() {
     var token = getCookie("token");
     updateHeader(token);
+    return token;
 }
 
 function setCookie(token) {

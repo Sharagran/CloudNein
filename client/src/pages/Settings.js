@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from 'axios';
 import GlobalVal from "./GlobalVal";
+import { getToken } from "../Authenticator";
 
 
 export default class Settings extends Component {
@@ -38,7 +39,7 @@ export default class Settings extends Component {
 
   goBack(e){
     e.preventDefault();
-    this.props.history.goBack();
+    this.props.history.push("/home");
   }
 
 // This function will handle the submission.
@@ -79,7 +80,7 @@ export default class Settings extends Component {
 
   // This following section will display the form that takes the input from the user.
   render() {
-    if(GlobalVal.username == null){
+    if(getToken === ""){
       return (
         <>
                 <div class="login-form">

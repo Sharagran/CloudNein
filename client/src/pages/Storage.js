@@ -1,38 +1,63 @@
 import React, { Component } from "react";
 import axios from 'axios';
 import GlobalVal from "./GlobalVal";
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
+import { getToken } from "../Authenticator";
 
 var fileID;
 var data;
 var fileName = [];
 var file;
-var message;
 
 export default class Storage extends Component {
 
     constructor(props) {
         super(props);
-        this.goBack = this.goBack.bind(this)
+        this.goBack = this.goBack.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
-        this.onChangeCheckbox = this.onChangeCheckbox.bind(this);
+        this.onUpdate = this.onUpdate.bind(this);
+        this.onChangeTag = this.onChangeTag.bind(this);
+        this.onChangeComment = this.onChangeComment.bind(this);
+        this.onChangEmail = this.onChangEmail.bind(this);
+        this.onChangeDays = this.onChangeDays.bind(this);
+        this.onShare = this.onShare.bind(this);
       }
 
       state = {
         // Initially, no file is selected
         selectedFile: null,
-        message: ""
+        message: "",
+        tag: "",
+        comment: "",
+        email: "",
+        days: ""
       };
 
       goBack(e){
         e.preventDefault();
-        this.props.history.goBack();
+        this.props.history.push("/home")
       }     
       
-      onChangeCheckbox(e){
+      onChangeTag(e) {
         this.setState({
-          selectedFile: e.target.value,
+          tag: e.target.value
         });
-        console.log("this.state.selectedFile")
+      }
+      onChangeComment(e) {
+        this.setState({
+          comment: e.target.value
+        });
+      }
+      onChangEmail(e) {
+        this.setState({
+          email: e.target.value
+        });
+      }
+      onChangeDays(e) {
+        this.setState({
+          days: e.target.value
+        });
       }
 
      componentWillMount(){
@@ -43,9 +68,8 @@ export default class Storage extends Component {
           axios
             .post("http://localhost:80/storage", {user})
             .then((res) => {
-
               data = res.data
-
+        
               //Split für Filename
               for(var i = 0; i <res.data.length; i++){
                 var str = data[i].path
@@ -61,16 +85,50 @@ export default class Storage extends Component {
                 th1.innerHTML += fileName[i];
                 var th2 = document.createElement('th');
                 tr.appendChild(th2);
+                th2.id = "tag"+ i
+                th2.innerHTML = "-" + data[i].tags;
+                var th3 = document.createElement('th');
+                tr.appendChild(th3);
+                th3.id = "comment" + i
+                th3.innerHTML = "-" + data[i].comments
+                var th4 = document.createElement('th');
+                tr.appendChild(th4);
                 var input = document.createElement('input');
                 input.id = i
                 input.type = "radio"
                 input.name = "selectedFile"
                 input.value = i
-                th2.appendChild(input)
+                th4.appendChild(input)
               }
             });
-
     }
+
+    onUpdate(e){
+      e.preventDefault();
+
+      for(var i = 0; i <data.length; i++){
+        if(document.getElementById(i).checked) {
+
+          const fileInforamtion = {
+            tag: this.state.tag,
+            comment: this.state.comment,
+            fileID: data[i].id
+          }
+
+          console.log(fileInforamtion)
+          axios.post("http://localhost:80/updateFileInformation", {fileInforamtion}).then((res) => {
+            console.log(res.data)
+          })
+          document.getElementById("tag" + i).innerHTML = fileInforamtion.tag;
+          document.getElementById("comment" + i).innerHTML = fileInforamtion.comment;
+          this.setState({message: "Updated"})
+          break;
+        }else{
+          this.setState({message: "Select a File"})
+        }
+      }
+    }
+
 
     onSubmit(e) {
       e.preventDefault();
@@ -82,9 +140,10 @@ export default class Storage extends Component {
           file = fileName[i];
           break;
         }else{
-          
+          this.setState({message: "Select a File"})
         }
       }
+
         // When post request is sent to the create url, axios will add a new record(user) to the database.
         console.log(fileID);
         axios({
@@ -96,25 +155,51 @@ export default class Storage extends Component {
           console.log(url)
           const link = document.createElement('a');
           link.href = url;
-          link.setAttribute('download', file); //TODO: Dateiname abhängig von der fileID machen
+          link.setAttribute('download', file); 
           document.body.appendChild(link);
           link.click();
+          this.setState({message: ""})
         });
+  }
+
+  onShare(e){
 
   }
 
   // This following section will display the form that takes the input from the user.
   render() {
+    if(getToken() === ""){
+      return (
+        <>
+                <div class="login-form">
+                  no Permission
+                </div>
+        </>
+        );
+    }
     return (
         <>
             <div class="login-form">
               <h1>Storage</h1> 
               <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
               <table id="storageData">
-
               </table >
               <input type="submit" value="Download" onClick={this.onSubmit}></input>
-              <h1>{this.message}</h1>
+              <Popup  trigger={<button> Update Tag or Comment</button>} position="bottom center">
+                <div>              
+                  <input type="text" name="tags" placeholder="Tag" onChange={this.onChangeTag}></input> 
+                  <input type="text" name="comments" placeholder="Comment" onChange={this.onChangeComment}></input>
+                  <input type="submit" value="Update" onClick={this.onUpdate}></input>
+                </div>
+              </Popup><br></br>
+              <Popup  trigger={<button> Share Files</button>} position="bottom center">
+                <div>              
+                  <input type="text" name="mail" placeholder="Email"pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangEmail} required></input> 
+                  <input type="number" name="comments" placeholder="Days untill expires" min="1" max ="7"onChange={this.onChangeDays} required></input>
+                  <input type="submit" value="Share" onClick={this.onUpdate}></input>
+                </div>
+              </Popup>
+              <h1>{this.state.message}</h1>
             </div>
         </>
     );
