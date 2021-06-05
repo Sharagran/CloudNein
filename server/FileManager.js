@@ -5,6 +5,19 @@ const util = require('util');
 const path = require('path');
 var cron = require('node-cron');
 
+
+// every minute 0 (every hour)
+cron.schedule('0 * * * *', () => {
+    try {
+        checkFileExpirations();
+        checkSharelinkExpirations();
+    } catch (error) {
+        console.error("Error during Scheduled task");
+        console.error(error);
+    }
+
+});
+
 const readdir = util.promisify(fs.readdir);
 
 // tags = keywords
@@ -180,7 +193,6 @@ async function setSettings(limit) {
     console.log("Settings updated");
 }
 
-
 async function checkUploadLimit(userID) {
     var size = 0;
     var error, resultRead = await db.readDataPromise('settings', { User: "Admin" });
@@ -200,19 +212,6 @@ async function checkUploadLimit(userID) {
         console.log("Regular upload");
     }
 }
-
-
-// every minute 0 (every hour)
-cron.schedule('0 * * * *', () => {
-    try {
-        checkFileExpirations();
-        checkSharelinkExpirations();
-    } catch (error) {
-        console.error("Error during Scheduled task");
-        console.error(error);
-    }
-
-});
 
 function checkFileExpirations(fileID) {
     var query = fileID ? { id: fileID } : {};
