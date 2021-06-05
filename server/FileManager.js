@@ -7,7 +7,7 @@ const path = require('path')
 const readdir = util.promisify(fs.readdir);
 
 // tags = keywords
-function uploadFiles(req, tags = [], userID, username) {
+function uploadFiles(req, userID, username, tags = []) {
     for (const key in req.files) {
         const file = req.files[key];
 

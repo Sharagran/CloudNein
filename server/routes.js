@@ -85,7 +85,7 @@ router.post('/settings', (req, res) => {
 })
 
 router.post('/upload', upload.array("files"), function (req, res) {
-    var responseJSON = fm.uploadFiles(req,"", req.user.id, req.user.username);
+    var responseJSON = fm.uploadFiles(req, req.user.id, req.user.username);
     res.end(JSON.stringify(responseJSON));
 });
 
