@@ -61,12 +61,10 @@ export default class Storage extends Component {
       }
 
      componentWillMount(){
-          const user = {
-            username: GlobalVal.username,
-          };
-  
+
+          //TODO: Es muss kein Username übergeben
           axios
-            .post("http://localhost:80/storage", {user})
+            .post("http://localhost:80/storage")
             .then((res) => {
               data = res.data
         

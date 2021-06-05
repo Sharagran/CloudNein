@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from 'axios';
 import { getToken } from "../Authenticator";
+import GlobalVal from "./GlobalVal";
 
 export default class Admin extends Component {
 
@@ -40,7 +41,12 @@ export default class Admin extends Component {
 
     goBack(e){
         e.preventDefault();
-        this.props.history.goBack();
+        this.props.history.push("/home");
+        GlobalVal.username = null;
+        GlobalVal.password = null;
+        GlobalVal.loginState = null;
+        GlobalVal.id= null;
+
     }
 
     componentWillMount(){

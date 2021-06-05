@@ -4,8 +4,9 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import { getToken } from "./Authenticator";
 
-
+getToken();
 
 
 ReactDOM.render(
