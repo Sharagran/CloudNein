@@ -2,12 +2,13 @@ const fs = require("fs");
 const db = require("./Database");
 const uuidv4 = require('uuid').v4;
 const util = require('util');
-const path = require('path')
+const path = require('path');
+var cron = require('node-cron');
 
 const readdir = util.promisify(fs.readdir);
 
 // tags = keywords
-function uploadFiles(req, userID, username, tags = []) {
+function uploadFiles(req, userID, username, expires, tags = []) {
     for (const key in req.files) {
         const file = req.files[key];
 
@@ -16,16 +17,19 @@ function uploadFiles(req, userID, username, tags = []) {
         fs.rename(file.path, savePath, function (error) {
             if (error)
                 throw error;
-            console.log(file.destination)
+            console.log(file.destination); //FIXME: debug only
             //TODO: save file metadata in db
             const id = uuidv4();
+            expires = expires || new Date('2038');
+            expires = expires.toISOString();
+
             db.createData("file", {
                 id: id,
                 path: savePath,
                 owner: userID,
                 tags: tags,
                 fileSize: file.size,    //FIXME: might be wrong format
-                // expires: null,
+                expires: expires,
                 // comment: "comment"
             });
 
@@ -53,12 +57,12 @@ async function createFolder(Path) {
 }
 
 async function getFile(id) {
-    var file = await db.readDataPromise('file', {id: id})
+    var file = await db.readDataPromise('file', { id: id })
     return file[0];
 }
 
 async function getFiles(userID) {
-    var error, files = await db.readDataPromise('file',{owner: userID})
+    var error, files = await db.readDataPromise('file', { owner: userID })
     return files;
 }
 
@@ -89,7 +93,8 @@ function moveFile(oldPath, newPath) {
 }
 
 // react route https://ncoughlin.com/posts/react-router-variable-route-parameters/
-function share(path, expires = -1, deleteAfter = false, callback) {
+//TODO: change to id instead of path
+function share(path, expires, deleteAfter = false, callback) {
     // check if file exists
     fs.stat(path, function (error, stats) {
         if (error)
@@ -97,7 +102,11 @@ function share(path, expires = -1, deleteAfter = false, callback) {
 
         if (stats.isFile() && !stats.isSymbolicLink()) {
             const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
-            db.createData("share", {
+            expires = expires || new Date('2038');
+            expires = expires.toISOString();
+            console.log(expires);
+
+            db.createData("shared", {
                 shareID: shareID,
                 sharedItem: path,
                 deleteAfter: deleteAfter, //TODO:
@@ -193,12 +202,54 @@ async function checkUploadLimit(userID) {
 }
 
 
-function checkFileExpirations() {
+// every minute 0 (every hour)
+cron.schedule('0 * * * *', () => {
+    try {
+        checkFileExpirations();
+        checkSharelinkExpirations();
+    } catch (error) {
+        console.error("Error during Scheduled task");
+        console.error(error);
+    }
 
+});
+
+function checkFileExpirations(fileID) {
+    var query = fileID ? { id: fileID } : {};
+
+    db.readData('file', query, function (error, result) {
+        result.forEach(file => {
+            var fileExpiration = Date.parse(file.expires);
+
+            // expired
+            if (Date.now >= fileExpiration) {
+                db.deleteData('file', {_id: file._id}, function () {
+                    console.log(`${file.path} deleted`);
+                });
+            }
+        });
+    });
 }
 
-function checkSharelinkExpirations() {
-    
+function checkSharelinkExpirations(shareID) {
+    var query = shareID ? { shareID: shareID } : {};
+
+    db.readData('shared', query, function (error, result) {
+        result.forEach(shareEntry => {
+            var shareExpiration = Date.parse(shareEntry.expires);
+
+            // expired
+            if (Date.now >= shareExpiration) {
+                db.deleteData('shared', {_id: shareEntry._id}, function () {
+                    console.log(`share link "${shareEntry.shareID}" deleted`);
+                });
+            }
+        });
+    });
+}
+
+function checkSharelinkUsages(shareID) {
+    //TODO:
 }
 
 
@@ -216,5 +267,8 @@ module.exports = {
     checkUploadLimit: checkUploadLimit,
     createUploadSettings: createUploadSettings,
     getSettings: getSettings,
-    setSettings: setSettings
+    setSettings: setSettings,
+
+    checkFileExpirations: checkFileExpirations,
+    checkSharelinkExpirations: checkSharelinkExpirations
 }
