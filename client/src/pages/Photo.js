@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import {Camera} from 'react-html5-camera-photo'
 import 'react-html5-camera-photo/build/css/index.css';
-import GlobalVal from "./GlobalVal";
 import axios from 'axios';
 import { getToken } from "../Authenticator";
 

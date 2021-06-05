@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import GlobalVal from "./GlobalVal";
 import axios from 'axios';
 import { getToken } from "../Authenticator";
 

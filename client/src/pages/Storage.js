@@ -76,28 +76,29 @@ export default class Storage extends Component {
                 fileName[i] = str.substring(str.lastIndexOf("/")+1, str.length)
               }
 
-              for(var i = 0; i < res.data.length; i++){
+              
+              for(var j = 0; j < res.data.length; j++){
                 var tr = document.createElement('tr');
                 document.getElementById('storageData').appendChild(tr);
                 var th1 = document.createElement('th');
                 tr.appendChild(th1);
                 th1.name = "Andre"
-                th1.innerHTML += fileName[i];
+                th1.innerHTML += fileName[j];
                 var th2 = document.createElement('th');
                 tr.appendChild(th2);
-                th2.id = "tag"+ i
-                th2.innerHTML = "-" + data[i].tags;
+                th2.id = "tag"+ j
+                th2.innerHTML = "-" + data[j].tags;
                 var th3 = document.createElement('th');
                 tr.appendChild(th3);
-                th3.id = "comment" + i
-                th3.innerHTML = "-" + data[i].comments
+                th3.id = "comment" + j
+                th3.innerHTML = "-" + data[j].comments
                 var th4 = document.createElement('th');
                 tr.appendChild(th4);
                 var input = document.createElement('input');
-                input.id = i
+                input.id = j
                 input.type = "radio"
                 input.name = "selectedFile"
-                input.value = i
+                input.value = j
                 th4.appendChild(input)
               }
             });

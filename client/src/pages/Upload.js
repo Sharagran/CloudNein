@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import axios from 'axios';
-import GlobalVal from "./GlobalVal";
 import { Link } from 'react-router-dom';
 import { getToken } from "../Authenticator";
 

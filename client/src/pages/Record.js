@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import {Recorder} from 'react-voice-recorder'
 import './css/recorder.css'
-import GlobalVal from "./GlobalVal";
 import axios from 'axios';
 import { getToken } from "../Authenticator";
 
