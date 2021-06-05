@@ -4,6 +4,7 @@ const uuidv4 = require('uuid').v4;
 const util = require('util');
 const path = require('path');
 var cron = require('node-cron');
+import { zip } from 'zip-a-folder';
 
 
 // every minute 0 (every hour)
@@ -106,34 +107,24 @@ function moveFile(oldPath, newPath) {
 }
 
 // react route https://ncoughlin.com/posts/react-router-variable-route-parameters/
-//TODO: change to id instead of path
-function share(path, expires, deleteAfter = false, callback) {
-    // check if file exists
-    fs.stat(path, function (error, stats) {
-        if (error)
-            callback({ message: "Path does not exist" }, null);
+function share(itemID, expires, deleteAfter = false, callback) {
+    var file = getFile(itemID);
 
-        if (stats.isFile() && !stats.isSymbolicLink()) {
-            const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
-            expires = expires || new Date('2038');
-            expires = expires.toISOString();
-            console.log(expires);
+    const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
+    expires = expires || new Date('2038');
+    expires = expires.toISOString();
+    console.log(expires);
 
-            db.createData("shared", {
-                shareID: shareID,
-                sharedItem: path,
-                deleteAfter: deleteAfter, //TODO:
-                expires: expires    //TODO:
-            }, function () {
-                callback(null, shareID);
-                //TODO: create route to file in react
-            });
-
-        } else {
-            callback({ message: "Not a file" }, null);
-        }
-
+    db.createData("shared", {
+        shareID: shareID,
+        sharedItem: file.path,
+        deleteAfter: deleteAfter, //TODO:
+        expires: expires
+    }, function () {
+        callback(null, shareID);
+        //TODO: create route to file in react
     });
+
 }
 
 async function addTag(fileID, tag) {
@@ -213,6 +204,7 @@ async function checkUploadLimit(userID) {
     }
 }
 
+//#region call those functions before each item access
 function checkFileExpirations(fileID) {
     var query = fileID ? { id: fileID } : {};
 
@@ -222,7 +214,7 @@ function checkFileExpirations(fileID) {
 
             // expired
             if (Date.now >= fileExpiration) {
-                db.deleteData('file', {_id: file._id}, function () {
+                db.deleteData('file', { _id: file._id }, function () {
                     console.log(`${file.path} deleted`);
                 });
             }
@@ -239,7 +231,7 @@ function checkSharelinkExpirations(shareID) {
 
             // expired
             if (Date.now >= shareExpiration) {
-                db.deleteData('shared', {_id: shareEntry._id}, function () {
+                db.deleteData('shared', { _id: shareEntry._id }, function () {
                     console.log(`share link "${shareEntry.shareID}" deleted`);
                 });
             }
@@ -247,10 +239,33 @@ function checkSharelinkExpirations(shareID) {
     });
 }
 
-function checkSharelinkUsages(shareID) {
-    //TODO:
-}
+function checkFileDeletion(shareID) {
+    db.readData('shared', {shareID: shareID}, function (error, result) {
+        result = result[0];
+        if(result.deleteAfter) {
+            var path = result.path;
 
+            db.readData('shared', {path: path}, function(error, result) {
+                //check if other links refer to same fileID
+                if(result.length > 1) {
+                    // more links
+                } else {
+                    //delete file
+                    fs.unlinkSync(path);
+                    db.deleteData('shared', {shareID: shareID});
+                    db.deleteData('file', {path: path});
+                }
+            });
+        }
+    });
+}
+//#endregion
+
+async function compressFolder(path) {
+    var zipPath = path + '.zip';
+    await zip(path, zipPath);
+    return zipPath;
+}
 
 
 module.exports = {

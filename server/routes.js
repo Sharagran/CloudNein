@@ -90,8 +90,7 @@ router.post('/upload', upload.array("files"), function (req, res) {
 });
 
 router.post("/share", async function (req, res) {
-    var file = await fm.getFile(req.body.fileID);
-    fm.share(file.path, null, 10, function (error, shareID) {
+    fm.share(req.body.fileID, null, 10, function (error, shareID) {
         if(error) {
             console.error(error.message);
             res.send(500);
