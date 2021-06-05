@@ -52,9 +52,9 @@ async function createFolder(Path) {
     return true;
 }
 
-async function getPath(id) {
-    var path = await db.readDataPromise('file', {id: id})
-    return path;
+async function getFile(id) {
+    var file = await db.readDataPromise('file', {id: id})
+    return file;
 }
 
 async function getFiles(userID) {
@@ -198,7 +198,7 @@ module.exports = {
     uploadFiles: uploadFiles,
     createFolder: createFolder,
     addTag: addTag,
-    getPath: getPath,
+    getFile: getFile,
     getFiles: getFiles,
     commentFile: commentFile,
     editFile: editFile,

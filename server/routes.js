@@ -89,9 +89,22 @@ router.post('/upload', upload.array("files"), function (req, res) {
     res.end(JSON.stringify(responseJSON));
 });
 
+router.post("/share", async function (req, res) {
+    var file = await fm.getFile(req.params.id);
+    fm.share(file.path, 3000, 10, function (error, shareID) {
+        if(error) {
+            console.error(error.message);
+            res.send(500);
+        }
+            
+        
+        res.send(shareID);
+    });
+});
+
 router.get('/download/:id', async function (req, res) {
-    var path = await fm.getPath(req.params.id); 
-    res.download(path[0].path);
+    var file = await fm.getFile(req.params.id); 
+    res.download(file[0].path);
  });
 
 router.post('/storage', async function(req, res) {
@@ -162,12 +175,6 @@ router.get('/test', function (req, res) {
     console.log("/test");
     console.log(req.user);
     res.send(req.user);
-
-    // fm.share("../UserFiles/Sharangran-hinten.png", 3000, 10, function (error, link) {
-    //     if(error)
-    //         console.error(error.message);
-    //     console.log(link);
-    // });
 })
 
 router.get('*', function (req, res) {
