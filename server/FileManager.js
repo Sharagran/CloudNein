@@ -26,9 +26,7 @@ function uploadFiles(req, userID, username, tags = []) {
                 tags: tags,
                 fileSize: file.size,    //FIXME: might be wrong format
                 // expires: null,
-                // comments: [
-                //     { author: authorID, text: text },
-                // ]
+                // comment: "comment"
             });
 
         });
@@ -99,12 +97,11 @@ function share(path, expires = -1, deleteAfter = false, callback) {
 
         if (stats.isFile() && !stats.isSymbolicLink()) {
             const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
-            //TODO: add db entry
             db.createData("share", {
                 shareID: shareID,
                 sharedItem: path,
-                deleteAfter: deleteAfter,
-                expires: expires
+                deleteAfter: deleteAfter, //TODO:
+                expires: expires    //TODO:
             }, function () {
                 callback(null, shareID);
                 //TODO: create route to file in react
