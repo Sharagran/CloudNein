@@ -54,7 +54,7 @@ async function createFolder(Path) {
 
 async function getFile(id) {
     var file = await db.readDataPromise('file', {id: id})
-    return file;
+    return file[0];
 }
 
 async function getFiles(userID) {
@@ -190,6 +190,15 @@ async function checkUploadLimit(userID) {
     } {
         console.log("Regular upload");
     }
+}
+
+
+function checkFileExpirations() {
+
+}
+
+function checkSharelinkExpirations() {
+    
 }
 
 

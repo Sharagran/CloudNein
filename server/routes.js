@@ -104,7 +104,7 @@ router.post("/share", async function (req, res) {
 
 router.get('/download/:id', async function (req, res) {
     var file = await fm.getFile(req.params.id); 
-    res.download(file[0].path);
+    res.download(file.path);
  });
 
 router.post('/storage', async function(req, res) {
