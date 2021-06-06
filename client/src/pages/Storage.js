@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import axios from 'axios';
-import GlobalVal from "./GlobalVal";
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import { getToken } from "../Authenticator";
@@ -195,7 +194,7 @@ export default class Storage extends Component {
                 <div>              
                   <input type="text" name="mail" placeholder="Email"pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangEmail} required></input> 
                   <input type="number" name="comments" placeholder="Days untill expires" min="1" max ="7"onChange={this.onChangeDays} required></input>
-                  <input type="submit" value="Share" onClick={this.onUpdate}></input>
+                  <input type="submit" value="Share" onClick={this.onShare}></input>
                 </div>
               </Popup>
               <h1>{this.state.message}</h1>

@@ -44,44 +44,15 @@ router.post('/setDataLimit', async (req, res) => {
     await fm.setSettings(req.body.settings.dataSizeNew);
 });
 
-router.post('/settings', (req, res) => {
-    //Daten des User erfragen, wie? Per Session?
+router.post('/settings', async (req, res) => {
+    var username = req.body.user.username
+    var mail = req.body.user.mail
 
-    db.readData("user", { username: req.body.user.previousUsername},  (error, result) =>{
-        if (error) {
-            throw error;}
-            if(req.body.user.username == undefined){
-                db.readData("user", { email: req.body.user.mail },  (error, result) => {
-                    console.log(result);
-                    if (error) {
-                        throw error;
-                    }else if(result.length == 0){
-                        db.updateData("user", { email: req.body.user.previousMail }, { $set: { email: req.body.user.mail } }, (error, result) => {
-                            if (error) throw error;
-                            console.log("Mail updated");
-                        })
-                    }
-                })
-            }else if (req.body.user.mail == undefined) {
-                db.readData("user", { username: req.body.user.username },  (error, result) => {
-                    if (error) {
-                        throw error;
-                    }else if(result.length == 0){
-                        db.updateData("user", { username: req.body.user.previousUsername }, { $set: { username: req.body.user.username } }, (error, result) => {
-                            if (error) throw error;
-                            console.log("Username updated");
-                            fs.rename("../UserFiles/"+ req.body.user.previousUsername, "../UserFiles/"+ req.body.user.username, function(err) {
-                                if (err) {
-                                  console.error(err)
-                                } else {
-                                  console.log("Successfully renamed the directory.")
-                                }
-                              })
-                        })
-                    }
-                })
-            }
-    })
+    if(username === undefined){
+        await auth.changeMail(req.user.id, req.body.user.mail, req.body.user.previousMail)
+    }else if (mail === undefined){
+        await auth.changeUsername(req.user.id, req.body.user.username, req.body.user.previousUsername)
+    }
 })
 
 router.post('/upload', upload.array("files"), function (req, res) {
@@ -116,6 +87,7 @@ router.post('/updateFileInformation', (req, res) => {
   var tag = req.body.fileInforamtion.tag;
   var comment = req.body.fileInforamtion.comment;
   var fileID = req.body.fileInforamtion.fileID
+  
 //TODO: Muss getestet werden
   /*
     if(tag === "" && comment === ""){

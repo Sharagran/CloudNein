@@ -59,7 +59,32 @@ function generatePassword() {
   return newPW
 };
 
+async function changeUsername(userID, newUsername, previousUsername ){
+  var previousUsername = previousUsername
+  var error, usernameCheck = await db.readDataPromise('user', {username: newUsername})
+  console.log(usernameCheck);
+  if(usernameCheck.length == 0){
+    var error, result = await db.updateDataPromise('user', {id: userID}, {$set: {username: newUsername}})
+    console.log(result);
+    fs.rename("../UserFiles/"+ previousUsername, "../UserFiles/"+ newUsername, function(err) {
+      if (err) {
+        console.error(err)
+      } else {
+        console.log("Successfully renamed the directory.")
+      }
+    })
+  }
+} 
 
+async function changeMail(userID, newMail, previousMail){
+  var previousMail = previousMail
+  var error, mailCheck = await db.readDataPromise('user', {username: newMail})
+  console.log(mailCheck);
+  if(mailCheck.length == 0){
+    var error, result = await db.updateDataPromise('user', {id: userID}, {$set: {email: newMail}})
+    console.log(result);
+  }
+}
 
 async function login(username, password) {
   var error, result = await readData("user", { username: username });
@@ -161,5 +186,7 @@ module.exports = {
   register: register,
   forgotPassword: forgotPassword,
   sign: sign,
-  verify: verify
+  verify: verify,
+  changeMail: changeMail,
+  changeUsername: changeUsername
 }
