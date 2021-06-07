@@ -154,6 +154,7 @@ export default class Storage extends Component {
           const link = document.createElement('a');
           link.href = url;
           link.setAttribute('download', file); 
+          console.log(link)
           document.body.appendChild(link);
           link.click();
           this.setState({message: ""})
@@ -161,6 +162,30 @@ export default class Storage extends Component {
   }
 
   onShare(e){
+    e.preventDefault();
+
+
+    for(var i = 0; i <data.length; i++){
+      if(document.getElementById(i).checked) {
+        console.log(i);
+        fileID = data[i].id;
+
+        const shareInformation = {
+          email: this.state.email,
+          days: this.state.days,
+          fileID: data[i].id
+        }
+
+        axios.post("http://localhost:80/share", {shareInformation} ).then((res) => {
+          console.log(res.data)
+
+        })
+        break;
+      }else{
+        this.setState({message: "Select a File"})
+      }
+    }
+
 
   }
 

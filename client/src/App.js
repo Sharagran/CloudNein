@@ -12,6 +12,7 @@ import SendEmail from './pages/SendEmail';
 import Upload from './pages/Upload';
 import Admin from './pages/Admin';
 import Storage from './pages/Storage';
+import ShareFile from './pages/ShareFile';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/Upload" component={Upload} />
         <Route path="/Admin" component={Admin} />
         <Route path="/Storage" component={Storage} />
+        <Route path="/ShareFile" component={ShareFile} />
       </Switch>
     </BrowserRouter>
 
