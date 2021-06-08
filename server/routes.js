@@ -67,7 +67,7 @@ router.post("/share", async function (req, res) {
     var email = req.body.shareInformation.email
     var fileName = req.body.shareInformation.fileName
 
-    fm.share(fileID, null, days, function (error, shareID) {
+    fm.share(fileID, days, 10,  function (error, shareID) {
         if(error) {
             console.error(error.message);
             res.send(500);
@@ -82,20 +82,7 @@ router.post("/share", async function (req, res) {
 });
 
 router.get('/share/:id', function (req, res) {
-    var days = parseInt(req.body.shareInformation.days)
-    var fileID = req.body.shareInformation.fileID
-    var email = req.body.shareInformation.email
-    var fileName = req.body.shareInformation.fileName
 
-    fm.share(fileID, null, days, function (error, shareID) {
-        if(error) {
-            console.error(error.message);
-            res.send(500);
-        }
-        fm.sendLink(email, shareID, fileID, fileName, (error, info) => {
-            if (error) throw error;
-        })
-    });
 });
 
 router.get('/download/:id', async function (req, res) {

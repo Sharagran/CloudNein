@@ -4,6 +4,7 @@ const uuidv4 = require('uuid').v4;
 const util = require('util');
 const path = require('path');
 var cron = require('node-cron');
+const nodemailer = require("nodemailer");
 var { zip } = require('zip-a-folder');
 
 const readdir = util.promisify(fs.readdir);
@@ -37,6 +38,7 @@ function uploadFiles(req, userID, username, expires, tags = []) {
             const id = uuidv4();
             expires = expires || new Date('2038');
             expires = expires.toISOString();
+            console.log(expires);
 
             db.createData("file", {
                 id: id,
@@ -106,17 +108,19 @@ function share(itemID, expires, usages, callback) {
     //TODO: delete file/folder after X downloads
     //TODO: link usages
     var file = getFile(itemID);
+    console.log(file);
+
 
     const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
     var date = new Date();
     date.setDate(date.getDate() + expires )
     //expires = expires || new Date('2038');
-    expires = expires.toISOString();
+    expires = date.toISOString();
     usages = usages || -1;
 
     db.createData("shared", {
         shareID: shareID,
-        sharedItem: file[0].path,
+        sharedItem: file,
         usages: usages,
         expires: expires
     }, function () {
@@ -128,7 +132,7 @@ function share(itemID, expires, usages, callback) {
 async function downloadFile(id, res) {
     //TODO: check usages
 
-    var file = await fm.getFile(req.params.id); 
+    var file = await getFile(id); 
     res.download(file.path);
 
     //TODO: countdown usages in db
