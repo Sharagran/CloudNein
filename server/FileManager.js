@@ -6,6 +6,7 @@ const path = require('path');
 var cron = require('node-cron');
 import { zip } from 'zip-a-folder';
 
+const readdir = util.promisify(fs.readdir);
 
 // every minute 0 (every hour)
 cron.schedule('0 * * * *', () => {
@@ -19,7 +20,7 @@ cron.schedule('0 * * * *', () => {
 
 });
 
-const readdir = util.promisify(fs.readdir);
+
 
 // tags = keywords
 function uploadFiles(req, userID, username, expires, tags = []) {
@@ -56,7 +57,9 @@ function uploadFiles(req, userID, username, expires, tags = []) {
     };
     return responseJSON;
 }
+//TODO: max downloads for files/folders
 
+//TODO: expires for folder
 async function createFolder(Path) {
     //TODO: test if function works
     var folderPath = path.join(__dirname, '../UserFiles', Path);
@@ -86,15 +89,7 @@ function commentFile(fileID, userID, comment) {
     //TODO: add new comment db entry
 }
 
-function editFile(fileID, newContent) {
-    throw { name: "NotImplementedError", message: "too lazy to implement" };
-
-    fs.writeFile(file, newContent, function (error) {
-
-    });
-}
-
-function moveFile(oldPath, newPath) {
+function moveFile(fileID, path) {
     throw { name: "NotImplementedError", message: "too lazy to implement" };
 
     fs.rename(oldPath, newPath, function (error) {
@@ -107,24 +102,34 @@ function moveFile(oldPath, newPath) {
 }
 
 // react route https://ncoughlin.com/posts/react-router-variable-route-parameters/
-function share(itemID, expires, deleteAfter = false, callback) {
+function share(itemID, expires, usages, callback) {
+    //TODO: delete file/folder after X downloads
+    //TODO: link usages
     var file = getFile(itemID);
 
     const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
     expires = expires || new Date('2038');
     expires = expires.toISOString();
-    console.log(expires);
+    usages = usages || -1;
 
     db.createData("shared", {
         shareID: shareID,
         sharedItem: file.path,
-        deleteAfter: deleteAfter, //TODO:
+        usages: usages,
         expires: expires
     }, function () {
         callback(null, shareID);
-        //TODO: create route to file in react
     });
 
+}
+
+function downloadFile(id, res) {
+    //TODO: check usages
+
+    var file = await fm.getFile(req.params.id); 
+    res.download(file.path);
+
+    //TODO: countdown usages in db
 }
 
 async function addTag(fileID, tag) {
@@ -204,7 +209,7 @@ async function checkUploadLimit(userID) {
     }
 }
 
-//#region call those functions before each item access
+//#region TODO: call those functions before each item access
 function checkFileExpirations(fileID) {
     var query = fileID ? { id: fileID } : {};
 
@@ -239,26 +244,6 @@ function checkSharelinkExpirations(shareID) {
     });
 }
 
-function checkFileDeletion(shareID) {
-    db.readData('shared', {shareID: shareID}, function (error, result) {
-        result = result[0];
-        if(result.deleteAfter) {
-            var path = result.path;
-
-            db.readData('shared', {path: path}, function(error, result) {
-                //check if other links refer to same fileID
-                if(result.length > 1) {
-                    // more links
-                } else {
-                    //delete file
-                    fs.unlinkSync(path);
-                    db.deleteData('shared', {shareID: shareID});
-                    db.deleteData('file', {path: path});
-                }
-            });
-        }
-    });
-}
 //#endregion
 
 async function compressFolder(path) {
@@ -275,8 +260,8 @@ module.exports = {
     getFile: getFile,
     getFiles: getFiles,
     commentFile: commentFile,
-    editFile: editFile,
     moveFile: moveFile,
+    downloadFile: downloadFile,
     share: share,
     checkUploadLimit: checkUploadLimit,
     createUploadSettings: createUploadSettings,

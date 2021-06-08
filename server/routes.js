@@ -72,9 +72,12 @@ router.post("/share", async function (req, res) {
     });
 });
 
+router.get('/share/:id', function (req, res) {
+
+});
+
 router.get('/download/:id', async function (req, res) {
-    var file = await fm.getFile(req.params.id); 
-    res.download(file.path);
+    fm.downloadFile(req.params.id, res);
  });
 
 router.post('/storage', async function(req, res) {
