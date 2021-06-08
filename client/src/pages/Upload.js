@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { getToken } from "../Authenticator";
 
+
 export default class Upload extends Component {
 
   constructor(props) {
@@ -11,12 +12,12 @@ export default class Upload extends Component {
   }
   state = {
     // Initially, no file is selected
-    selectedFile: null
+    selectedFile: null,
+    message: ""
   };
   
-  // On file select (from the pop up)
+     // Update the state
   onFileChange = event => {
-    // Update the state
     this.setState({ selectedFile: event.target.files});
   };
 
@@ -26,22 +27,21 @@ export default class Upload extends Component {
   }
   
   // On file upload (click the upload button)
-  onFileUpload = () => {
-  
-    // Create an object of formData
-    const formData = new FormData();
-
-    for(var x = 0; x < this.state.selectedFile.length; x++){
-      formData.append("files", this.state.selectedFile[x])
-    }
-  
-    // Details of the uploaded file
-    console.log(this.state.selectedFile);
-    console.log()
-    // Request made to the backend api
-    // Send formData object
-    axios.post("http://localhost:80/upload", formData);
-  };
+  onFileUpload = (e) => {
+    e.preventDefault();
+    try {
+          // Create an object of formData
+          const formData = new FormData();
+          
+          for(var x = 0; x < this.state.selectedFile.length; x++){
+            formData.append("files", this.state.selectedFile[x])
+          }
+            axios.post("http://localhost:80/upload", formData);
+            this.setState({message: ""})
+    } catch (error) {
+        console.log(error);
+        this.setState({message: "Select a File"})
+    }};
 
   // This following section will display the form that takes the input from the user.
   render() {
@@ -64,7 +64,9 @@ export default class Upload extends Component {
                 <Link to="/Photo"><button id="forgotPassword-btn" type="submit" >Take Photo</button></Link>
                 <Link to="/Record"><button id="forgotPassword-btn" type="submit" >Record Audio</button></Link>
               </div>
+              <h1>{this.state.message}</h1>
             </div>
+            
         </>
     );
   }

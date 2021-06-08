@@ -112,12 +112,10 @@ export default class Admin extends Component {
                     <td><input onChange={this.onChangeDataSize}></input></td>
                     <td><button onClick={this.onSubmitDataSize}>Bestätigen</button></td>
                     <td>{this.state.days}</td>
-                    <td><input onChange={this.onChangeDays}></input></td>
+                    <td><input type="number" min="1" onChange={this.onChangeDays}></input></td>
                     <td><button onClick={this.onSubmitDays}>Bestätigen</button></td>
                 </tr>
             </table>
-
-
         </>
     );
   }

@@ -11,7 +11,9 @@ export default class Success extends Component {
   render() {
     return (
         <>
-            <h1>Success</h1>
+            <div class="login-form">
+                <h1>Success</h1>
+            </div>
         </>
     );
   }

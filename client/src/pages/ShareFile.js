@@ -21,22 +21,27 @@ export default class ShareFile extends Component {
 
   onSubmit(e){
     e.preventDefault();
+    try {
+      axios({
+        url: 'http://localhost:80/download/'+ fileID,
+        method: 'GET',
+        responseType: 'blob',
+      }).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        console.log(url)
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', fileName); 
+        console.log(link)
+        document.body.appendChild(link);
+        link.click();
+        this.setState({message: ""})
+      });
+    } catch (error) {
+      console.log(error)
+      this.setState({message: "Error while preparing download"})
+    }
 
-    axios({
-      url: 'http://localhost:80/download/'+ fileID,
-      method: 'GET',
-      responseType: 'blob',
-    }).then((response) => {
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      console.log(url)
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', fileName); 
-      console.log(link)
-      document.body.appendChild(link);
-      link.click();
-      this.setState({message: ""})
-    });
   }
 
 
@@ -47,6 +52,7 @@ export default class ShareFile extends Component {
         <>
           <div class="login-form">
             <input type="submit" value={"Download " + fileName}  onClick={this.onSubmit}></input>
+            <h1>{this.state.message}</h1>
           </div>
         </>
     );
