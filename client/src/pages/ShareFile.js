@@ -12,11 +12,27 @@ export default class ShareFile extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
+  state = {
+    // Initially, no file is selected
+    message: ""
+  };
+
   componentWillMount(){
     const queryParams = new URLSearchParams(window.location.search);
-    fileName = queryParams.get('fileName');
-    fileID = queryParams.get('fileID');
     shareID = queryParams.get('shareID');
+    fileName = queryParams.get('fileName');
+
+    var shareInformation = {
+      shareID: shareID
+    }
+
+    try {
+      axios.post("http://localhost:80/getShareInformation", {shareInformation}).then((res) => {
+        fileID = res.data.id
+      })
+    } catch (error) {
+      console.log(error)
+    }
 }
 
   onSubmit(e){
@@ -41,7 +57,6 @@ export default class ShareFile extends Component {
       console.log(error)
       this.setState({message: "Error while preparing download"})
     }
-
   }
 
 

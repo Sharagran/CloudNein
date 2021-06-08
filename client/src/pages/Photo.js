@@ -12,25 +12,29 @@ export default class Photo extends Component {
         this.handleTakePhoto = this.handleTakePhoto.bind(this)
     }
 
+    state = {
+        message: ""
+    }
     handleTakePhoto (dataUri) {
-
-        var today = new Date();
-        var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-        var time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
-        var dateTime = date + "@" + time;
-   
-
-        var binary = atob(dataUri.split(',')[1]);
-        var array = [];
-        for(var i = 0; i < binary.length; i++) {
-            array.push(binary.charCodeAt(i));
+        try {
+            var today = new Date();
+            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            var time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
+            var dateTime = date + "@" + time;
+       
+            var binary = atob(dataUri.split(',')[1]);
+            var array = [];
+            for(var i = 0; i < binary.length; i++) {
+                array.push(binary.charCodeAt(i));
+            }
+            var photo = new Blob([new Uint8Array(array)], {type: 'image/png'});
+            const formData = new FormData();
+            formData.append("files", photo, dateTime +".png")
+            axios.post("http://localhost:80/upload", formData )
+        } catch (error) {
+            console.log(error);
+            this.setState({message: "Error while uploading photo"})
         }
-        var photo = new Blob([new Uint8Array(array)], {type: 'image/png'});
-
- 
-        const formData = new FormData();
-        formData.append("files", photo, dateTime +".png")
-        axios.post("http://localhost:80/upload", formData )
     }
 
 
@@ -43,9 +47,9 @@ export default class Photo extends Component {
         if(getToken() === ""){
             return (
               <>
-                      <div class="login-form">
-                        no Permission
-                      </div>
+                <div class="login-form">
+                    no Permission
+                </div>
               </>
               );
           }

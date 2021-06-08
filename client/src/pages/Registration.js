@@ -16,7 +16,8 @@ export default class Registration extends Component {
     this.state = {
       username: "",
       password: "",
-	    mail: ""
+	    mail: "",
+      message: ""
     };
   }
 
@@ -47,22 +48,28 @@ export default class Registration extends Component {
   onSubmit(e) {
     e.preventDefault();
 
+    try {
+      const user = {
+        username: this.state.username,
+        password: this.state.password,
+        mail: this.state.mail
+      };
+  
+      axios
+        .post("http://localhost:80/register", {user})
+        .then((res) => {
+          if (res.data === true){
+            this.props.history.push('/success')
+          }else{
+            this.props.history.push('/failed')
+          }
+        });
+    } catch (error) {
+      console.log(error)
+      this.setState({message: "Error while registration"})
+    }
     // When post request is sent to the create url, axios will add a new record(user) to the database.
-    const user = {
-      username: this.state.username,
-      password: this.state.password,
-	    mail: this.state.mail
-    };
 
-    axios
-      .post("http://localhost:80/register", {user})
-      .then((res) => {
-        if (res.data === true){
-          this.props.history.push('/success')
-        }else{
-          this.props.history.push('/failed')
-        }
-      });
 
     // We will empty the state after posting the data to the database
 
@@ -75,12 +82,12 @@ export default class Registration extends Component {
 			<div class="register-form"> 
 				<h1>Registration</h1> <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
 				<form action="/Registration" method="POST">
-
 					<input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
 					<input type="text" name="mail" placeholder="E-Mail" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeMail} required ></input>
 					<input id="password"type="password" name="password" placeholder="Password (6 characters minimum)" minLength="6" onChange={this.onChangePassword} required ></input>
 					<input type="submit" value="Create Account" onClick={this.onSubmit}></input>
 				</form>
+        <h1>{this.state.message}</h1>
 			</div>
 			</>
     );

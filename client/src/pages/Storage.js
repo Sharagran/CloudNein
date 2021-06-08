@@ -103,7 +103,6 @@ export default class Storage extends Component {
       console.log(error);
       this.setState({ message: "Error while loading Files" })
     }
-
   }
 
   onUpdate(e) {

@@ -14,12 +14,12 @@ export default class Admin extends Component {
         this.onSubmitDays = this.onSubmitDays.bind(this)
         this.onChangeDays = this.onChangeDays.bind(this)
 
-
         this.state = {
           dataSize: "",
           dataSizeNew:"",
           days: "",
-          daysNew: ""
+          daysNew: "",
+          message: ""
         };
       }
 
@@ -37,27 +37,39 @@ export default class Admin extends Component {
 
     onSubmitDataSize(e) {
         e.preventDefault();
-        const settings = {
-          dataSizeNew: this.state.dataSizeNew
-        };
-        console.log(settings)
-        axios.post("http://localhost:80/setDataLimit", {settings}).then((res) => {
-          console.log(res)
-          
-        });
-        this.setState({dataSize: settings.dataSizeNew/1000000})
+        try {
+          const settings = {
+            dataSizeNew: this.state.dataSizeNew
+          };
+          console.log(settings)
+          axios.post("http://localhost:80/setDataLimit", {settings}).then((res) => {
+            console.log(res)
+          });
+          this.setState({dataSize: settings.dataSizeNew/1000000})
+          this.setState({message: "Updated datalimit"})
+        } catch (error) {
+          console.log(error)
+          this.setState({message: "Error while updating datalimit"})
+        }
+
       }
 
       onSubmitDays(e){
-        const settings = {
-          daysNew: this.state.daysNew
-        };
-        console.log(settings)
-        axios.post("http://localhost:80/setExpirationDate", {settings}).then((res) => {
-          console.log(res)
-          
-        });
-        this.setState({days: settings.daysNew})
+        try {
+          const settings = {
+            daysNew: this.state.daysNew
+          };
+          console.log(settings)
+          axios.post("http://localhost:80/setExpirationDate", {settings}).then((res) => {
+            console.log(res)
+          });
+          this.setState({days: settings.daysNew})
+          this.setState({message: "Updated exploration date"})
+        } catch (error) {
+          console.log(error)
+          this.setState({ message: "Error while updating exploration date"})
+        }
+
       }
 
     goBack(e){
@@ -68,19 +80,22 @@ export default class Admin extends Component {
         GlobalVal.loginState = null;
         GlobalVal.id= null;
         this.props.history.push('/')
-
     }
 
     componentWillMount(){
+      try {
         axios.post("http://localhost:80/getDataLimit").then((res) => {
-         this.setState({dataSize: res.data})
-        });
-
-        axios.post("http://localhost:80/getExpirationDate").then((res) => {
-          console.log(res.data)
-          this.setState({days: res.data})
+          this.setState({dataSize: res.data})
          });
-
+ 
+         axios.post("http://localhost:80/getExpirationDate").then((res) => {
+           console.log(res.data)
+           this.setState({days: res.data})
+          });
+      } catch (error) {
+        console.log(error)
+        this.setState({ message: "Error while loading datalimit or exploration date"})
+      }
     }
 
   // This following section will display the form that takes the input from the user.
@@ -88,9 +103,9 @@ export default class Admin extends Component {
     if(getToken() === ""){
         return (
           <>
-                  <div class="login-form">
-                    no Permission
-                  </div>
+              <div class="login-form">
+                no Permission
+              </div>
           </>
           );
       }
@@ -116,6 +131,7 @@ export default class Admin extends Component {
                     <td><button onClick={this.onSubmitDays}>Bestätigen</button></td>
                 </tr>
             </table>
+            <h1>{this.state.message}</h1>
         </>
     );
   }

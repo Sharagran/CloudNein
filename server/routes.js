@@ -70,7 +70,7 @@ router.post('/upload', upload.array("files"), function (req, res) {
 });
 
 router.post("/share", async function (req, res) {
-    console.log(req.body.shareInformation.fileID);
+    
     var days = parseInt(req.body.shareInformation.days)
     var fileID = req.body.shareInformation.fileID
     var email = req.body.shareInformation.email
@@ -81,14 +81,16 @@ router.post("/share", async function (req, res) {
             console.error(error.message);
             res.send(500);
         }
-        fm.sendLink(email, shareID, fileID, fileName, (error, info) => {
+        fm.sendLink(email, shareID, fileName, (error, info) => {
             if (error) throw error;
         })
     });
-
-
-
 });
+
+router.post('/getShareInformation', async (req, res) => {
+    var sharedFiles = await fm.getSharedFiles(req.body.shareInformation.shareID)
+    res.send(sharedFiles[0].sharedItem)
+})
 
 router.get('/share/:id', function (req, res) {
 

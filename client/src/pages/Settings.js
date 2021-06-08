@@ -93,10 +93,10 @@ export default class Settings extends Component {
 			<>
 			<div class="register-form">
 				<h1>Settings</h1> <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
-				<form action="/" method="POST">
-					<input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
-                    <input type="submit" value="Update Username" onClick={this.onSubmitUsername}></input>
-					<input type="text" name="mail" placeholder="E-Mail" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeMail} required ></input>
+				<form action="/settings" method="POST">
+					<input type="text" name="username" placeholder="Username (6 characters minimum)"  minlength="8" onChange={this.onChangeUsername} required></input>
+          <input type="submit" value="Update Username" onClick={this.onSubmitUsername}></input>
+					<input type="text" name="mail" placeholder="E-Mail" minLength="6" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeMail} required ></input>
 					<input type="submit" value="Update E-Mail" onClick={this.onSubmitMail}></input>
 				</form>
 			</div>

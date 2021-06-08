@@ -11,7 +11,8 @@ export default class ForgotPassword extends Component {
     this.goBack = this.goBack.bind(this)
 
     this.state = {
-      email: ""
+      email: "",
+      message: ""
     };
   }
 
@@ -32,20 +33,26 @@ export default class ForgotPassword extends Component {
   onSubmit(e) {
     e.preventDefault();
 
+    try {
+      const email = {
+        email: this.state.email,
+      };
+  
+      axios
+        .post("http://localhost:80/forgotPassword", {email})
+        .then((res) => {
+          if (res.data === true){
+            this.props.history.push('/sendEmail')
+          }else{
+            this.props.history.push('/failed')
+          }
+        });
+    } catch (error) {
+      console.log(error)
+      this.setState({ message: "Error while sending email"})
+    }
     // When post request is sent to the create url, axios will add a new record(user) to the database.
-    const email = {
-      email: this.state.email,
-    };
 
-    axios
-      .post("http://localhost:80/forgotPassword", {email})
-      .then((res) => {
-        if (res.data === true){
-          this.props.history.push('/sendEmail')
-        }else{
-          this.props.history.push('/failed')
-        }
-      });
 
 
   }
@@ -60,6 +67,7 @@ export default class ForgotPassword extends Component {
                 <input type="text" name="email" placeholder="Email" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"  onChange={this.onChangeEmail} required></input>
 				<input type="submit" value="Submit" onClick={this.onSubmit}></input>
 			</form>
+      <h1>{this.state.message}</h1>
 		</div>
     </>
     );

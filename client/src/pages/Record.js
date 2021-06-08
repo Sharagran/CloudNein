@@ -22,7 +22,8 @@ export default class Record extends Component {
               m: 0,
               s: 0
             }
-          }
+          },
+        message: " "
     }
 
     handleAudioStop(data){
@@ -31,17 +32,23 @@ export default class Record extends Component {
     }
 
     handleAudioUpload(file) {
-        console.log(file); 
-        var today = new Date();
-        var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-        var time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
-        var dateTime = date + "@" + time;
-        
-        const formData = new FormData();
-        formData.append("files", file, dateTime +".webm")
-        // Request made to the backend api
-        // Send formData object
-        axios.post("http://localhost:80/upload", formData);
+
+        try {
+          console.log(file); 
+          var today = new Date();
+          var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+          var time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
+          var dateTime = date + "@" + time;
+          const formData = new FormData();
+          formData.append("files", file, dateTime +".webm")
+          // Request made to the backend api
+          // Send formData object
+          axios.post("http://localhost:80/upload", formData);
+        } catch (error) {
+          console.log(error);
+          this.setState({message: "Error while uploading audio"})
+        }
+
     }
 
     handleReset() {
@@ -87,6 +94,7 @@ export default class Record extends Component {
                     handleReset={() => this.handleReset()}
                     mimeTypeToUseWhenRecording={`audio/webm`}
                 />
+                <h1>{this.state.message}</h1>
             </div>
 
             </>

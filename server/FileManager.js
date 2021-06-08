@@ -108,10 +108,10 @@ function moveFile(fileID, path) {
 }
 
 // react route https://ncoughlin.com/posts/react-router-variable-route-parameters/
-function share(itemID, expires, usages, callback) {
+async function share(itemID, expires, usages, callback) {
     //TODO: delete file/folder after X downloads
     //TODO: link usages
-    var file = getFile(itemID);
+    var file = await getFile(itemID);
     console.log(file);
 
 
@@ -187,6 +187,11 @@ function createUploadSettings() {
             console.log("Settings are already available");
         }
     })
+}
+
+async function getSharedFiles(shareID){
+    var error, result = await db.readDataPromise('shared', {shareID: shareID})
+    return result
 }
 
 async function getDataLimit() {
@@ -267,14 +272,14 @@ function checkSharelinkExpirations(shareID) {
     });
 }
 
-function sendLink(receiver, shareID, fileID, fileName, callback) {
+function sendLink(receiver, shareID, fileName, callback) {
 
     const transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'cloudneinofficial@gmail.com', pass: 'CloudNein' }, });
     var mailOptions = { 
         from: 'cloudneinofficial@gmail.com', 
         to: receiver,
         subject: 'CloudNein Files',
-        text: "Link to files: " + "https://localhost:3000/sharefile?shareID="+ shareID +"&fileName=" + fileName +"&fileID=" + fileID
+        text: "Link to files: " + "https://localhost:3000/sharefile?shareID="+ shareID +"&fileName=" + fileName
     };
     
     transporter.sendMail(mailOptions, function (error, info) {
@@ -316,5 +321,6 @@ module.exports = {
     checkFileExpirations: checkFileExpirations,
     checkSharelinkExpirations: checkSharelinkExpirations,
     getExpirationDate: getExpirationDate,
-    setExpirationDate: setExpirationDate
+    setExpirationDate: setExpirationDate,
+    getSharedFiles: getSharedFiles
 }

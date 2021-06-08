@@ -66,6 +66,9 @@ function generatePassword() {
 
 async function changeUsername(userID, newUsername, previousUsername ){
   var previousUsername = previousUsername
+  if(previousUsername < 6){
+    return
+  }
   var error, usernameCheck = await db.readDataPromise('user', {username: newUsername})
   console.log(usernameCheck);
   if(usernameCheck.length == 0){
@@ -83,6 +86,9 @@ async function changeUsername(userID, newUsername, previousUsername ){
 
 async function changeMail(userID, newMail, previousMail){
   var previousMail = previousMail
+  if(previousMail < 6){
+    return
+  }
   var error, mailCheck = await db.readDataPromise('user', {username: newMail})
   console.log(mailCheck);
   if(mailCheck.length == 0){
@@ -119,25 +125,33 @@ async function login(username, password) {
 
 async function register(email, username, password) {
   //prüfen, ob Name und Email vorhanden sind, wen nicht dann hashen und speichern
-    var error, resultUsername =  db.readDataPromise("user", { username: username});
-    if(resultUsername.length > 0){
-      console.log("Username already taken");
-      return false
-    }else {
-      var error, resultEmail = await readDataPromise("user", {email: email });
-      if(resultEmail.length > 0){
-        console.log("Mail already taken");
-        return false
-      }else{
-        hash_password(password, (error, hash) => {
-          if (error) throw error;
-          const id = uuidv4();
-          db.createDataPromise('user',[{id: id, username: username, password: hash, email: email }])
-          fm.createFolder(username);
-      })
-      return true
-    }
+  console.log(email);
+  if(email === "" || username === "", password === ""){
+    return false
   }
+    try {
+      var error, resultUsername =  db.readDataPromise("user", { username: username});
+      if(resultUsername.length > 0){
+        console.log("Username already taken");
+        return false
+      }else {
+        var error, resultEmail = await readDataPromise("user", {email: email });
+        if(resultEmail.length > 0){
+          console.log("Mail already taken");
+          return false
+        }else{
+          hash_password(password, (error, hash) => {
+            if (error) throw error;
+            const id = uuidv4();
+            db.createDataPromise('user',[{id: id, username: username, password: hash, email: email }])
+            fm.createFolder(username);
+        })
+        return true
+      }
+    }
+    } catch (error) {
+      console.log(error);
+    }
 }
 
 function forgotPassword(email) {
