@@ -4,7 +4,7 @@ const uuidv4 = require('uuid').v4;
 const util = require('util');
 const path = require('path');
 var cron = require('node-cron');
-import { zip } from 'zip-a-folder';
+var { zip } = require('zip-a-folder');
 
 const readdir = util.promisify(fs.readdir);
 
@@ -108,13 +108,15 @@ function share(itemID, expires, usages, callback) {
     var file = getFile(itemID);
 
     const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
-    expires = expires || new Date('2038');
+    var date = new Date();
+    date.setDate(date.getDate() + expires )
+    //expires = expires || new Date('2038');
     expires = expires.toISOString();
     usages = usages || -1;
 
     db.createData("shared", {
         shareID: shareID,
-        sharedItem: file.path,
+        sharedItem: file[0].path,
         usages: usages,
         expires: expires
     }, function () {
@@ -123,7 +125,7 @@ function share(itemID, expires, usages, callback) {
 
 }
 
-function downloadFile(id, res) {
+async function downloadFile(id, res) {
     //TODO: check usages
 
     var file = await fm.getFile(req.params.id); 
@@ -244,6 +246,28 @@ function checkSharelinkExpirations(shareID) {
     });
 }
 
+function sendLink(receiver, shareID, fileID, fileName, callback) {
+
+    const transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'cloudneinofficial@gmail.com', pass: 'CloudNein' }, });
+    var mailOptions = { 
+        from: 'cloudneinofficial@gmail.com', 
+        to: receiver,
+        subject: 'CloudNein Files',
+        text: "Link to files: " + "https://localhost:3000/sharefile?shareID="+ shareID +"&fileName=" + fileName +"&fileID=" + fileID
+    };
+    
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.error(error);
+        throw error;
+      } else {
+        console.log('Email sent: ' + info.response);
+        callback(error, info);
+      };
+    });
+  };
+
+
 //#endregion
 
 async function compressFolder(path) {
@@ -267,7 +291,7 @@ module.exports = {
     createUploadSettings: createUploadSettings,
     getSettings: getSettings,
     setSettings: setSettings,
-
+    sendLink: sendLink,
     checkFileExpirations: checkFileExpirations,
     checkSharelinkExpirations: checkSharelinkExpirations
 }

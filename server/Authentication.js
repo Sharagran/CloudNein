@@ -40,7 +40,12 @@ function compare_hash(password, hashFromDB, callback) {
 function sendNewPassword(receiver, newPassword, callback) {
 
   const transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'cloudneinofficial@gmail.com', pass: 'CloudNein' }, });
-  var mailOptions = { from: 'cloudneinofficial@gmail.com', to: receiver, subject: 'Your CloudNein Password', text: "Your new password: " + newPassword };
+  var mailOptions = { 
+    from: 'cloudneinofficial@gmail.com', 
+    to: receiver, 
+    subject: 'Your CloudNein Password', 
+    text: "Your new password: " + newPassword 
+  };
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {

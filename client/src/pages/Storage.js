@@ -173,7 +173,8 @@ export default class Storage extends Component {
         const shareInformation = {
           email: this.state.email,
           days: this.state.days,
-          fileID: data[i].id
+          fileID: data[i].id,
+          fileName: fileName[i]
         }
 
         axios.post("http://localhost:80/share", {shareInformation} ).then((res) => {
