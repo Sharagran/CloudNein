@@ -133,16 +133,6 @@ async function register(email, username, password) {
           if (error) throw error;
           const id = uuidv4();
           db.createDataPromise('user',[{id: id, username: username, password: hash, email: email }])
-          // fs.mkdirSync("../UserFiles/"+ username, function(err) {
-          //   if (err) {
-          //     console.log(err)
-          //   } else {
-          //     console.log("New directory successfully created.")
-          //     return true; //TODO: Gibt true nicht zurück
-          //   }
-          // })
-
-          //TODO: test me
           fm.createFolder(username);
       })
       return true

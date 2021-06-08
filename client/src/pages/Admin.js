@@ -9,14 +9,17 @@ export default class Admin extends Component {
         super(props);
         this.goBack = this.goBack.bind(this)
         this.onChangeDataSize = this.onChangeDataSize.bind(this)
-        this.onSubmit = this.onSubmit.bind(this)
-        this.componentWillMount = this.componentWillMount.bind(this);
+        this.onSubmitDataSize = this.onSubmitDataSize.bind(this)
+        this.componentWillMount = this.componentWillMount.bind(this)
+        this.onSubmitDays = this.onSubmitDays.bind(this)
+        this.onChangeDays = this.onChangeDays.bind(this)
 
 
         this.state = {
           dataSize: "",
           dataSizeNew:"",
-          days: ""
+          days: "",
+          daysNew: ""
         };
       }
 
@@ -26,7 +29,13 @@ export default class Admin extends Component {
       });
     }
 
-    onSubmit(e) {
+    onChangeDays(e) {
+      this.setState({
+        daysNew: e.target.value,
+      });
+    }
+
+    onSubmitDataSize(e) {
         e.preventDefault();
         const settings = {
           dataSizeNew: this.state.dataSizeNew
@@ -39,13 +48,26 @@ export default class Admin extends Component {
         this.setState({dataSize: settings.dataSizeNew/1000000})
       }
 
+      onSubmitDays(e){
+        const settings = {
+          daysNew: this.state.daysNew
+        };
+        console.log(settings)
+        axios.post("http://localhost:80/setExpirationDate", {settings}).then((res) => {
+          console.log(res)
+          
+        });
+        this.setState({days: settings.daysNew})
+      }
+
     goBack(e){
         e.preventDefault();
-        this.props.history.push("/home");
+        document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
         GlobalVal.username = null;
         GlobalVal.password = null;
         GlobalVal.loginState = null;
         GlobalVal.id= null;
+        this.props.history.push('/')
 
     }
 
@@ -53,6 +75,12 @@ export default class Admin extends Component {
         axios.post("http://localhost:80/getDataLimit").then((res) => {
          this.setState({dataSize: res.data})
         });
+
+        axios.post("http://localhost:80/getExpirationDate").then((res) => {
+          console.log(res.data)
+          this.setState({days: res.data})
+         });
+
     }
 
   // This following section will display the form that takes the input from the user.
@@ -82,10 +110,10 @@ export default class Admin extends Component {
                 <tr>
                     <td>{this.state.dataSize}</td>
                     <td><input onChange={this.onChangeDataSize}></input></td>
-                    <td><button onClick={this.onSubmit}>Bestätigen</button></td>
+                    <td><button onClick={this.onSubmitDataSize}>Bestätigen</button></td>
                     <td>{this.state.days}</td>
-                    <td><input></input></td>
-                    <td><button onClick={this.onSubmit}>Bestätigen</button></td>
+                    <td><input onChange={this.onChangeDays}></input></td>
+                    <td><button onClick={this.onSubmitDays}>Bestätigen</button></td>
                 </tr>
             </table>
 

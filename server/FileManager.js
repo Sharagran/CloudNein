@@ -24,7 +24,8 @@ cron.schedule('0 * * * *', () => {
 
 
 // tags = keywords
-function uploadFiles(req, userID, username, expires, tags = []) {
+async function uploadFiles(req, userID, username, expires, tags = []) {
+    var expirationDate = await db.readDataPromise('settings', { User: "Admin"})
     for (const key in req.files) {
         const file = req.files[key];
 
@@ -35,9 +36,12 @@ function uploadFiles(req, userID, username, expires, tags = []) {
                 throw error;
             console.log(file.destination); //FIXME: debug only
             //TODO: save file metadata in db
+
             const id = uuidv4();
-            expires = expires || new Date('2038');
-            expires = expires.toISOString();
+            var date = new Date();
+            date.setDate(date.getDate() +  parseInt(expirationDate[0].days))
+            //expires = expires || new Date('2038');
+            expires = date.toISOString();
             console.log(expires);
 
             db.createData("file", {
@@ -177,22 +181,35 @@ function createUploadSettings() {
     db.readData('settings', { User: "Admin" }, (error, result) => {
         if (error) throw error;
         if (result.length == 0) {
-            db.createData('settings', { User: "Admin", limit: 100000000 })
+            db.createData('settings', { User: "Admin", limit: 100000000, days: 7 })
+
         } else {
             console.log("Settings are already available");
         }
     })
 }
 
-async function getSettings() {
+async function getDataLimit() {
     var error, result = await db.readDataPromise('settings', { User: "Admin" });
     return result[0].limit / 1000000
-    console.log("Send settings");
+    console.log("Send DataLimit");
 }
 
-async function setSettings(limit) {
+async function getExpirationDate() {
+    var error, result = await db.readDataPromise('settings', { User: "Admin" });
+    return result[0].days 
+    console.log("Send Expiration Date");
+}
+
+
+async function setDataLimit(limit) {
     var error, result = await db.updateDataPromise('settings', { User: "Admin" }, { $set: { limit: limit } });
-    console.log("Settings updated");
+    console.log("DataLimit updated");
+}
+
+async function setExpirationDate(days) {
+    var error, result = await db.updateDataPromise('settings', { User: "Admin" }, { $set: { days: days } });
+    console.log("Expiratio nDate updated");
 }
 
 async function checkUploadLimit(userID) {
@@ -293,9 +310,11 @@ module.exports = {
     share: share,
     checkUploadLimit: checkUploadLimit,
     createUploadSettings: createUploadSettings,
-    getSettings: getSettings,
-    setSettings: setSettings,
+    getDataLimit: getDataLimit,
+    setDataLimit: setDataLimit,
     sendLink: sendLink,
     checkFileExpirations: checkFileExpirations,
-    checkSharelinkExpirations: checkSharelinkExpirations
+    checkSharelinkExpirations: checkSharelinkExpirations,
+    getExpirationDate: getExpirationDate,
+    setExpirationDate: setExpirationDate
 }

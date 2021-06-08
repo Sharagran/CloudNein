@@ -36,12 +36,21 @@ router.post('/forgotPassword', (req, res) => {
 });
 
 router.post('/getDataLimit', async (req, res) => {
-    var settings = await fm.getSettings();
-    res.json(settings);
+    var dataLimit = await fm.getDataLimit();
+    res.json(dataLimit);
 });
 
+router.post('/getExpirationDate', async (req, res) => {
+    var expirationDate = await fm.getExpirationDate();
+    res.json(expirationDate);
+})
+
 router.post('/setDataLimit', async (req, res) => {
-    await fm.setSettings(req.body.settings.dataSizeNew);
+    await fm.setDataLimit(req.body.settings.dataSizeNew);
+});
+
+router.post('/setExpirationDate', async (req, res) => {
+    await fm.setExpirationDate(req.body.settings.daysNew);
 });
 
 router.post('/settings', async (req, res) => {
