@@ -18,14 +18,13 @@ cron.schedule('0 * * * *', () => {
         console.error("Error during Scheduled task");
         console.error(error);
     }
-
 });
 
 
 
 // tags = keywords
 async function uploadFiles(req, userID, username, expires, tags = []) {
-    var expirationDate = await db.readDataPromise('settings', { User: "Admin"})
+    var expirationDate = await db.readDataPromise('settings', { User: "Admin" })
     for (const key in req.files) {
         const file = req.files[key];
 
@@ -35,11 +34,10 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
             if (error)
                 throw error;
             console.log(file.destination); //FIXME: debug only
-            //TODO: save file metadata in db
 
             const id = uuidv4();
             var date = new Date();
-            date.setDate(date.getDate() +  parseInt(expirationDate[0].days))
+            date.setDate(date.getDate() + parseInt(expirationDate[0].days))
             //expires = expires || new Date('2038');
             expires = date.toISOString();
             console.log(expires);
@@ -51,6 +49,8 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
                 tags: tags,
                 fileSize: file.size,    //FIXME: might be wrong format
                 expires: expires,
+                downloads: 0
+                //maxDownloads: null
                 // comment: "comment"
             });
 
@@ -107,6 +107,12 @@ function moveFile(fileID, path) {
     });
 }
 
+function deleteFile(fileID) {
+    db.deleteData('file', { id: fileID }, function () {
+        console.log(`${file.path} deleted`);
+    });
+}
+
 // react route https://ncoughlin.com/posts/react-router-variable-route-parameters/
 async function share(itemID, expires, usages, callback) {
     //TODO: delete file/folder after X downloads
@@ -117,7 +123,7 @@ async function share(itemID, expires, usages, callback) {
 
     const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
     var date = new Date();
-    date.setDate(date.getDate() + expires )
+    date.setDate(date.getDate() + expires)
     //expires = expires || new Date('2038');
     expires = date.toISOString();
     usages = usages || -1;
@@ -135,11 +141,31 @@ async function share(itemID, expires, usages, callback) {
 
 async function downloadFile(id, res) {
     //TODO: check usages
+    var file = await getFile(id);
+    if (file.downloads >= file.maxDownloads) {
+        return;
+    }
 
-    var file = await getFile(id); 
+    if (isExpired(file)) {
+        deleteFile(file.id);
+        return;
+    }
+
     res.download(file.path);
 
-    //TODO: countdown usages in db
+    //countdown usages in db
+    //check for deletion
+}
+
+async function downloadSharedFile(shareID, res) {
+    //TODO: check usages
+    checkSharelinkExpirations(shareID);
+
+    var file = await getFile(id);
+    res.download(file.path);
+
+    //countdown usages in db
+    //check for deletion
 }
 
 async function addTag(fileID, tag) {
@@ -189,8 +215,8 @@ function createUploadSettings() {
     })
 }
 
-async function getSharedFiles(shareID){
-    var error, result = await db.readDataPromise('shared', {shareID: shareID})
+async function getSharedFiles(shareID) {
+    var error, result = await db.readDataPromise('shared', { shareID: shareID })
     return result
 }
 
@@ -202,7 +228,7 @@ async function getDataLimit() {
 
 async function getExpirationDate() {
     var error, result = await db.readDataPromise('settings', { User: "Admin" });
-    return result[0].days 
+    return result[0].days
     console.log("Send Expiration Date");
 }
 
@@ -238,6 +264,8 @@ async function checkUploadLimit(userID) {
 }
 
 //#region TODO: call those functions before each item access
+
+//TODO: return result
 function checkFileExpirations(fileID) {
     var query = fileID ? { id: fileID } : {};
 
@@ -247,14 +275,23 @@ function checkFileExpirations(fileID) {
 
             // expired
             if (Date.now >= fileExpiration) {
-                db.deleteData('file', { _id: file._id }, function () {
-                    console.log(`${file.path} deleted`);
-                });
+                deleteFile(file.id);
             }
         });
     });
 }
 
+function isExpired(file) {
+    var fileExpiration = Date.parse(file.expires);
+
+    if (Date.now >= fileExpiration) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+//TODO: return result
 function checkSharelinkExpirations(shareID) {
     var query = shareID ? { shareID: shareID } : {};
 
@@ -272,26 +309,41 @@ function checkSharelinkExpirations(shareID) {
     });
 }
 
+function getSharelinkUsages(shareID) {
+    db.readData('shared', query, function (error, result) {
+        result.forEach(shareEntry => {
+            var shareExpiration = Date.parse(shareEntry.expires);
+
+            // expired
+            if (Date.now >= shareExpiration) {
+                db.deleteData('shared', { _id: shareEntry._id }, function () {
+                    console.log(`share link "${shareEntry.shareID}" deleted`);
+                });
+            }
+        });
+    });
+}
+
 function sendLink(receiver, shareID, fileName, callback) {
 
     const transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'cloudneinofficial@gmail.com', pass: 'CloudNein' }, });
-    var mailOptions = { 
-        from: 'cloudneinofficial@gmail.com', 
+    var mailOptions = {
+        from: 'cloudneinofficial@gmail.com',
         to: receiver,
         subject: 'CloudNein Files',
-        text: "Link to files: " + "https://localhost:3000/sharefile?shareID="+ shareID +"&fileName=" + fileName
+        text: "Link to files: " + "https://localhost:3000/sharefile?shareID=" + shareID + "&fileName=" + fileName
     };
-    
+
     transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.error(error);
-        throw error;
-      } else {
-        console.log('Email sent: ' + info.response);
-        callback(error, info);
-      };
+        if (error) {
+            console.error(error);
+            throw error;
+        } else {
+            console.log('Email sent: ' + info.response);
+            callback(error, info);
+        };
     });
-  };
+};
 
 
 //#endregion
@@ -323,4 +375,48 @@ module.exports = {
     getExpirationDate: getExpirationDate,
     setExpirationDate: setExpirationDate,
     getSharedFiles: getSharedFiles
+}
+
+
+
+//Abstract class
+class dbEntry {
+    constructor(obj) {
+        if (new.target === dbEntry) {
+            throw new TypeError("Cannot construct Abstract instances directly");
+        }
+    
+        if (obj) {
+            Object.assign(this, obj);
+            this.type = new.target.name;
+        } else {
+            throw new Error("No object specified");
+        }
+    }
+
+    isExpired() {
+        let expirationDate = Date.parse(this.expires);
+
+        if (Date.now >= expirationDate) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    delete() {
+
+    }
+
+}
+
+class File extends dbEntry {
+    constructor(obj) {
+        super(obj);
+    }
+
+    delete() {
+
+    }
+
 }
