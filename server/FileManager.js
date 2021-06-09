@@ -1,13 +1,12 @@
+/* eslint-disable no-unused-vars */
 const fs = require("fs");
 const db = require("./Database");
 const uuidv4 = require('uuid').v4;
-const util = require('util');
 const path = require('path');
 var cron = require('node-cron');
 const nodemailer = require("nodemailer");
 var { zip } = require('zip-a-folder');
 
-const readdir = util.promisify(fs.readdir);
 
 // every minute 0 (every hour)
 cron.schedule('0 * * * *', () => {
@@ -89,26 +88,18 @@ async function getFiles(userID) {
     return files;
 }
 
-async function commentFile(fileID, userID, comment) {
+async function commentFile(fileID, userID, text) {
     console.log(fileID, userID, comment);
-    var error, comment = await db.updateDataPromise('file', {owner: userID, id: fileID},  { $set: { comment: comment }})
+    var error, comment = await db.updateDataPromise('file', {owner: userID, id: fileID},  { $set: { comment: text }})
 }
 
 function moveFile(fileID, path) {
     throw { name: "NotImplementedError", message: "too lazy to implement" };
-
-    fs.rename(oldPath, newPath, function (error) {
-        if (error)
-            throw error;
-
-        //TODO: update file metadata in db
-
-    });
 }
 
 function deleteFile(fileID) {
     db.deleteData('file', { id: fileID }, function () {
-        console.log(`${file.path} deleted`);
+        console.log(`${fileID} deleted`);
     });
 }
 
@@ -160,7 +151,7 @@ async function downloadSharedFile(shareID, res) {
     //TODO: check usages
     checkSharelinkExpirations(shareID);
 
-    var file = await getFile(id);
+    var file;// = await getFile();
     res.download(file.path);
 
     //countdown usages in db
@@ -177,27 +168,27 @@ async function addTag(fileID, tag) {
     var tagExists = result.length > 0;
 
     if (tagExists) {
-        var error, result = await db.updateDataPromise('tag', { name: tag }, { $push: { files: fileID } });
-        if (error)
-            console.error(error);
+        var error2, result2 = await db.updateDataPromise('tag', { name: tag }, { $push: { files: fileID } });
+        if (error2)
+            console.error(error2);
 
         console.log("tag updated");
     } else {
         // If tag doesnt exist
-        var error, result = await db.createDataPromise('tag', {
+        var error3, result3 = await db.createDataPromise('tag', {
             name: tag,
             files: [fileID]
         });
-        if (error)
-            console.error(error);
+        if (error3)
+            console.error(error3);
 
         console.log("tag created");
     }
 
     // update file tags
-    var error, result = await db.updateData('file', { id: fileID }, { $push: { tags: tag } });
-    if (error)
-        console.error(error);
+    var error4, result4 = await db.updateData('file', { id: fileID }, { $push: { tags: tag } });
+    if (error4)
+        console.error(error4);
 
     console.log("file tags updated");
 }
@@ -221,14 +212,12 @@ async function getSharedFiles(shareID) {
 
 async function getDataLimit() {
     var error, result = await db.readDataPromise('settings', { User: "Admin" });
-    return result[0].limit / 1000000
-    console.log("Send DataLimit");
+    return result[0].limit / 1000000;
 }
 
 async function getExpirationDate() {
     var error, result = await db.readDataPromise('settings', { User: "Admin" });
     return result[0].days
-    console.log("Send Expiration Date");
 }
 
 
@@ -249,7 +238,7 @@ async function checkUploadLimit(userID) {
 
     console.log(limit);
 
-    var error, result = await db.readDataPromise('file', { owner: userID });
+    var error2, result = await db.readDataPromise('file', { owner: userID });
     console.log(result);
     for (var i = 0; i < result.length; i++) {
         size += result[i].fileSize
@@ -340,9 +329,9 @@ function sendLink(receiver, shareID, fileName, callback) {
         } else {
             console.log('Email sent: ' + info.response);
             callback(error, info);
-        };
+        }
     });
-};
+}
 
 
 //#endregion

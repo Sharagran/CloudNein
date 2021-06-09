@@ -13,6 +13,7 @@ import Upload from './pages/Upload';
 import Admin from './pages/Admin';
 import Storage from './pages/Storage';
 import ShareFile from './pages/ShareFile';
+import React from "react";
 
 function App() {
   return (
