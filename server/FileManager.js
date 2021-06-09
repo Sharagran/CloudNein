@@ -51,7 +51,7 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
                 tags: tags,
                 fileSize: file.size,    //FIXME: might be wrong format
                 expires: expires,
-                // comment: "comment"
+                comment: ""
             });
 
         });
@@ -89,10 +89,9 @@ async function getFiles(userID) {
     return files;
 }
 
-function commentFile(fileID, userID, comment) {
-    throw { name: "NotImplementedError", message: "too lazy to implement" };
-
-    //TODO: add new comment db entry
+async function commentFile(fileID, userID, comment) {
+    console.log(fileID, userID, comment);
+    var error, comment = await db.updateDataPromise('file', {owner: userID, id: fileID},  { $set: { comment: comment }})
 }
 
 function moveFile(fileID, path) {

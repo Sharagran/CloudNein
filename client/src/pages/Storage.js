@@ -60,7 +60,7 @@ export default class Storage extends Component {
   }
 
   componentWillMount() {
-
+    
     try {
       axios
         .post("http://localhost:80/storage")
@@ -87,7 +87,7 @@ export default class Storage extends Component {
             var th3 = document.createElement('th');
             tr.appendChild(th3);
             th3.id = "comment" + j
-            th3.innerHTML = "-" + data[j].comments
+            th3.innerHTML = "-" + data[j].comment
             var th4 = document.createElement('th');
             tr.appendChild(th4);
             var input = document.createElement('input');
@@ -119,12 +119,18 @@ export default class Storage extends Component {
           axios.post("http://localhost:80/updateFileInformation", { fileInforamtion }).then((res) => {
             console.log(res.data)
           })
-          document.getElementById("tag" + i).innerHTML = fileInforamtion.tag;
-          document.getElementById("comment" + i).innerHTML = fileInforamtion.comment;
+          if(fileInforamtion.tag.length > 0) {
+            document.getElementById("tag" + i).innerHTML = document.getElementById("tag" + i).innerHTML +"," + fileInforamtion.tag;
+          }
+          if(fileInforamtion.comment.length > 0){
+            document.getElementById("comment" + i).innerHTML = fileInforamtion.comment;
+          }
           this.setState({ message: "Updated" })
+          this.setState({tag: ""})
           break;
         } else {
           this.setState({ message: "Select a File" })
+
         }
       }
     } catch (error) {
