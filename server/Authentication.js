@@ -6,9 +6,12 @@ const fs = require("fs");
 const config = require('./config.json');
 const jwt = require('jsonwebtoken');
 const util = require('util');
+const { readDataPromise } = require('./Database');
 const fm = require('./FileManager');
 const uuidv4 = require('uuid').v4;
 
+//TODO: alle callbacks durch promises ersetzen
+const readData = util.promisify(db.readData);
 const comp_hash = util.promisify(compare_hash);
 
 //Hasht das Passwort
@@ -37,11 +40,11 @@ function compare_hash(password, hashFromDB, callback) {
 function sendNewPassword(receiver, newPassword, callback) {
 
   const transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'cloudneinofficial@gmail.com', pass: 'CloudNein' }, });
-  var mailOptions = {
-    from: 'cloudneinofficial@gmail.com',
-    to: receiver,
-    subject: 'Your CloudNein Password',
-    text: "Your new password: " + newPassword
+  var mailOptions = { 
+    from: 'cloudneinofficial@gmail.com', 
+    to: receiver, 
+    subject: 'Your CloudNein Password', 
+    text: "Your new password: " + newPassword 
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
@@ -61,18 +64,17 @@ function generatePassword() {
   return newPW
 };
 
-async function changeUsername(userID, newUsername, previousUsername) {
-  var previousUsername = previousUsername;
-  if (previousUsername < 6) {
-    return;
+async function changeUsername(userID, newUsername, previousUsername ){
+  var previousUsername = previousUsername
+  if(previousUsername < 6){
+    return
   }
-  var isTaken = await db.isUsernameTaken(newUsername);
-  console.log(isTaken);
-  if (!isTaken) {
-    //Not taken
-    db.changeUsername(userID, newUsername);
-
-    fs.rename("../UserFiles/" + previousUsername, "../UserFiles/" + newUsername, function (err) {
+  var error, usernameCheck = await db.readDataPromise('user', {username: newUsername})
+  console.log(usernameCheck);
+  if(usernameCheck.length == 0){
+    var error, result = await db.updateDataPromise('user', {id: userID}, {$set: {username: newUsername}})
+    console.log(result);
+    fs.rename("../UserFiles/"+ previousUsername, "../UserFiles/"+ newUsername, function(err) {
       if (err) {
         console.error(err)
       } else {
@@ -80,25 +82,26 @@ async function changeUsername(userID, newUsername, previousUsername) {
       }
     })
   }
-}
+} 
 
-async function changeMail(userID, newMail, previousMail) {
+async function changeMail(userID, newMail, previousMail){
   var previousMail = previousMail
-  if (previousMail < 6) {
+  if(previousMail < 6){
     return
   }
-
-  var emailTaken = await db.isEmailTaken(newMail);
-  if (!emailTaken) {
-    //email not taken
-    db.changeEmail(userID, newMail);
+  var error, mailCheck = await db.readDataPromise('user', {username: newMail})
+  console.log(mailCheck);
+  if(mailCheck.length == 0){
+    var error, result = await db.updateDataPromise('user', {id: userID}, {$set: {email: newMail}})
+    console.log(result);
   }
 }
 
 async function login(username, password) {
-  console.log("Login:");
-  var result = await db.getUserByUsername(username);
-  console.log(result);
+  var error, result = await readData("user", { username: username });
+
+  if (error)
+    throw error;
 
   if (result.length > 0) {
     var user = result[0];
@@ -123,56 +126,60 @@ async function login(username, password) {
 async function register(email, username, password) {
   //prüfen, ob Name und Email vorhanden sind, wen nicht dann hashen und speichern
   console.log(email);
-  if (email === "" || username === "", password === "") {
+  if(email === "" || username === "", password === ""){
     return false
   }
-  try {
-    var usernameTaken = await db.isUsernameTaken(username);
-    if (usernameTaken) {
-      console.log("Username already taken");
-      return false;
-    } else {
-      var emailTaken = await db.isEmailTaken(email);
-      if (emailTaken) {
-        console.log("Mail already taken");
-        return false;
-      } else {
-        hash_password(password, (error, hash) => {
-          if (error) throw error;
-          const id = uuidv4();
-          db.insertUser(id, username, hash, email);
-          fm.createFolder(username);
+    try {
+      var error, resultUsername =  db.readDataPromise("user", { username: username});
+      if(resultUsername.length > 0){
+        console.log("Username already taken");
+        return false
+      }else {
+        var error, resultEmail = await readDataPromise("user", {email: email });
+        if(resultEmail.length > 0){
+          console.log("Mail already taken");
+          return false
+        }else{
+          hash_password(password, (error, hash) => {
+            if (error) throw error;
+            const id = uuidv4();
+            db.createDataPromise('user',[{id: id, username: username, password: hash, email: email }])
+            fm.createFolder(username);
         })
-        return true;
+        return true
       }
     }
-  } catch (error) {
-    console.log(error);
-  }
+    } catch (error) {
+      console.log(error);
+    }
 }
 
-async function forgotPassword(email) {
+function forgotPassword(email) {
   console.log(email);
-  var result = await db.getUserByEmail(email);
-
-  if (result.length < 1) {
-    console.log("Email nicht gefunden");
-  } else {
-    newPassword = generatePassword();
-    hash_password(newPassword, (error, hash) => {
-      if (error) throw error;
-      db.changePassword(email, hash);
-      sendNewPassword(result[0].email, newPassword, (error, info) => {
+  db.readData('user', { email: email }, (error, result) => {
+    if (error) {
+      throw error;
+    } else if (result.length < 1) {
+      console.log("Email nicht gefunden");
+    } else {
+      newPassword = generatePassword();
+      hash_password(newPassword, (error, hash) => {
         if (error) throw error;
-        return true;
-      });
-    });
-  };
-
+        db.updateData("user", { email: email }, { $set: { password: hash } }, (error, result) => {
+          if (error) throw error;
+          console.log(result);
+        })
+        sendNewPassword(result[0].email, newPassword, (error, info) => {
+          if (error) throw error;
+          return true;
+        });
+      })
+    };
+  });
 }
 
 function sign(user) {
-  const payload = { id: user.id, username: user.username, email: user.email };
+  const payload = {id: user.id, username: user.username, email: user.email };
   const token = jwt.sign(payload, config.secret, { expiresIn: '30m' }); //FIXME: expiresIn
 
   return token;
