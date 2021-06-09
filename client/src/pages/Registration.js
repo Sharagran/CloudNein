@@ -76,11 +76,11 @@ export default class Registration extends Component {
 			<>
 			<div class="register-form"> 
 				<h1>Registration</h1> <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
-				<form action="/Registration" method="POST">
+				<form action="/Registration" method="POST" onSubmit={this.onSubmit}>
 					<input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
 					<input type="text" name="mail" placeholder="E-Mail" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeMail} required ></input>
 					<input id="password"type="password" name="password" placeholder="Password (6 characters minimum)" minLength="6" onChange={this.onChangePassword} required ></input>
-					<input type="submit" value="Create Account" onClick={this.onSubmit}></input>
+					<input type="submit" value="Create Account"></input>
 				</form>
         <h1>{this.state.message}</h1>
 			</div>

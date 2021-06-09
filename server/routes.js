@@ -56,15 +56,25 @@ router.post('/setExpirationDate', async (req, res) => {
 router.post('/settings', async (req, res) => {
     var username = req.body.user.username
     var mail = req.body.user.mail
+    var previousUsername = req.body.user.previousUsername
 
-    if(username === undefined){
-        await auth.changeMail(req.user.id, req.body.user.mail, req.body.user.previousMail)
-    }else if (mail === undefined){
-        await auth.changeUsername(req.user.id, req.body.user.username, req.body.user.previousUsername)
+    if(username){
+        await auth.changeUsername(req.user.id, username, previousUsername)
+    }else if (mail){
+        await auth.changeMail(req.user.id, mail)
     }
 })
 
-router.post('/upload', upload.array("files"), function (req, res) {
+router.post('/uploadCheck', async function (req, res) {
+    var spaceCheck = await fm.spaceCheck(req, req.user.id)
+    if(spaceCheck){
+        res.send(spaceCheck)
+    }else{
+        res.send(false)
+    }
+});
+
+router.post('/upload', upload.array("files"), async function (req, res) {
     var responseJSON = fm.uploadFiles(req, req.user.id, req.user.username);
     res.end(JSON.stringify(responseJSON));
 });
@@ -75,7 +85,7 @@ router.post("/share", async function (req, res) {
     var email = req.body.shareInformation.email
     var fileName = req.body.shareInformation.fileName
 
-    fm.share(fileID, days, 10,  function (error, shareID) {
+    fm.share(fileID, days, email.length,  function (error, shareID) {
         if(error) {
             console.error(error.message);
             res.send(500);

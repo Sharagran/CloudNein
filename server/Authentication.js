@@ -64,11 +64,7 @@ function generatePassword() {
   return newPW
 };
 
-async function changeUsername(userID, newUsername, previousUsername ){
-  var previousUsername = previousUsername
-  if(previousUsername < 6){
-    return
-  }
+async function changeUsername(userID, newUsername, previousUsername){
   var error, usernameCheck = await db.readDataPromise('user', {username: newUsername})
   console.log(usernameCheck);
   if(usernameCheck.length == 0){
@@ -84,12 +80,8 @@ async function changeUsername(userID, newUsername, previousUsername ){
   }
 } 
 
-async function changeMail(userID, newMail, previousMail){
-  var previousMail = previousMail
-  if(previousMail < 6){
-    return
-  }
-  var error, mailCheck = await db.readDataPromise('user', {username: newMail})
+async function changeMail(userID, newMail){
+  var error, mailCheck = await db.readDataPromise('user', {email: newMail})
   console.log(mailCheck);
   if(mailCheck.length == 0){
     var error, result = await db.updateDataPromise('user', {id: userID}, {$set: {email: newMail}})
@@ -125,12 +117,8 @@ async function login(username, password) {
 
 async function register(email, username, password) {
   //prüfen, ob Name und Email vorhanden sind, wen nicht dann hashen und speichern
-  console.log(email);
-  if(email === "" || username === "", password === ""){
-    return false
-  }
     try {
-      var error, resultUsername =  db.readDataPromise("user", { username: username});
+      var error, resultUsername = await db.readDataPromise("user", { username: username});
       if(resultUsername.length > 0){
         console.log("Username already taken");
         return false
@@ -154,29 +142,23 @@ async function register(email, username, password) {
     }
 }
 
-function forgotPassword(email) {
-  console.log(email);
-  db.readData('user', { email: email }, (error, result) => {
-    if (error) {
-      throw error;
-    } else if (result.length < 1) {
+async function forgotPassword(email) {
+
+  var email = await db.readDataPromise('user', { email: email })
+    if (email.length < 1) {
       console.log("Email nicht gefunden");
     } else {
       newPassword = generatePassword();
-      hash_password(newPassword, (error, hash) => {
+      hash_password(newPassword, async (error, hash) => {
         if (error) throw error;
-        db.updateData("user", { email: email }, { $set: { password: hash } }, (error, result) => {
-          if (error) throw error;
-          console.log(result);
-        })
+        await db.updateDataPromise("user", { email: email }, { $set: { password: hash } })
         sendNewPassword(result[0].email, newPassword, (error, info) => {
           if (error) throw error;
           return true;
         });
       })
     };
-  });
-}
+  }
 
 function sign(user) {
   const payload = {id: user.id, username: user.username, email: user.email };

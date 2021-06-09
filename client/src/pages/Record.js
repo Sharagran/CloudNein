@@ -4,7 +4,7 @@ import './css/recorder.css'
 import axios from 'axios';
 import { getToken } from "../Authenticator";
 
-
+var spaceCheck;
 export default class Record extends Component {
 
     constructor(props) {
@@ -43,7 +43,17 @@ export default class Record extends Component {
           formData.append("files", file, dateTime +".webm")
           // Request made to the backend api
           // Send formData object
-          axios.post("http://localhost:80/upload", formData);
+
+          axios.post("http://localhost:80/uploadCheck").then((res => {
+            spaceCheck = res.data
+            console.log(spaceCheck)
+            if(spaceCheck){
+                axios.post("http://localhost:80/upload", formData )
+                this.setState({message: "Uploaded audio"})
+              }else{
+                this.setState({message: "Not enough space"})
+              }
+            }));
         } catch (error) {
           console.log(error);
           this.setState({message: "Error while uploading audio"})

@@ -156,8 +156,8 @@ export default class Storage extends Component {
         url: 'http://localhost:80/download/' + fileID,
         method: 'GET',
         responseType: 'blob',
-      }).then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+      }).then((res) => {
+        const url = window.URL.createObjectURL(new Blob([res.data]));
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', file);
@@ -190,7 +190,7 @@ export default class Storage extends Component {
             console.log(res.data)
           })
           
-          this.setState({ message: ""})
+          this.setState({ message: "Links send"})
           break;
         } else if (i === data.length - 1 && !document.getElementById(data.length - 1).checked) {
           this.setState({ message: "Select a File" })
@@ -223,16 +223,20 @@ export default class Storage extends Component {
           <input id="download_btn" type="submit" value="Download" onClick={this.onSubmit}></input>
           <Popup trigger={<button> Update Tag or Comment</button>} position="bottom center">
             <div>
-              <input type="text" name="tags" placeholder="Tag" onChange={this.onChangeTag}></input>
-              <input type="text" name="comments" placeholder="Comment" onChange={this.onChangeComment}></input>
-              <input type="submit" value="Update" onClick={this.onUpdate}></input>
+              <form onSubmit={this.onUpdate}>
+                <input type="text" name="tags" placeholder="Tag" onChange={this.onChangeTag}></input>
+                <input type="text" name="comments" placeholder="Comment" onChange={this.onChangeComment}></input>
+                <input type="submit" value="Update"></input>
+              </form>
             </div>
           </Popup><br></br>
           <Popup trigger={<button> Share Files</button>} position="bottom center">
             <div>
-              <input type="text" name="mail" placeholder="Email * More than one email, Please seperate with comma (,)" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangEmail} required></input>
-              <input type="number" name="comments" placeholder="Days untill expires" min="1" max="7" onChange={this.onChangeDays} required></input>
-              <input type="submit" value="Share" onClick={this.onShare}></input>
+              <form onSubmit={this.onShare}>
+                <input type="text" name="mail" placeholder="Email * More than one email, Please seperate with comma (,)" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$+,[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangEmail} required></input>
+                <input type="number" name="comments" placeholder="Days untill expires" min="1" max="7" onChange={this.onChangeDays} required></input>
+                <input type="submit" value="Share"></input>
+              </form>
             </div>
           </Popup>
           <h1>{this.state.message}</h1>

@@ -20,48 +20,65 @@ cron.schedule('0 * * * *', () => {
     }
 });
 
+async function spaceCheck(req, userID){
+    var folderSize = await checkUploadLimit(userID)
+    var dataLimit = await getDataLimit() * 1000000
 
+    var fileSize = 0
+    for (const key in req.files) {
+        const file = req.files[key];
+        fileSize += file.size
+    }
+
+    if(folderSize + fileSize <= dataLimit){
+        console.log("enough space")
+        return true;
+     }else {
+        console.log(("not enough space"));
+        return false;
+    }
+}
 
 // tags = keywords
 async function uploadFiles(req, userID, username, expires, tags = []) {
+    
     var expirationDate = await db.readDataPromise('settings', { User: "Admin" })
-    for (const key in req.files) {
-        const file = req.files[key];
-
-        // save file to disk
-        const savePath = file.destination + username + "/" + file.originalname;
-        fs.rename(file.path, savePath, function (error) {
-            if (error)
-                throw error;
-            console.log(file.destination); //FIXME: debug only
-
-            const id = uuidv4();
-            var date = new Date();
-            date.setDate(date.getDate() + parseInt(expirationDate[0].days))
-            //expires = expires || new Date('2038');
-            expires = date.toISOString();
-            console.log(expires);
-
-            db.createData("file", {
-                id: id,
-                path: savePath,
-                owner: userID,
-                tags: tags,
-                fileSize: file.size,    //FIXME: might be wrong format
-                expires: expires,
-                downloads: 0,
-                //maxDownloads: null
-                comment: ""
+        for (const key in req.files) {
+            const file = req.files[key];
+    
+            // save file to disk
+            const savePath = file.destination + username + "/" + file.originalname;
+            fs.rename(file.path, savePath, function (error) {
+                if (error)
+                    throw error;
+                console.log(file.destination); //FIXME: debug only
+    
+                const id = uuidv4();
+                var date = new Date();
+                date.setDate(date.getDate() + parseInt(expirationDate[0].days))
+                //expires = expires || new Date('2038');
+                expires = date.toISOString();
+                console.log(expires);
+    
+                db.createData("file", {
+                    id: id,
+                    path: savePath,
+                    owner: userID,
+                    tags: tags,
+                    fileSize: file.size,    //FIXME: might be wrong format
+                    expires: expires,
+                    downloads: 0,
+                    //maxDownloads: null
+                    comment: ""
+                });
+    
             });
+        }
+        var responseJSON = {
+            message: req.files.length + ' files uploaded successfully'
+        };
+        return responseJSON;
 
-        });
-    }
-
-
-    var responseJSON = {
-        message: req.files.length + ' files uploaded successfully'
-    };
-    return responseJSON;
 }
 //TODO: max downloads for files/folders
 
@@ -236,20 +253,14 @@ async function checkUploadLimit(userID) {
     var size = 0;
     var error, resultRead = await db.readDataPromise('settings', { User: "Admin" });
     var limit = resultRead[0].limit
-
-    console.log(limit);
+    console.log(limit)
 
     var error2, result = await db.readDataPromise('file', { owner: userID });
-    console.log(result);
     for (var i = 0; i < result.length; i++) {
         size += result[i].fileSize
     }
 
-    if (size > limit) {
-        console.log("Not enough space");
-    } {
-        console.log("Regular upload");
-    }
+    return size 
 }
 
 //#region TODO: call those functions before each item access
@@ -364,6 +375,7 @@ module.exports = {
     getExpirationDate: getExpirationDate,
     setExpirationDate: setExpirationDate,
     getSharedFiles: getSharedFiles,
-    compressFolder: compressFolder
+    compressFolder: compressFolder,
+    spaceCheck: spaceCheck
 }
 

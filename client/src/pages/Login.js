@@ -73,10 +73,10 @@ export default class Login extends Component {
         <>
             <div class="login-form">
                 <h1>Login</h1>
-                <form action="/login" method="POST" >
+                <form action="/login" method="POST" onSubmit={this.onSubmit}>
                     <input type="text" name="username" placeholder="Username" minLength="6" onChange={this.onChangeUsername} required></input>
                     <input type="password" name="password" placeholder="Password" minLength="6"  onChange={this.onChangePassword}  required></input>
-                    <button id="register-btn" type="submit" value="login" onClick={this.onSubmit}>Login</button>
+                    <button id="register-btn" type="submit" value="login">Login</button>
                 </form>
             </div>
             <div class="login-form">

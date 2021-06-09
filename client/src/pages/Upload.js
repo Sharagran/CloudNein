@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { getToken } from "../Authenticator";
 
+var spaceCheck;
+
 export default class Upload extends Component {
 
   constructor(props) {
@@ -25,25 +27,37 @@ export default class Upload extends Component {
     e.preventDefault();
     this.props.history.push("/home");
   }
+
   
   // On file upload (click the upload button)
   onFileUpload = (e) => {
     e.preventDefault();
     try {
+
           // Create an object of formData
       const formData = new FormData();
           
       for(var x = 0; x < this.state.selectedFile.length; x++){
         formData.append("files", this.state.selectedFile[x])
       }
-      axios.post("http://localhost:80/upload", formData);
-      this.setState({message: "Uploaded"})
-      document.getElementById("upload").value = "";
-      this.setState({selectedFile: null})
+      axios.post("http://localhost:80/uploadCheck").then((res => {
+        spaceCheck = res.data
+        console.log(spaceCheck)
+        if(spaceCheck){
+          axios.post("http://localhost:80/upload", formData);
+          this.setState({message: "Uploaded"})
+          document.getElementById("upload").value = "";
+          this.setState({selectedFile: null})
+        }else{
+          this.setState({message: "Not enough space"})
+          this.setState({selectedFile: null})
+        }
+      }));
     } catch (error) {
         console.log(error);
         this.setState({message: "Select a File"})
-    }};
+    }
+  };
 
   // This following section will display the form that takes the input from the user.
   render() {

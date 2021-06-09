@@ -17,8 +17,7 @@ export default class Settings extends Component {
     this.state = {
       username: "",
 	    mail: "", 
-      previousUsername: GlobalVal.username,
-      previousMail: GlobalVal.email
+      previousUsername: ""
     };
   }
 
@@ -63,7 +62,6 @@ export default class Settings extends Component {
     // When post request is sent to the create url, axios will add a new record(user) to the database.
     const user = {
       mail: this.state.mail,
-      previousMail: GlobalVal.email
     };
     
     axios
@@ -89,12 +87,14 @@ export default class Settings extends Component {
 			<div class="register-form">
 				<h1>Settings</h1> <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
         <img id="profilePicture" src={"/UserFiles/ProfilePictures/logo512.png"}></img>
-				<form action="/settings" method="POST">
-					<input type="text" name="username" placeholder="Username (6 characters minimum)"  minlength="8" onChange={this.onChangeUsername} required></input>
-          <input type="submit" value="Update Username" onClick={this.onSubmitUsername}></input>
-					<input type="text" name="mail" placeholder="E-Mail" minLength="6" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeMail} required ></input>
-					<input type="submit" value="Update E-Mail" onClick={this.onSubmitMail}></input>
-				</form>
+				<form action="/settings" method="POST" onSubmit={this.onSubmitUsername}>
+					<input type="text" name="username" placeholder="Username (6 characters minimum)"  minlength="6" onChange={this.onChangeUsername} required></input>
+          <input type="submit" value="Update Username"></input>
+        </form>
+        <form onSubmit={this.onSubmitMail}>
+          <input type="text" name="mail" placeholder="E-Mail" minLength="6" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeMail} required ></input>
+					<input type="submit" value="Update E-Mail"></input>
+        </form>
 			</div>
 			</>
     );
