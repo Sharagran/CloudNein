@@ -30,16 +30,16 @@ function createData (collectionName, data, callback = defaultCallBack) {
     }
 }
 
-function readData (collectionName, query = {}, callback = defaultCallBack, limit = 0, sort = {}) {
-    collection = db.collection(collectionName);
-    collection.find(query).limit(0).sort(sort).toArray(function (error, result) {
+function readData (collectionName, query = {}, callback = defaultCallBack, sort = {}) {
+    var collection = db.collection(collectionName);
+    collection.find(query).sort(sort).toArray(function (error, result) {
         if (error) throw error;
         callback(error, result);
     });
 }
 
 function updateData (collectionName, query = {}, values = {}, callback = defaultCallBack) {
-    collection = db.collection(collectionName);
+    var collection = db.collection(collectionName);
     collection.updateMany(query, values, (error, result) => {
         if (error) throw error;
         callback(error, result)
@@ -47,7 +47,7 @@ function updateData (collectionName, query = {}, values = {}, callback = default
 }
 
 function deleteData (collectionName, query = {}, callback = defaultCallBack) {
-    collection = db.collection(collectionName);
+    var collection = db.collection(collectionName);
     collection.deleteMany(query, (error, result) => {
         if (error) throw error;
         callback(error, result);
@@ -59,36 +59,21 @@ function defaultCallBack(result) {
 }
 
 async function createDataPromise(collectionName, data) {
-    try {
-        return await create(collectionName, data);
-    } catch (error) {
-        throw error;
-    }
-    
+    return await create(collectionName, data);
 }
 
 async function readDataPromise(collectionName, query = {}) {
-    try {
-        return await read(collectionName, query);
-    } catch (error) {
-        throw error;
-    }
+    return await read(collectionName, query);
+
 }
 
 async function updateDataPromise(collectionName, query = {}, values = {}) {
-    try {
-        return await update(collectionName, query, values);
-    } catch (error) {
-        throw error;
-    }
+    return await update(collectionName, query, values);
+
 }
 
 async function deleteDataPromise(collectionName, query = {}) {
-    try {
-        return await _delete(collectionName, query);
-    } catch (error) {
-        throw error;
-    }
+    return await _delete(collectionName, query);
 }
 
 module.exports = {
