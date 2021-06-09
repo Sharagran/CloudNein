@@ -24,7 +24,7 @@ cron.schedule('0 * * * *', () => {
 
 // tags = keywords
 async function uploadFiles(req, userID, username, expires, tags = []) {
-    var expirationDate = await db.readDataPromise('settings', { User: "Admin" })
+    var settings = await db.getSettings('Admin');
     for (const key in req.files) {
         const file = req.files[key];
 
@@ -37,23 +37,12 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
 
             const id = uuidv4();
             var date = new Date();
-            date.setDate(date.getDate() + parseInt(expirationDate[0].days))
+            date.setDate(date.getDate() + parseInt(settings[0].days))
             //expires = expires || new Date('2038');
             expires = date.toISOString();
             console.log(expires);
 
-            db.createData("file", {
-                id: id,
-                path: savePath,
-                owner: userID,
-                tags: tags,
-                fileSize: file.size,    //FIXME: might be wrong format
-                expires: expires,
-                downloads: 0
-                //maxDownloads: null
-                // comment: "comment"
-            });
-
+            db.insertFile(id, savePath, userID, tags, file.size, expires, null, "");
         });
     }
 
@@ -66,32 +55,29 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
 //TODO: max downloads for files/folders
 
 //TODO: expires for folder
-async function createFolder(Path) {
+async function createFolder(name) {
     //TODO: test if function works
-    var folderPath = path.join(__dirname, '../UserFiles', Path);
+    var folderPath = path.join(__dirname, '../UserFiles', name);
+    const folderID = uuidv4();
 
     fs.mkdirSync(folderPath);
-    await db.createDataPromise('folder', {
-        name: folderPath,
-        files: []
-    });
-
+    await db.insertFolder(folderID, name);
     return true;
 }
 
 async function getFile(id) {
-    var file = await db.readDataPromise('file', { id: id })
+    var file = await db.getFile(id);
     return file[0];
 }
 
 async function getFiles(userID) {
-    var error, files = await db.readDataPromise('file', { owner: userID })
+    var files = await db.getUserFiles(userID);
     return files;
 }
 
 async function commentFile(fileID, userID, text) {
     console.log(fileID, userID, comment);
-    var error, comment = await db.updateDataPromise('file', {owner: userID, id: fileID},  { $set: { comment: text }})
+    db.changeFileComment(fileID, text);
 }
 
 function moveFile(fileID, path) {
@@ -99,9 +85,7 @@ function moveFile(fileID, path) {
 }
 
 function deleteFile(fileID) {
-    db.deleteData('file', { id: fileID }, function () {
-        console.log(`${fileID} deleted`);
-    });
+    db.deleteFile(fileID);
 }
 
 // react route https://ncoughlin.com/posts/react-router-variable-route-parameters/
@@ -119,15 +103,8 @@ async function share(itemID, expires, usages, callback) {
     expires = date.toISOString();
     usages = usages || -1;
 
-    db.createData("shared", {
-        shareID: shareID,
-        sharedItem: file,
-        usages: usages,
-        expires: expires
-    }, function () {
-        callback(null, shareID);
-    });
-
+    await db.insertSharelink(shareID, file, usages, expires);
+    callback(null, shareID);
 }
 
 async function downloadFile(id, res) {
@@ -159,87 +136,54 @@ async function downloadSharedFile(shareID, res) {
     //check for deletion
 }
 
-async function addTag(fileID, tag) {
-    //TODO: fix callback hell & remove useless callbacks
-
-    var error, result = await db.readDataPromise('tag', { name: tag });
-    if (error)
-        console.error(error);
-
-    var tagExists = result.length > 0;
-
-    if (tagExists) {
-        var error2, result2 = await db.updateDataPromise('tag', { name: tag }, { $push: { files: fileID } });
-        if (error2)
-            console.error(error2);
-
-        console.log("tag updated");
-    } else {
-        // If tag doesnt exist
-        var error3, result3 = await db.createDataPromise('tag', {
-            name: tag,
-            files: [fileID]
-        });
-        if (error3)
-            console.error(error3);
-
-        console.log("tag created");
-    }
-
-    // update file tags
-    var error4, result4 = await db.updateData('file', { id: fileID }, { $push: { tags: tag } });
-    if (error4)
-        console.error(error4);
-
-    console.log("file tags updated");
+function addTag(fileID, tag) {
+    db.addTag(fileID, tag);
 }
 
-function createUploadSettings() {
-    db.readData('settings', { User: "Admin" }, (error, result) => {
-        if (error) throw error;
-        if (result.length == 0) {
-            db.createData('settings', { User: "Admin", limit: 100000000, days: 7 })
-
-        } else {
-            console.log("Settings are already available");
-        }
-    })
+async function createUploadSettings() {
+    var settingsExist = await db.settingsExist('Admin');
+    if(settingsExist) {
+        console.log("Settings are already available");
+    } else {
+        db.insertSettings('Admin', 100000000, 7);
+    }
 }
 
 async function getSharedFiles(shareID) {
-    var error, result = await db.readDataPromise('shared', { shareID: shareID })
-    return result
+    // var error, result = await db.readDataPromise('shared', { shareID: shareID });   //FIXME: DB
+    var result = "lol";
+    return result;
 }
 
 async function getDataLimit() {
-    var error, result = await db.readDataPromise('settings', { User: "Admin" });
+    var result = await db.getSettings('Admin');
     return result[0].limit / 1000000;
 }
 
 async function getExpirationDate() {
-    var error, result = await db.readDataPromise('settings', { User: "Admin" });
+    var result = await db.getSettings('Admin');
     return result[0].days
 }
 
 
-async function setDataLimit(limit) {
-    var error, result = await db.updateDataPromise('settings', { User: "Admin" }, { $set: { limit: limit } });
-    console.log("DataLimit updated");
+function setDataLimit(limit) {
+    console.log("updating DataLimit");
+    db.setDataLimit('Admin', limit);
 }
 
-async function setExpirationDate(days) {
-    var error, result = await db.updateDataPromise('settings', { User: "Admin" }, { $set: { days: days } });
-    console.log("Expiratio nDate updated");
+function setExpirationDate(days) {
+    console.log("updating Expiration Date");
+    db.setExpirationDate('Admin', days);
 }
 
 async function checkUploadLimit(userID) {
     var size = 0;
-    var error, resultRead = await db.readDataPromise('settings', { User: "Admin" });
-    var limit = resultRead[0].limit
+    var resultRead = await db.getSettings('Admin');
+    var limit = resultRead[0].limit;
 
     console.log(limit);
 
-    var error2, result = await db.readDataPromise('file', { owner: userID });
+    var result = await db.getUserFiles(userID);
     console.log(result);
     for (var i = 0; i < result.length; i++) {
         size += result[i].fileSize
@@ -258,16 +202,16 @@ async function checkUploadLimit(userID) {
 function checkFileExpirations(fileID) {
     var query = fileID ? { id: fileID } : {};
 
-    db.readData('file', query, function (error, result) {
-        result.forEach(file => {
-            var fileExpiration = Date.parse(file.expires);
+    // db.readData('file', query, function (error, result) { //FIXME: DB
+    //     result.forEach(file => {
+    //         var fileExpiration = Date.parse(file.expires);
 
-            // expired
-            if (Date.now >= fileExpiration) {
-                deleteFile(file.id);
-            }
-        });
-    });
+    //         // expired
+    //         if (Date.now >= fileExpiration) {
+    //             deleteFile(file.id);
+    //         }
+    //     });
+    // });
 }
 
 function isExpired(file) {
@@ -284,33 +228,32 @@ function isExpired(file) {
 function checkSharelinkExpirations(shareID) {
     var query = shareID ? { shareID: shareID } : {};
 
-    db.readData('shared', query, function (error, result) {
-        result.forEach(shareEntry => {
-            var shareExpiration = Date.parse(shareEntry.expires);
+    // db.readData('shared', query, function (error, result) { //FIXME: DB
+    //     result.forEach(shareEntry => {
+    //         var shareExpiration = Date.parse(shareEntry.expires);
 
-            // expired
-            if (Date.now >= shareExpiration) {
-                db.deleteData('shared', { _id: shareEntry._id }, function () {
-                    console.log(`share link "${shareEntry.shareID}" deleted`);
-                });
-            }
-        });
-    });
+    //         // expired
+    //         if (Date.now >= shareExpiration) {
+    //             console.log(`deleting shareLink "${shareEntry.shareID}"`);
+    //             db.deleteSharelink(shareEntry.shareID);
+    //         }
+    //     });
+    // });
+
 }
 
 function getSharelinkUsages(shareID) {
-    db.readData('shared', query, function (error, result) {
-        result.forEach(shareEntry => {
-            var shareExpiration = Date.parse(shareEntry.expires);
+    // db.readData('shared', query, function (error, result) { //FIXME: DB
+    //     result.forEach(shareEntry => {
+    //         var shareExpiration = Date.parse(shareEntry.expires);
 
-            // expired
-            if (Date.now >= shareExpiration) {
-                db.deleteData('shared', { _id: shareEntry._id }, function () {
-                    console.log(`share link "${shareEntry.shareID}" deleted`);
-                });
-            }
-        });
-    });
+    //         // expired
+    //         if (Date.now >= shareExpiration) {
+    //             console.log(`deleting shareLink "${shareEntry.shareID}"`);
+    //             db.deleteSharelink(shareEntry.shareID)
+    //         }
+    //     });
+    // });
 }
 
 function sendLink(receiver, shareID, fileName, callback) {
