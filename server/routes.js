@@ -1,10 +1,10 @@
+/* eslint-disable no-unused-vars */
+
 const path = require("path");
 const multer = require('multer');
-const db = require("./Database");
 const auth = require("./Authentication");
 const fm = require('./FileManager');
 const express = require("express");
-const fs = require("fs");
 
 
 var upload = multer({ dest: `${__dirname}/../UserFiles/` });
@@ -111,13 +111,10 @@ router.post('/updateFileInformation', (req, res) => {
   var comment = req.body.fileInforamtion.comment;
   var fileID = req.body.fileInforamtion.fileID
 
-    if(tag === "" && comment === ""){
-    }else if(comment === ""){
+    if(tag) {
         fm.addTag(fileID, tag);
-    }else if (tag === ""){
-        fm.commentFile(fileID, req.user.id, comment)
-    }else{
-        fm.addTag(fileID, tag);
+    }
+    if(comment) {
         fm.commentFile(fileID, req.user.id, comment)
     }
 })

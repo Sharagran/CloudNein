@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-
 const fs = require("fs");
 const db = require("./Database");
 const uuidv4 = require('uuid').v4;
@@ -89,21 +88,6 @@ async function getFiles(userID) {
     return files;
 }
 
-async function commentFile(fileID, userID, text) {
-    console.log(fileID, userID, comment);
-    var error, comment = await db.updateDataPromise('file', {owner: userID, id: fileID},  { $set: { comment: text }})
-}
-
-function moveFile(fileID, path) {
-    throw { name: "NotImplementedError", message: "too lazy to implement" };
-}
-
-function deleteFile(fileID) {
-    db.deleteData('file', { id: fileID }, function () {
-        console.log(`${fileID} deleted`);
-    });
-}
-
 // react route https://ncoughlin.com/posts/react-router-variable-route-parameters/
 async function share(itemID, expires, usages, callback) {
     //TODO: delete file/folder after X downloads
@@ -159,41 +143,6 @@ async function downloadSharedFile(shareID, res) {
     //check for deletion
 }
 
-async function addTag(fileID, tag) {
-    //TODO: fix callback hell & remove useless callbacks
-
-    var error, result = await db.readDataPromise('tag', { name: tag });
-    if (error)
-        console.error(error);
-
-    var tagExists = result.length > 0;
-
-    if (tagExists) {
-        var error2, result2 = await db.updateDataPromise('tag', { name: tag }, { $push: { files: fileID } });
-        if (error2)
-            console.error(error2);
-
-        console.log("tag updated");
-    } else {
-        // If tag doesnt exist
-        var error3, result3 = await db.createDataPromise('tag', {
-            name: tag,
-            files: [fileID]
-        });
-        if (error3)
-            console.error(error3);
-
-        console.log("tag created");
-    }
-
-    // update file tags
-    var error4, result4 = await db.updateData('file', { id: fileID }, { $push: { tags: tag } });
-    if (error4)
-        console.error(error4);
-
-    console.log("file tags updated");
-}
-
 function createUploadSettings() {
     db.readData('settings', { User: "Admin" }, (error, result) => {
         if (error) throw error;
@@ -220,7 +169,6 @@ async function getExpirationDate() {
     var error, result = await db.readDataPromise('settings', { User: "Admin" });
     return result[0].days
 }
-
 
 async function setDataLimit(limit) {
     var error, result = await db.updateDataPromise('settings', { User: "Admin" }, { $set: { limit: limit } });
@@ -252,7 +200,55 @@ async function checkUploadLimit(userID) {
     }
 }
 
-//#region TODO: call those functions before each item access
+function sendLink(receiver, shareID, fileName, callback) {
+
+    const transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'cloudneinofficial@gmail.com', pass: 'CloudNein' }, });
+    var mailOptions = {
+        from: 'cloudneinofficial@gmail.com',
+        to: receiver,
+        subject: 'CloudNein Files',
+        text: "Link to files: " + "https://localhost:3000/sharefile?shareID=" + shareID + "&fileName=" + fileName
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.error(error);
+            throw error;
+        } else {
+            console.log('Email sent: ' + info.response);
+            callback(error, info);
+        }
+    });
+}
+
+async function compressFolder(path) {
+    var zipPath = path + '.zip';
+    await zip(path, zipPath);
+    return zipPath;
+}
+
+module.exports = {
+    uploadFiles: uploadFiles,
+    createFolder: createFolder,
+    addTag: addTag,
+    getFile: getFile,
+    getFiles: getFiles,
+    commentFile: commentFile,
+    moveFile: moveFile,
+    downloadFile: downloadFile,
+    share: share,
+    checkUploadLimit: checkUploadLimit,
+    createUploadSettings: createUploadSettings,
+    getDataLimit: getDataLimit,
+    setDataLimit: setDataLimit,
+    sendLink: sendLink,
+    checkFileExpirations: checkFileExpirations,
+    checkSharelinkExpirations: checkSharelinkExpirations,
+    getExpirationDate: getExpirationDate,
+    setExpirationDate: setExpirationDate,
+    getSharedFiles: getSharedFiles
+}
+
 
 //TODO: return result
 function checkFileExpirations(fileID) {
@@ -268,16 +264,6 @@ function checkFileExpirations(fileID) {
             }
         });
     });
-}
-
-function isExpired(file) {
-    var fileExpiration = Date.parse(file.expires);
-
-    if (Date.now >= fileExpiration) {
-        return true;
-    } else {
-        return false;
-    }
 }
 
 //TODO: return result
@@ -313,56 +299,113 @@ function getSharelinkUsages(shareID) {
     });
 }
 
-function sendLink(receiver, shareID, fileName, callback) {
 
-    const transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'cloudneinofficial@gmail.com', pass: 'CloudNein' }, });
-    var mailOptions = {
-        from: 'cloudneinofficial@gmail.com',
-        to: receiver,
-        subject: 'CloudNein Files',
-        text: "Link to files: " + "https://localhost:3000/sharefile?shareID=" + shareID + "&fileName=" + fileName
-    };
-
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            console.error(error);
-            throw error;
-        } else {
-            console.log('Email sent: ' + info.response);
-            callback(error, info);
+//Abstract class
+class dbEntry {
+    constructor(obj) {
+        if (new.target === dbEntry) {
+            throw new TypeError("Cannot construct Abstract instances directly");
         }
-    });
+    
+        if (obj) {
+            Object.assign(this, obj);
+            this.type = new.target.name;
+        } else {
+            throw new Error("No object specified");
+        }
+    }
+
+    get expired() {
+        let expirationDate = Date.parse(this.expires);
+
+        if (Date.now >= expirationDate) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 
+class CloudItem {
+    constructor() {
 
-//#endregion
+    }
 
-async function compressFolder(path) {
-    var zipPath = path + '.zip';
-    await zip(path, zipPath);
-    return zipPath;
+    share() {
+
+    }
 }
 
+class File extends dbEntry {
+    constructor(obj) {
+        super(obj);
+    }
 
-module.exports = {
-    uploadFiles: uploadFiles,
-    createFolder: createFolder,
-    addTag: addTag,
-    getFile: getFile,
-    getFiles: getFiles,
-    commentFile: commentFile,
-    moveFile: moveFile,
-    downloadFile: downloadFile,
-    share: share,
-    checkUploadLimit: checkUploadLimit,
-    createUploadSettings: createUploadSettings,
-    getDataLimit: getDataLimit,
-    setDataLimit: setDataLimit,
-    sendLink: sendLink,
-    checkFileExpirations: checkFileExpirations,
-    checkSharelinkExpirations: checkSharelinkExpirations,
-    getExpirationDate: getExpirationDate,
-    setExpirationDate: setExpirationDate,
-    getSharedFiles: getSharedFiles
+    static parse(obj) {
+        return new File(obj);
+    }
+
+    comment(text) {
+        db.updateData('file', { id: this.id }, { $set: { comment: text }})
+    }
+
+    move(newPath) {
+        throw { name: "NotImplementedError", message: "too lazy to implement" };
+    }
+
+    delete() {
+        db.deleteData('file', { id: this.id }, function () {
+            console.log(`${this.path} deleted`);
+        });
+    }
+
+    async addTag(tag) {
+        var error, result = await db.readDataPromise('tag', { name: tag });
+        if(error) {
+            console.error(error);
+            return error;
+        }
+        var tagExists = result.length > 0;
+
+        if (tagExists) {
+            db.updateData('tag', { name: tag }, { $push: { files: this.id } }, function () {
+                console.log("tag updated");
+            });
+        } else {
+            // If tag doesnt exist
+            db.createData('tag', {
+                name: tag,
+                files: [this.id]
+            }, function () {
+                console.log("tag created");
+            });
+        }
+
+        // update file tags
+        db.updateData('file', { id: this.id }, { $push: { tags: tag } }, function () {
+            console.log("file tags updated");
+        });
+    }
+
+    download() {
+
+    }
+
 }
 
+class Folder extends CloudItem {
+
+}
+
+class shareLink extends dbEntry {
+    constructor(obj) {
+        super(obj);
+    }
+
+    delete() {
+        db.deleteData('shared', { shareID: this.shareID }, function () {
+            console.log(`${this.sharedItem} deleted`);
+        });
+    }
+
+}
