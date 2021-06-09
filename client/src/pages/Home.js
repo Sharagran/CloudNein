@@ -4,8 +4,8 @@ import GlobalVal from "./GlobalVal";
 import { getToken } from "../Authenticator";
 
 export default class Home extends Component {
-  // This is the constructor that stores the data.
 
+  // This is the constructor that stores the data.
   constructor(props) {
     super(props);
     this.goBack = this.goBack.bind(this)
@@ -26,20 +26,20 @@ export default class Home extends Component {
     if(getToken() === ""){
       return (
         <>
-                <div class="login-form">
-                  no Permission
-                </div>
+          <div class="login-form">
+            no Permission
+          </div>
         </>
         );
     }
     return (
 		<>
-            <div class="login-form">
-              <h1>Home</h1>  <button class="logoutLblPos" onClick={this.goBack}>Logout</button>
-              <Link to="/Storage"><button id="forgotPassword-btn" type="submit" >Storage</button></Link>
-              <Link to="/Upload"><button id="forgotPassword-btn" type="submit" >Upload</button></Link>
-              <Link to="/Settings"><button id="forgotPassword-btn" type="submit" >Settings</button></Link>
-            </div>
+      <div class="login-form">
+        <h1>Home</h1>  <button class="logoutLblPos" onClick={this.goBack}>Logout</button>
+          <Link to="/Storage"><button id="forgotPassword-btn" type="submit" >Storage</button></Link>
+          <Link to="/Upload"><button id="forgotPassword-btn" type="submit" >Upload</button></Link>
+          <Link to="/Settings"><button id="forgotPassword-btn" type="submit" >Settings</button></Link>
+      </div>
     </>
     );
   }

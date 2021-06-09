@@ -21,17 +21,17 @@ export default class Storage extends Component {
     this.onChangEmail = this.onChangEmail.bind(this);
     this.onChangeDays = this.onChangeDays.bind(this);
     this.onShare = this.onShare.bind(this);
-  }
 
-  state = {
-    // Initially, no file is selected
-    selectedFile: null,
-    message: "",
-    tag: "",
-    comment: "",
-    email: "",
-    days: ""
-  };
+    this.state = {
+      // Initially, no file is selected
+      selectedFile: null,
+      message: "",
+      tag: "",
+      comment: "",
+      email: "",
+      days: ""
+    };
+  }
 
   goBack(e) {
     e.preventDefault();
@@ -39,28 +39,22 @@ export default class Storage extends Component {
   }
 
   onChangeTag(e) {
-    this.setState({
-      tag: e.target.value
-    });
+    this.setState({tag: e.target.value});
   }
+
   onChangeComment(e) {
-    this.setState({
-      comment: e.target.value
-    });
+    this.setState({comment: e.target.value});
   }
+
   onChangEmail(e) {
-    this.setState({
-      email: e.target.value
-    });
+    this.setState({email: e.target.value});
   }
+
   onChangeDays(e) {
-    this.setState({
-      days: e.target.value
-    });
+    this.setState({days: e.target.value});
   }
 
   componentWillMount() {
-    
     try {
       axios
         .post("http://localhost:80/storage")
@@ -100,8 +94,8 @@ export default class Storage extends Component {
           }
         });
     } catch (error) {
-      console.log(error);
-      this.setState({ message: "Error while loading Files" })
+        console.log(error);
+        this.setState({ message: "Error while loading Files" })
     }
   }
 
@@ -115,27 +109,30 @@ export default class Storage extends Component {
             comment: this.state.comment,
             fileID: data[i].id
           }
+
           console.log(fileInforamtion)
           axios.post("http://localhost:80/updateFileInformation", { fileInforamtion }).then((res) => {
             console.log(res.data)
           })
+
           if(fileInforamtion.tag.length > 0) {
             document.getElementById("tag" + i).innerHTML = document.getElementById("tag" + i).innerHTML +"," + fileInforamtion.tag;
           }
+
           if(fileInforamtion.comment.length > 0){
             document.getElementById("comment" + i).innerHTML = fileInforamtion.comment;
           }
+
           this.setState({ message: "Updated" })
           this.setState({tag: ""})
           break;
-        } else {
+        }else {
           this.setState({ message: "Select a File" })
-
         }
       }
     } catch (error) {
-      console.log(error)
-      this.setState({ message: "Error while updating tags and comments" })
+        console.log(error)
+        this.setState({ message: "Error while updating tags and comments" })
     }
   }
 
@@ -145,7 +142,6 @@ export default class Storage extends Component {
     try {
       for (var i = 0; i < data.length; i++) {
         if (document.getElementById(i).checked) {
-          console.log(i);
           fileID = data[i].id;
           file = fileName[i];
           break;
@@ -154,58 +150,55 @@ export default class Storage extends Component {
           return
         }
       }
-  
+
       // When post request is sent to the create url, axios will add a new record(user) to the database.
-      console.log(fileID);
       axios({
         url: 'http://localhost:80/download/' + fileID,
         method: 'GET',
         responseType: 'blob',
       }).then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
-        console.log(url)
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', file);
-        console.log(link)
         document.body.appendChild(link);
         link.click();
         this.setState({ message: ""})
       });
     } catch (error) {
-      console.log(error)
-      this.setState({ message: "Error while preparing download" })
+        console.log(error)
+        this.setState({ message: "Error while preparing download" })
     }
   }
 
   onShare(e) {
     e.preventDefault();
-
     try {
       for (var i = 0; i < data.length; i++) {
         if (document.getElementById(i).checked) {
-          console.log(i);
+          var allEmails = this.state.email.split(",")
           fileID = data[i].id;
-  
+          
           const shareInformation = {
-            email: this.state.email,
+            email: allEmails,
             days: this.state.days,
             fileID: data[i].id,
             fileName: fileName[i]
           }
-  
+
           axios.post("http://localhost:80/share", { shareInformation }).then((res) => {
             console.log(res.data)
           })
+          
           this.setState({ message: ""})
           break;
-        } else if(i === data.length - 1 && !document.getElementById(data.length - 1).checked) {
+        } else if (i === data.length - 1 && !document.getElementById(data.length - 1).checked) {
           this.setState({ message: "Select a File" })
         }
       }
     } catch (error) {
-      console.log(error)
-      this.setState({ message: "Error while creating the share Link " })
+        console.log(error)
+        this.setState({ message: "Error while creating the share Link " })
     }
   }
 
@@ -216,7 +209,7 @@ export default class Storage extends Component {
         <>
           <div class="login-form">
             no Permission
-                </div>
+          </div>
         </>
       );
     }
@@ -227,7 +220,7 @@ export default class Storage extends Component {
           <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
           <table id="storageData">
           </table >
-          <input id="download_btn"type="submit" value="Download" onClick={this.onSubmit}></input>
+          <input id="download_btn" type="submit" value="Download" onClick={this.onSubmit}></input>
           <Popup trigger={<button> Update Tag or Comment</button>} position="bottom center">
             <div>
               <input type="text" name="tags" placeholder="Tag" onChange={this.onChangeTag}></input>
@@ -237,7 +230,7 @@ export default class Storage extends Component {
           </Popup><br></br>
           <Popup trigger={<button> Share Files</button>} position="bottom center">
             <div>
-              <input type="text" name="mail" placeholder="Email" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangEmail} required></input>
+              <input type="text" name="mail" placeholder="Email * More than one email, Please seperate with comma (,)" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangEmail} required></input>
               <input type="number" name="comments" placeholder="Days untill expires" min="1" max="7" onChange={this.onChangeDays} required></input>
               <input type="submit" value="Share" onClick={this.onShare}></input>
             </div>

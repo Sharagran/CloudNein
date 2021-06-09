@@ -49,9 +49,9 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
                 tags: tags,
                 fileSize: file.size,    //FIXME: might be wrong format
                 expires: expires,
-                downloads: 0
+                downloads: 0,
                 //maxDownloads: null
-                // comment: "comment"
+                comment: ""
             });
 
         });
@@ -363,6 +363,7 @@ module.exports = {
     checkSharelinkExpirations: checkSharelinkExpirations,
     getExpirationDate: getExpirationDate,
     setExpirationDate: setExpirationDate,
-    getSharedFiles: getSharedFiles
+    getSharedFiles: getSharedFiles,
+    compressFolder: compressFolder
 }
 

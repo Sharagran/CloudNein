@@ -23,20 +23,15 @@ export default class Registration extends Component {
 
   // These methods will update the state properties.
   onChangeUsername(e) {
-    this.setState({
-    	username: e.target.value,
-    });
+    this.setState({username: e.target.value});
   }
 
   onChangeMail(e) {
-	this.setState({
-		mail: e.target.value,
-	});  
+	  this.setState({mail: e.target.value});  
   }
+
   onChangePassword(e) {
-    this.setState({
-    	password: e.target.value,
-    });
+    this.setState({password: e.target.value});
   }
 
   goBack(e){
@@ -64,7 +59,7 @@ export default class Registration extends Component {
             this.props.history.push('/failed')
           }
         });
-    } catch (error) {
+    }catch (error){
       console.log(error)
       this.setState({message: "Error while registration"})
     }

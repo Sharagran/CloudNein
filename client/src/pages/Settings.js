@@ -3,9 +3,7 @@ import axios from 'axios';
 import GlobalVal from "./GlobalVal";
 import { getToken } from "../Authenticator";
 
-
 export default class Settings extends Component {
-
 
   constructor(props) {
     super(props);
@@ -24,17 +22,15 @@ export default class Settings extends Component {
     };
   }
 
+  componentWillMount(){
+  }
   // These methods will update the state properties.
   onChangeUsername(e) {
-    this.setState({
-    	username: e.target.value,
-    });
+    this.setState({username: e.target.value});
   }
 
   onChangeMail(e) {
-	this.setState({
-		mail: e.target.value,
-	});  
+	this.setState({mail: e.target.value});  
   }
 
   goBack(e){
@@ -74,7 +70,6 @@ export default class Settings extends Component {
       .post("http://localhost:80/settings", {user})
       .then((res) => console.log(res.data));
 
-
     GlobalVal.email = user.mail; 
   }
 
@@ -83,16 +78,17 @@ export default class Settings extends Component {
     if(getToken === ""){
       return (
         <>
-                <div class="login-form">
-                  no Permission
-                </div>
+          <div class="login-form">
+            no Permission
+          </div>
         </>
-        );
+      );
     }
     return (
 			<>
 			<div class="register-form">
 				<h1>Settings</h1> <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
+        <img id="profilePicture" src={"/UserFiles/ProfilePictures/logo512.png"}></img>
 				<form action="/settings" method="POST">
 					<input type="text" name="username" placeholder="Username (6 characters minimum)"  minlength="8" onChange={this.onChangeUsername} required></input>
           <input type="submit" value="Update Username" onClick={this.onSubmitUsername}></input>

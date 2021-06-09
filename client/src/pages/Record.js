@@ -10,20 +10,20 @@ export default class Record extends Component {
     constructor(props) {
         super(props)
         this.goBack = this.goBack.bind(this)
-    }
 
-    state = {
-        audioDetails: {
-            url: null,
-            blob: null,
-            chunks: null,
-            duration: {
-              h: 0,
-              m: 0,
-              s: 0
-            }
-          },
-        message: " "
+        this.state = {
+          audioDetails: {
+              url: null,
+              blob: null,
+              chunks: null,
+              duration: {
+                h: 0,
+                m: 0,
+                s: 0
+              }
+            },
+          message: " "
+      }
     }
 
     handleAudioStop(data){
@@ -74,31 +74,29 @@ export default class Record extends Component {
         if(getToken() === ""){
             return (
               <>
-                      <div class="login-form">
-                        no Permission
-                      </div>
+                <div class="login-form">
+                  no Permission
+                </div>
               </>
               );
           }
         return (
             <>
-            <div class="login-form" >
-            <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
+              <div class="login-form" >
+              <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
                 <Recorder 
-                    record={true}
-                    title={"New recording"}
-                    audioURL={this.state.audioDetails.url}
-                    showUIAudio
-                    handleAudioStop={data => this.handleAudioStop(data)}
-                    handleAudioUpload={data => this.handleAudioUpload(data)}
-                    handleReset={() => this.handleReset()}
-                    mimeTypeToUseWhenRecording={`audio/webm`}
-                />
-                <h1>{this.state.message}</h1>
-            </div>
-
+                  record={true}
+                  title={"New recording"}
+                  audioURL={this.state.audioDetails.url}
+                  showUIAudio
+                  handleAudioStop={data => this.handleAudioStop(data)}
+                  handleAudioUpload={data => this.handleAudioUpload(data)}                 
+                  handleReset={() => this.handleReset()}
+                  mimeTypeToUseWhenRecording={`audio/webm`}
+                  />
+                  <h1>{this.state.message}</h1>
+              </div>
             </>
         );
-        
     }
 }

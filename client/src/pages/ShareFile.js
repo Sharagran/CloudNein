@@ -10,12 +10,12 @@ export default class ShareFile extends Component {
   constructor(props) {
     super(props);
     this.onSubmit = this.onSubmit.bind(this);
-  }
 
-  state = {
-    // Initially, no file is selected
-    message: ""
-  };
+    this.state = {
+      // Initially, no file is selected
+      message: ""
+    };
+  }
 
   componentWillMount(){
     const queryParams = new URLSearchParams(window.location.search);
@@ -54,8 +54,8 @@ export default class ShareFile extends Component {
         this.setState({message: ""})
       });
     } catch (error) {
-      console.log(error)
-      this.setState({message: "Error while preparing download"})
+        console.log(error)
+        this.setState({message: "Error while preparing download"})
     }
   }
 

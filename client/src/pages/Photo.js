@@ -10,11 +10,13 @@ export default class Photo extends Component {
         super(props);
         this.goBack = this.goBack.bind(this)
         this.handleTakePhoto = this.handleTakePhoto.bind(this)
+
+        this.state = {
+            message: ""
+        }
     }
 
-    state = {
-        message: ""
-    }
+
     handleTakePhoto (dataUri) {
         try {
             var today = new Date();
@@ -27,10 +29,12 @@ export default class Photo extends Component {
             for(var i = 0; i < binary.length; i++) {
                 array.push(binary.charCodeAt(i));
             }
+        
             var photo = new Blob([new Uint8Array(array)], {type: 'image/png'});
             const formData = new FormData();
             formData.append("files", photo, dateTime +".png")
             axios.post("http://localhost:80/upload", formData )
+    
         } catch (error) {
             console.log(error);
             this.setState({message: "Error while uploading photo"})

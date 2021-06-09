@@ -1,5 +1,6 @@
-import Login from './pages/Login';
+import React from "react";
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import Login from './pages/Login';
 import Registration from './pages/Registration';
 import ForgotPassword from './pages/ForgotPassword';
 import Home from './pages/Home';
@@ -13,7 +14,6 @@ import Upload from './pages/Upload';
 import Admin from './pages/Admin';
 import Storage from './pages/Storage';
 import ShareFile from './pages/ShareFile';
-import React from "react";
 
 function App() {
   return (
@@ -35,7 +35,6 @@ function App() {
         <Route path="/ShareFile" component={ShareFile} />
       </Switch>
     </BrowserRouter>
-
   );
 }
 

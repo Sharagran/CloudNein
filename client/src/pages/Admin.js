@@ -54,7 +54,7 @@ export default class Admin extends Component {
 
       }
 
-      onSubmitDays(e){
+    onSubmitDays(e){
         try {
           const settings = {
             daysNew: this.state.daysNew
@@ -103,16 +103,15 @@ export default class Admin extends Component {
     if(getToken() === ""){
         return (
           <>
-              <div class="login-form">
-                no Permission
-              </div>
+            <div class="login-form">
+              no Permission
+            </div>
           </>
           );
       }
     return (
-        
         <>
-            <h1>Admin</h1> <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
+          <h1>Admin</h1> <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
             <table>
                 <tr>
                     <th>Datenmenge aktuell in MB</th>

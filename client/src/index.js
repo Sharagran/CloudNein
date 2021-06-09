@@ -8,7 +8,6 @@ import { getToken } from "./Authenticator";
 
 getToken();
 
-
 ReactDOM.render(
   <React.StrictMode>
     <App />
