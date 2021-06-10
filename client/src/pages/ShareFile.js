@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import axios from 'axios';
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
 
 var fileName;
 var fileID;
@@ -37,6 +39,8 @@ export default class ShareFile extends Component {
 
   onSubmit(e){
     e.preventDefault();
+
+    //TODO: Check for usages
     try {
       axios({
         url: 'http://localhost:80/download/'+ fileID,
@@ -51,7 +55,9 @@ export default class ShareFile extends Component {
         console.log(link)
         document.body.appendChild(link);
         link.click();
-        this.setState({message: ""})
+        this.setState({message: "Download successful"})
+
+        //TODO: decrease usages
       });
     } catch (error) {
         console.log(error)
@@ -66,7 +72,14 @@ export default class ShareFile extends Component {
     return (
         <>
           <div class="login-form">
-            <input type="submit" value={"Download " + fileName}  onClick={this.onSubmit}></input>
+            <Popup trigger={<input value={"Download " + fileName}></input>} position="bottom center">
+            <div>
+              <form onSubmit={this.onUpdate}>
+                <input type="submit" value="Download " onClick={this.onSubmit}></input>
+                <input type="submit" value="Confirm successful download"></input>
+              </form>
+            </div>
+          </Popup>
             <h1>{this.state.message}</h1>
           </div>
         </>

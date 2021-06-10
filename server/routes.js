@@ -84,8 +84,9 @@ router.post("/share", async function (req, res) {
     var fileID = req.body.shareInformation.fileID
     var email = req.body.shareInformation.email
     var fileName = req.body.shareInformation.fileName
+    var usages = req.body.shareInformation.usages
 
-    fm.share(fileID, days, email.length,  function (error, shareID) {
+    fm.share(fileID, days, usages, function (error, shareID) {
         if(error) {
             console.error(error.message);
             res.send(500);

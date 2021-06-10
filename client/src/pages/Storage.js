@@ -29,7 +29,8 @@ export default class Storage extends Component {
       tag: "",
       comment: "",
       email: "",
-      days: ""
+      days: "",
+      usages: null
     };
   }
 
@@ -177,13 +178,19 @@ export default class Storage extends Component {
       for (var i = 0; i < data.length; i++) {
         if (document.getElementById(i).checked) {
           var allEmails = this.state.email.split(",")
+          var counter;
           fileID = data[i].id;
+
+          if(document.getElementById("deleteAfterDownload").checked){
+            counter = allEmails.length
+          }
           
           const shareInformation = {
             email: allEmails,
             days: this.state.days,
             fileID: data[i].id,
-            fileName: fileName[i]
+            fileName: fileName[i],
+            usages: counter 
           }
 
           axios.post("http://localhost:80/share", { shareInformation }).then((res) => {
@@ -235,6 +242,10 @@ export default class Storage extends Component {
               <form onSubmit={this.onShare}>
                 <input type="text" name="mail" placeholder="Email * More than one email, Please seperate with comma (,)" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$+,[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangEmail} required></input>
                 <input type="number" name="comments" placeholder="Days untill expires" min="1" max="7" onChange={this.onChangeDays} required></input>
+                <div>
+                  <input id="deleteAfterDownload" type="checkbox"></input>
+                  <label>Delete after download</label>
+                </div>
                 <input type="submit" value="Share"></input>
               </form>
             </div>
