@@ -20,26 +20,7 @@ cron.schedule('0 * * * *', () => {
     }
 });
 
-async function spaceCheck(req, userID){
-    var folderSize = await checkUploadLimit(userID)
-    var dataLimit = await getDataLimit() * 1000000
-
-    var fileSize = 0
-    for (const key in req.files) {
-        const file = req.files[key];
-        fileSize += file.size
-    }
-
-    if(folderSize + fileSize <= dataLimit){
-        console.log("enough space")
-        return true;
-     }else {
-        console.log(("not enough space"));
-        return false;
-    }
-}
-
-// tags = keywords
+//#region File management
 async function uploadFiles(req, userID, username, expires, tags = []) {
     
     var expirationDate = await db.readDataPromise('settings', { User: "Admin" })
@@ -106,11 +87,6 @@ async function getFiles(userID) {
     return files;
 }
 
-async function commentFile(fileID, userID, text) {
-    console.log(fileID, userID, comment);
-    var error, comment = await db.updateDataPromise('file', {owner: userID, id: fileID},  { $set: { comment: text }})
-}
-
 function moveFile(fileID, path) {
     throw { name: "NotImplementedError", message: "too lazy to implement" };
 }
@@ -121,59 +97,12 @@ function deleteFile(fileID) {
     });
 }
 
-// react route https://ncoughlin.com/posts/react-router-variable-route-parameters/
-async function share(itemID, expires, usages, callback) {
-    //TODO: delete file/folder after X downloads
-    //TODO: link usages
-    var file = await getFile(itemID);
-    console.log(file);
+//#endregion
 
-
-    const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
-    var date = new Date();
-    date.setDate(date.getDate() + expires)
-    //expires = expires || new Date('2038');
-    expires = date.toISOString();
-    usages = usages || -1;
-
-    db.createData("shared", {
-        shareID: shareID,
-        sharedItem: file,
-        usages: usages,
-        expires: expires
-    }, function () {
-        callback(null, shareID);
-    });
-
-}
-
-async function downloadFile(id, res) {
-    //TODO: check usages
-    var file = await getFile(id);
-    if (file.downloads >= file.maxDownloads) {
-        return;
-    }
-
-    if (isExpired(file)) {
-        deleteFile(file.id);
-        return;
-    }
-
-    res.download(file.path);
-
-    //countdown usages in db
-    //check for deletion
-}
-
-async function downloadSharedFile(shareID, res) {
-    //TODO: check usages
-    checkSharelinkExpirations(shareID);
-
-    var file;// = await getFile();
-    res.download(file.path);
-
-    //countdown usages in db
-    //check for deletion
+//#region File attributes
+async function commentFile(fileID, userID, text) {
+    console.log(fileID, userID, comment);
+    var error, comment = await db.updateDataPromise('file', {owner: userID, id: fileID},  { $set: { comment: text }})
 }
 
 async function addTag(fileID, tag) {
@@ -211,61 +140,7 @@ async function addTag(fileID, tag) {
     console.log("file tags updated");
 }
 
-function createUploadSettings() {
-    db.readData('settings', { User: "Admin" }, (error, result) => {
-        if (error) throw error;
-        if (result.length == 0) {
-            db.createData('settings', { User: "Admin", limit: 100000000, days: 7 })
-
-        } else {
-            console.log("Settings are already available");
-        }
-    })
-}
-
-async function getSharedFiles(shareID) {
-    var error, result = await db.readDataPromise('shared', { shareID: shareID })
-    return result
-}
-
-async function getDataLimit() {
-    var error, result = await db.readDataPromise('settings', { User: "Admin" });
-    return result[0].limit / 1000000;
-}
-
-async function getExpirationDate() {
-    var error, result = await db.readDataPromise('settings', { User: "Admin" });
-    return result[0].days
-}
-
-
-async function setDataLimit(limit) {
-    var error, result = await db.updateDataPromise('settings', { User: "Admin" }, { $set: { limit: limit } });
-    console.log("DataLimit updated");
-}
-
-async function setExpirationDate(days) {
-    var error, result = await db.updateDataPromise('settings', { User: "Admin" }, { $set: { days: days } });
-    console.log("Expiratio nDate updated");
-}
-
-async function checkUploadLimit(userID) {
-    var size = 0;
-    var error, resultRead = await db.readDataPromise('settings', { User: "Admin" });
-    var limit = resultRead[0].limit
-    console.log(limit)
-
-    var error2, result = await db.readDataPromise('file', { owner: userID });
-    for (var i = 0; i < result.length; i++) {
-        size += result[i].fileSize
-    }
-
-    return size 
-}
-
-//#region TODO: call those functions before each item access
-
-//TODO: return result
+//TODO: return result (call those functions before each item access)
 function checkFileExpirations(fileID) {
     var query = fileID ? { id: fileID } : {};
 
@@ -291,6 +166,144 @@ function isExpired(file) {
     }
 }
 
+async function spaceCheck(req, userID){
+    var folderSize = await checkUploadLimit(userID)
+    var dataLimit = await getDataLimit() * 1000000
+
+    var fileSize = 0
+    for (const key in req.files) {
+        const file = req.files[key];
+        fileSize += file.size
+    }
+
+    if(folderSize + fileSize <= dataLimit){
+        console.log("enough space")
+        return true;
+     }else {
+        console.log(("not enough space"));
+        return false;
+    }
+}
+//#endregion
+
+//#region Settings
+function createUploadSettings() {
+    db.readData('settings', { User: "Admin" }, (error, result) => {
+        if (error) throw error;
+        if (result.length == 0) {
+            db.createData('settings', { User: "Admin", limit: 100000000, days: 7 })
+
+        } else {
+            console.log("Settings are already available");
+        }
+    })
+}
+
+async function getDataLimit() {
+    var error, result = await db.readDataPromise('settings', { User: "Admin" });
+    return result[0].limit / 1000000;
+}
+
+async function getExpirationDate() {
+    var error, result = await db.readDataPromise('settings', { User: "Admin" });
+    return result[0].days
+}
+
+async function setDataLimit(limit) {
+    var error, result = await db.updateDataPromise('settings', { User: "Admin" }, { $set: { limit: limit } });
+    console.log("DataLimit updated");
+}
+
+async function setExpirationDate(days) {
+    var error, result = await db.updateDataPromise('settings', { User: "Admin" }, { $set: { days: days } });
+    console.log("Expiratio nDate updated");
+}
+
+async function checkUploadLimit(userID) {
+    var size = 0;
+    var error, resultRead = await db.readDataPromise('settings', { User: "Admin" });
+    var limit = resultRead[0].limit
+    console.log(limit)
+
+    var error2, result = await db.readDataPromise('file', { owner: userID });
+    for (var i = 0; i < result.length; i++) {
+        size += result[i].fileSize
+    }
+
+    return size 
+}
+//#endregion
+
+//#region Download
+async function compressFolder(path) {
+    var zipPath = path + '.zip';
+    await zip(path, zipPath);
+    return zipPath;
+}
+
+async function downloadFile(id, res) {
+    //TODO: check usages
+    var file = await getFile(id);
+    if (file.downloads >= file.maxDownloads) {
+        return;
+    }
+
+    if (isExpired(file)) {
+        deleteFile(file.id);
+        return;
+    }
+
+    res.download(file.path);
+
+    //countdown usages in db
+    //check for deletion
+}
+
+async function downloadSharedFile(shareID, res) {
+    //TODO: check usages
+    checkSharelinkExpirations(shareID);
+
+    var file;// = await getFile();
+    res.download(file.path);
+
+    //countdown usages in db
+    //check for deletion
+}
+//#endregion
+
+//#region Share
+
+// react route https://ncoughlin.com/posts/react-router-variable-route-parameters/
+async function share(itemID, expires, usages, callback) {
+    //TODO: delete file/folder after X downloads
+    //TODO: link usages
+    var file = await getFile(itemID);
+    console.log(file);
+
+
+    const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
+    var date = new Date();
+    date.setDate(date.getDate() + expires)
+    //expires = expires || new Date('2038');
+    expires = date.toISOString();
+    usages = usages || -1;
+
+    db.createData("shared", {
+        shareID: shareID,
+        sharedItem: file,
+        usages: usages,
+        expires: expires
+    }, function () {
+        callback(null, shareID);
+    });
+
+}
+
+async function getSharedFiles(shareID) {
+    var error, result = await db.readDataPromise('shared', { shareID: shareID })
+    return result
+}
+
 //TODO: return result
 function checkSharelinkExpirations(shareID) {
     var query = shareID ? { shareID: shareID } : {};
@@ -309,7 +322,10 @@ function checkSharelinkExpirations(shareID) {
     });
 }
 
-function getSharelinkUsages(shareID) {
+//TODO: implement
+function checkSharelinkUsages(shareID) {
+    var query = shareID ? { shareID: shareID } : {};
+
     db.readData('shared', query, function (error, result) {
         result.forEach(shareEntry => {
             var shareExpiration = Date.parse(shareEntry.expires);
@@ -345,14 +361,7 @@ function sendLink(receiver, shareID, fileName, callback) {
     });
 }
 
-
 //#endregion
-
-async function compressFolder(path) {
-    var zipPath = path + '.zip';
-    await zip(path, zipPath);
-    return zipPath;
-}
 
 
 module.exports = {
