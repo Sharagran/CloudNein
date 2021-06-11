@@ -138,27 +138,12 @@ router.get('/', function (req, res) {
 });
 
 router.get('/dbtest', function (req, res) {
-    // fm.addTag('3fcc3d79-29dd-4d39-9b67-3238aeab5fd8', 'tag2');
+    fm.share('af3916d7-244e-4351-85a3-cf68d20e8a86', 7, null);
     res.send(200);
 });
 
 router.get('/upload', function (req, res) {
     res.sendFile(__dirname + "/public/upload.html");
-});
-
-router.get(['/myfiles', '/myfiles/:path'], function (req, res) {
-    // download
-    var path = req.params.path;
-
-    if (path) {
-        res.send(path);
-    } else {
-        res.send("myfiles");
-    }
-});
-
-router.get('/files/:id', function (req, res) {
-
 });
 
 router.get('/error', function (req, res) {

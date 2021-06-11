@@ -9,7 +9,7 @@ const nodemailer = require("nodemailer");
 var { zip } = require('zip-a-folder');
 
 
-// every minute 0 (every hour)
+// every minute==0 (every hour)
 cron.schedule('0 * * * *', () => {
     try {
         checkFileExpirations();
@@ -22,43 +22,43 @@ cron.schedule('0 * * * *', () => {
 
 //#region File management
 async function uploadFiles(req, userID, username, expires, tags = []) {
-    
+
     var expirationDate = await db.readDataPromise('settings', { User: "Admin" })
-        for (const key in req.files) {
-            const file = req.files[key];
-    
-            // save file to disk
-            const savePath = file.destination + username + "/" + file.originalname;
-            fs.rename(file.path, savePath, function (error) {
-                if (error)
-                    throw error;
-                console.log(file.destination); //FIXME: debug only
-    
-                const id = uuidv4();
-                var date = new Date();
-                date.setDate(date.getDate() + parseInt(expirationDate[0].days))
-                //expires = expires || new Date('2038');
-                expires = date.toISOString();
-                console.log(expires);
-    
-                db.createData("file", {
-                    id: id,
-                    path: savePath,
-                    owner: userID,
-                    tags: tags,
-                    fileSize: file.size,    //FIXME: might be wrong format
-                    expires: expires,
-                    downloads: 0,
-                    //maxDownloads: null
-                    comment: ""
-                });
-    
+    for (const key in req.files) {
+        const file = req.files[key];
+
+        // save file to disk
+        const savePath = file.destination + username + "/" + file.originalname;
+        fs.rename(file.path, savePath, function (error) {
+            if (error)
+                throw error;
+            console.log(file.destination); //FIXME: debug only
+
+            const id = uuidv4();
+            var date = new Date();
+            date.setDate(date.getDate() + parseInt(expirationDate[0].days))
+            //expires = expires || new Date('2038');
+            expires = date.toISOString();
+            console.log(expires);
+
+            db.createData("file", {
+                id: id,
+                path: savePath,
+                owner: userID,
+                tags: tags,
+                fileSize: file.size,    //FIXME: might be wrong format
+                expires: expires,
+                downloads: 0,
+                //maxDownloads: null
+                comment: ""
             });
-        }
-        var responseJSON = {
-            message: req.files.length + ' files uploaded successfully'
-        };
-        return responseJSON;
+
+        });
+    }
+    var responseJSON = {
+        message: req.files.length + ' files uploaded successfully'
+    };
+    return responseJSON;
 
 }
 //TODO: max downloads for files/folders
@@ -102,7 +102,7 @@ function deleteFile(fileID) {
 //#region File attributes
 async function commentFile(fileID, userID, text) {
     console.log(fileID, userID, comment);
-    var error, comment = await db.updateDataPromise('file', {owner: userID, id: fileID},  { $set: { comment: text }})
+    var error, comment = await db.updateDataPromise('file', { owner: userID, id: fileID }, { $set: { comment: text } })
 }
 
 async function addTag(fileID, tag) {
@@ -156,17 +156,22 @@ function checkFileExpirations(fileID) {
     });
 }
 
-function isExpired(file) {
-    var fileExpiration = Date.parse(file.expires);
+function isExpired(shareEntry) {
+    var expires = shareEntry.expires;
+    if (expires) {
+        var expiration = Date.parse(expires);
 
-    if (Date.now >= fileExpiration) {
-        return true;
-    } else {
-        return false;
+        if (Date.now >= expiration) {
+            return true;
+        }
+
     }
+
+    // expires == null || Date.now < expiration
+    return false;
 }
 
-async function spaceCheck(req, userID){
+async function spaceCheck(req, userID) {
     var folderSize = await checkUploadLimit(userID)
     var dataLimit = await getDataLimit() * 1000000
 
@@ -176,10 +181,10 @@ async function spaceCheck(req, userID){
         fileSize += file.size
     }
 
-    if(folderSize + fileSize <= dataLimit){
+    if (folderSize + fileSize <= dataLimit) {
         console.log("enough space")
         return true;
-     }else {
+    } else {
         console.log(("not enough space"));
         return false;
     }
@@ -230,7 +235,7 @@ async function checkUploadLimit(userID) {
         size += result[i].fileSize
     }
 
-    return size 
+    return size
 }
 //#endregion
 
@@ -282,11 +287,14 @@ async function share(itemID, expires, usages, callback) {
 
 
     const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
-    var date = new Date();
-    date.setDate(date.getDate() + expires)
-    //expires = expires || new Date('2038');
-    expires = date.toISOString();
-    usages = usages || -1;
+    if (expires && expires > 0) {
+        var date = new Date();
+        date.setDate(date.getDate() + expires)
+        expires = date.toISOString();
+    } else {
+        expires = null;
+    }
+    usages = usages;
 
     db.createData("shared", {
         shareID: shareID,
@@ -294,7 +302,9 @@ async function share(itemID, expires, usages, callback) {
         usages: usages,
         expires: expires
     }, function () {
-        callback(null, shareID);
+        if (typeof callback === 'function') {
+            callback(null, shareID);
+        }
     });
 
 }
@@ -304,40 +314,46 @@ async function getSharedFiles(shareID) {
     return result
 }
 
-//TODO: return result
+//TODO: check before every download @Andre
 function checkSharelinkExpirations(shareID) {
     var query = shareID ? { shareID: shareID } : {};
+    var shareLinkExpired;
 
     db.readData('shared', query, function (error, result) {
         result.forEach(shareEntry => {
-            var shareExpiration = Date.parse(shareEntry.expires);
-
-            // expired
-            if (Date.now >= shareExpiration) {
+            shareLinkExpired = isExpired(shareEntry);
+            if (shareLinkExpired) {
                 db.deleteData('shared', { _id: shareEntry._id }, function () {
                     console.log(`share link "${shareEntry.shareID}" deleted`);
                 });
             }
         });
     });
+
+    return shareLinkExpired;
 }
 
-//TODO: implement
+//TODO: check before every download @Andre
 function checkSharelinkUsages(shareID) {
     var query = shareID ? { shareID: shareID } : {};
+    var shareLinkUsed = false;
 
     db.readData('shared', query, function (error, result) {
         result.forEach(shareEntry => {
-            var shareExpiration = Date.parse(shareEntry.expires);
+            var usages = shareEntry.usages;
 
-            // expired
-            if (Date.now >= shareExpiration) {
-                db.deleteData('shared', { _id: shareEntry._id }, function () {
-                    console.log(`share link "${shareEntry.shareID}" deleted`);
-                });
+            if (usages) {
+                if (usages == 0) {
+                    shareLinkUsed = true;
+                    db.deleteData('shared', { _id: shareEntry._id }, function () {
+                        console.log(`share link "${shareEntry.shareID}" deleted`);
+                    });
+                }
             }
         });
     });
+
+    return shareLinkUsed;
 }
 
 function sendLink(receiver, shareID, fileName, callback) {
@@ -387,4 +403,3 @@ module.exports = {
     compressFolder: compressFolder,
     spaceCheck: spaceCheck
 }
-
