@@ -28,7 +28,8 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
         const file = req.files[key];
 
         // save file to disk
-        const savePath = file.destination + username + "/" + file.originalname;
+        //const savePath = file.destination + username + "/" + file.originalname;
+        const savePath = `${__dirname}/../UserFiles/${username}/${file.originalname}`;
         fs.rename(file.path, savePath, function (error) {
             if (error)
                 throw error;
@@ -43,7 +44,7 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
 
             db.createData("file", {
                 id: id,
-                path: savePath, //TODO rename to 'name'
+                name: file.originalname,
                 comment: "",
                 owner: userID,
                 tags: tags,
@@ -66,28 +67,24 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
 //TODO: max downloads for files/folders
 
 //TODO: expires for folder
-async function createFolder(Path) {
-    //TODO: test if function works
-    var folderPath = join(__dirname, '../UserFiles', Path);
-
-    fs.mkdirSync(folderPath);
+async function createFolder(parentID, name) {
     const id = uuidv4();
     await db.createDataPromise('folder', {
         id: id,
-        name: folderPath,
+        name: name,
         files: []
     });
 
     //TODO fix link between file & folder, change path to name
     await db.createDataPromise('file', {
         id: id,
-        path: folderPath,   //TODO rename to 'name'
+        name: name,
         comment: "",
         owner: userID,  //FIXME
         tags: [],
         fileSize: null,
         expires: null,
-        parent: null,   //TODO parent ID
+        parent: parentID,
         isFolder: true,
         downloads: 0,
         maxDownloads: null
@@ -122,7 +119,9 @@ async function getFiles(userID) {
 //#region //TODO untested
 async function getPath(fileID) {
     var file = await getFile(fileID);
-    var homePath = `${__dirname}/../UserFiles/${file.owner}/`;
+    var user = await db.readDataPromise('user', {id: file.owner});
+    var username = user[0].username;
+    var homePath = `${__dirname}/../UserFiles/${username}/`;
     var filePath = await getParentFolderpaths(fileID);
 
     return join(homePath, filePath);
@@ -304,7 +303,7 @@ async function compressFolder(path) {
 async function downloadFile(id, res) {
     //TODO: check usages
     var file = await getFile(id);
-    if (file.downloads >= file.maxDownloads) {
+    if (file.maxDownloads && file.downloads >= file.maxDownloads) {
         return;
     }
 
@@ -313,22 +312,13 @@ async function downloadFile(id, res) {
         return;
     }
 
-    res.download(file.path); //FIXME path -> name
+    var filePath = await getPath(file.id);
+    res.download(filePath);
 
-    //countdown usages in db
-    //check for deletion
+    //countdown usages in db?
+    //check for deletion?
 }
 
-async function downloadSharedFile(shareID, res) {
-    //TODO: check usages
-    checkSharelinkExpirations(shareID);
-
-    var file;// = await getFile();
-    res.download(file.path); //FIXME path -> name
-
-    //countdown usages in db
-    //check for deletion
-}
 //#endregion
 
 //#region Share

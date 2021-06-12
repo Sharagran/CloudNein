@@ -9,6 +9,7 @@ const util = require('util');
 const { readDataPromise } = require('./Database');
 const fm = require('./FileManager');
 const uuidv4 = require('uuid').v4;
+const { join } = require('path');
 
 //TODO: alle callbacks durch promises ersetzen
 const readData = util.promisify(db.readData);
@@ -137,7 +138,7 @@ async function register(email, username, password) {
               password: hash,
               email: email
             });
-            fm.createFolder(username);
+            createUserHomeDirectory(username);
         })
         return true
       }
@@ -145,6 +146,13 @@ async function register(email, username, password) {
     } catch (error) {
       console.log(error);
     }
+}
+
+function createUserHomeDirectory(username) {
+  //var folderPath = join(__dirname, '../UserFiles', username);
+  var folderPath = join(`${__dirname}/../UserFiles/${username}`);
+
+  fs.mkdirSync(folderPath);
 }
 
 async function forgotPassword(email) {

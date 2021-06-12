@@ -6,7 +6,6 @@ import { getToken } from "../Authenticator";
 
 var fileID;
 var data;
-var fileName = [];
 var file;
 
 export default class Storage extends Component {
@@ -63,10 +62,10 @@ export default class Storage extends Component {
           data = res.data
 
           //Split für Filename
-          for (var i = 0; i < res.data.length; i++) {
-            var str = data[i].path  //FIXME path -> name
-            fileName[i] = str.substring(str.lastIndexOf("/") + 1, str.length)
-          }
+          // for (var i = 0; i < res.data.length; i++) {
+          //   var str = data[i].path  //FIXME path -> name
+          //   fileName[i] = str.substring(str.lastIndexOf("/") + 1, str.length)
+          // }
 
           for (var j = 0; j < res.data.length; j++) {
             var tr = document.createElement('tr');
@@ -74,7 +73,7 @@ export default class Storage extends Component {
             var th1 = document.createElement('th');
             tr.appendChild(th1);
             th1.name = "Andre"
-            th1.innerHTML += fileName[j];
+            th1.innerHTML +=  data[j].name; //fileName[j];
             var th2 = document.createElement('th');
             tr.appendChild(th2);
             th2.id = "tag" + j
@@ -144,7 +143,7 @@ export default class Storage extends Component {
       for (var i = 0; i < data.length; i++) {
         if (document.getElementById(i).checked) {
           fileID = data[i].id;
-          file = fileName[i];
+          file = data[i].name;
           break;
         } else if(i === data.length - 1 && !document.getElementById(data.length - 1).checked) {
           this.setState({ message: "Select a File" })
@@ -189,7 +188,7 @@ export default class Storage extends Component {
             email: allEmails,
             days: this.state.days,
             fileID: data[i].id,
-            fileName: fileName[i],
+            fileName: data[i].name,
             usages: counter 
           }
 
