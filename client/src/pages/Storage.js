@@ -64,7 +64,7 @@ export default class Storage extends Component {
 
           //Split für Filename
           for (var i = 0; i < res.data.length; i++) {
-            var str = data[i].path
+            var str = data[i].path  //FIXME path -> name
             fileName[i] = str.substring(str.lastIndexOf("/") + 1, str.length)
           }
 

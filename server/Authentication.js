@@ -131,7 +131,12 @@ async function register(email, username, password) {
           hash_password(password, (error, hash) => {
             if (error) throw error;
             const id = uuidv4();
-            db.createDataPromise('user',[{id: id, username: username, password: hash, email: email }])
+            db.createDataPromise('user', {
+              id: id,
+              username: username,
+              password: hash,
+              email: email
+            });
             fm.createFolder(username);
         })
         return true

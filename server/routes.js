@@ -134,7 +134,9 @@ router.post('/updateFileInformation', (req, res) => {
 
 // FIXME: Debug only (all get routes should be handled with react)
 router.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname + '/public/login.html'));
+    console.log(__dirname + '/public/login.html');
+    console.log(path.join(__dirname + '/public/login.html'));
+    res.sendFile(__dirname + '/public/login.html');
 });
 
 router.get('/dbtest', function (req, res) {

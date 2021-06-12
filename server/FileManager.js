@@ -3,7 +3,7 @@
 const fs = require("fs");
 const db = require("./Database");
 const uuidv4 = require('uuid').v4;
-const path = require('path');
+const { join } = require('path');
 var cron = require('node-cron');
 const nodemailer = require("nodemailer");
 var { zip } = require('zip-a-folder');
@@ -43,14 +43,16 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
 
             db.createData("file", {
                 id: id,
-                path: savePath,
+                path: savePath, //TODO rename to 'name'
+                comment: "",
                 owner: userID,
                 tags: tags,
                 fileSize: file.size,    //FIXME: might be wrong format
                 expires: expires,
+                parent: null,   //TODO parent ID
+                isFolder: false,
                 downloads: 0,
-                //maxDownloads: null
-                comment: ""
+                maxDownloads: null
             });
 
         });
@@ -66,15 +68,45 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
 //TODO: expires for folder
 async function createFolder(Path) {
     //TODO: test if function works
-    var folderPath = path.join(__dirname, '../UserFiles', Path);
+    var folderPath = join(__dirname, '../UserFiles', Path);
 
     fs.mkdirSync(folderPath);
+    const id = uuidv4();
     await db.createDataPromise('folder', {
+        id: id,
         name: folderPath,
         files: []
     });
 
+    //TODO fix link between file & folder, change path to name
+    await db.createDataPromise('file', {
+        id: id,
+        path: folderPath,   //TODO rename to 'name'
+        comment: "",
+        owner: userID,  //FIXME
+        tags: [],
+        fileSize: null,
+        expires: null,
+        parent: null,   //TODO parent ID
+        isFolder: true,
+        downloads: 0,
+        maxDownloads: null
+    });
+
     return true;
+}
+
+async function getFolder(id) {
+    var attributes1 = await db.readDataPromise('folder', {id: id});
+    var attributes2 = await db.readDataPromise('file', {id: id});
+
+    /*
+    * attributes1 {id, name, files}
+    * attributes2 {id, name, comment, owner, tags, fileSize, expires, parent, isFolder, downloads, maxDownloads}
+    * folder {id, name, files, comment, owner, tags, fileSize, expires, parent, isFolder, downloads, maxDownloads}
+    */
+    var folder = {...attributes1, ...attributes2};
+    return folder;
 }
 
 async function getFile(id) {
@@ -86,6 +118,29 @@ async function getFiles(userID) {
     var error, files = await db.readDataPromise('file', { owner: userID })
     return files;
 }
+
+//#region //TODO untested
+async function getPath(fileID) {
+    var file = await getFile(fileID);
+    var homePath = `${__dirname}/../UserFiles/${file.owner}/`;
+    var filePath = await getParentFolderpaths(fileID);
+
+    return join(homePath, filePath);
+}
+
+async function getParentFolderpaths(fileID) {
+    var file = await getFile(fileID);
+
+    if(file.parent) {
+        var parent = await getFile(file.parent);
+        var fullPath = await getParentFolderpaths(parent.id);
+
+        return `${fullPath}/${file.name}`;
+    } else {
+        return file.name;
+    }
+}
+//#endregion
 
 function moveFile(fileID, path) {
     throw { name: "NotImplementedError", message: "too lazy to implement" };
@@ -258,7 +313,7 @@ async function downloadFile(id, res) {
         return;
     }
 
-    res.download(file.path);
+    res.download(file.path); //FIXME path -> name
 
     //countdown usages in db
     //check for deletion
@@ -269,7 +324,7 @@ async function downloadSharedFile(shareID, res) {
     checkSharelinkExpirations(shareID);
 
     var file;// = await getFile();
-    res.download(file.path);
+    res.download(file.path); //FIXME path -> name
 
     //countdown usages in db
     //check for deletion
