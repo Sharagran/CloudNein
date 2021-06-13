@@ -9,20 +9,18 @@ export default class Settings extends Component {
     super(props);
 
     this.onChangeUsername = this.onChangeUsername.bind(this);
-	  this.onChangeMail = this.onChangeMail.bind(this);
+    this.onChangeMail = this.onChangeMail.bind(this);
     this.onSubmitUsername = this.onSubmitUsername.bind(this);
     this.onSubmitMail = this.onSubmitMail.bind(this);
     this.goBack = this.goBack.bind(this)
 
     this.state = {
       username: "",
-	    mail: "", 
+      mail: "", 
       previousUsername: ""
     };
   }
 
-  componentWillMount(){
-  }
   // These methods will update the state properties.
   onChangeUsername(e) {
     this.setState({username: e.target.value});
@@ -76,7 +74,7 @@ export default class Settings extends Component {
     if(getToken === ""){
       return (
         <>
-          <div class="login-form">
+          <div className="login-form">
             no Permission
           </div>
         </>
@@ -84,11 +82,11 @@ export default class Settings extends Component {
     }
     return (
 			<>
-			<div class="register-form">
-				<h1>Settings</h1> <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
+			<div className="register-form">
+				<h1>Settings</h1> <button className="logoutLblPos" onClick={this.goBack}>zurück</button>
         <img id="profilePicture" src={"/UserFiles/ProfilePictures/logo512.png"}></img>
 				<form action="/settings" method="POST" onSubmit={this.onSubmitUsername}>
-					<input type="text" name="username" placeholder="Username (6 characters minimum)"  minlength="6" onChange={this.onChangeUsername} required></input>
+					<input type="text" name="username" placeholder="Username (6 characters minimum)"  minLength="6" onChange={this.onChangeUsername} required></input>
           <input type="submit" value="Update Username"></input>
         </form>
         <form onSubmit={this.onSubmitMail}>

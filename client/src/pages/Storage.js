@@ -213,7 +213,7 @@ export default class Storage extends Component {
     if (getToken() === "") {
       return (
         <>
-          <div class="login-form">
+          <div className="login-form">
             no Permission
           </div>
         </>
@@ -221,9 +221,9 @@ export default class Storage extends Component {
     }
     return (
       <>
-        <div class="login-form">
+        <div className="login-form">
           <h1>Storage</h1>
-          <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
+          <button className="logoutLblPos" onClick={this.goBack}>zurück</button>
           <table id="storageData">
           </table >
           <input id="download_btn" type="submit" value="Download" onClick={this.onSubmit}></input>

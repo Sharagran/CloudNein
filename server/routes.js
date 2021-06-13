@@ -117,6 +117,21 @@ router.post('/storage', async function(req, res) {
     res.json(files);
 });
 
+router.post('/checkSharelinkExpiration', async function (req, res) {
+    var result = await fm.checkSharelinkExpirations(req.body.shareInformation.shareID);
+    res.send(result);
+})
+
+router.post('/checkSharelinkUsages', async function (req, res) {
+    var result = await fm.checkSharelinkUsages(req.body.shareInformation.shareID)
+    console.log(result);
+    res.send(result);
+})
+
+router.post('/decreaseUsages', async function (req, res) {
+    var result = await fm.decreaseUsages(req.body.shareInformation.shareID)
+    res.send(result)
+})
 
 router.post('/updateFileInformation', (req, res) => {
   var tag = req.body.fileInforamtion.tag;

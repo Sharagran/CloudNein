@@ -94,15 +94,15 @@ async function createFolder(parentID, name) {
 }
 
 async function getFolder(id) {
-    var attributes1 = await db.readDataPromise('folder', {id: id});
-    var attributes2 = await db.readDataPromise('file', {id: id});
+    var attributes1 = await db.readDataPromise('folder', { id: id });
+    var attributes2 = await db.readDataPromise('file', { id: id });
 
     /*
     * attributes1 {id, name, files}
     * attributes2 {id, name, comment, owner, tags, fileSize, expires, parent, isFolder, downloads, maxDownloads}
     * folder {id, name, files, comment, owner, tags, fileSize, expires, parent, isFolder, downloads, maxDownloads}
     */
-    var folder = {...attributes1, ...attributes2};
+    var folder = { ...attributes1, ...attributes2 };
     return folder;
 }
 
@@ -119,7 +119,7 @@ async function getFiles(userID) {
 //#region //TODO untested
 async function getPath(fileID) {
     var file = await getFile(fileID);
-    var user = await db.readDataPromise('user', {id: file.owner});
+    var user = await db.readDataPromise('user', { id: file.owner });
     var username = user[0].username;
     var homePath = `${__dirname}/../UserFiles/${username}/`;
     var filePath = await getParentFolderpaths(fileID);
@@ -130,7 +130,7 @@ async function getPath(fileID) {
 async function getParentFolderpaths(fileID) {
     var file = await getFile(fileID);
 
-    if(file.parent) {
+    if (file.parent) {
         var parent = await getFile(file.parent);
         var fullPath = await getParentFolderpaths(parent.id);
 
@@ -203,7 +203,7 @@ function checkFileExpirations(fileID) {
             var fileExpiration = Date.parse(file.expires);
 
             // expired
-            if (Date.now >= fileExpiration) {
+            if (Date.now() >= fileExpiration) {
                 deleteFile(file.id);
             }
         });
@@ -214,8 +214,7 @@ function isExpired(shareEntry) {
     var expires = shareEntry.expires;
     if (expires) {
         var expiration = Date.parse(expires);
-
-        if (Date.now >= expiration) {
+        if (Date.now() >= expiration) {
             return true;
         }
 
@@ -360,45 +359,49 @@ async function getSharedFiles(shareID) {
 }
 
 //TODO: check before every download @Andre
-function checkSharelinkExpirations(shareID) {
+async function checkSharelinkExpirations(shareID) {
     var query = shareID ? { shareID: shareID } : {};
     var shareLinkExpired;
 
-    db.readData('shared', query, function (error, result) {
-        result.forEach(shareEntry => {
-            shareLinkExpired = isExpired(shareEntry);
-            if (shareLinkExpired) {
-                db.deleteData('shared', { _id: shareEntry._id }, function () {
-                    console.log(`share link "${shareEntry.shareID}" deleted`);
-                });
-            }
-        });
+    var error, result = await db.readDataPromise('shared', query);
+    result.forEach(shareEntry => {
+        shareLinkExpired = isExpired(shareEntry);
+        if (shareLinkExpired) {
+            db.deleteDataPromise('shared', { _id: shareEntry._id }, function () {
+                console.log(`share link "${shareEntry.shareID}" deleted`);
+            });
+        }
     });
 
     return shareLinkExpired;
 }
 
 //TODO: check before every download @Andre
-function checkSharelinkUsages(shareID) {
+async function checkSharelinkUsages(shareID) {
     var query = shareID ? { shareID: shareID } : {};
     var shareLinkUsed = false;
 
-    db.readData('shared', query, function (error, result) {
-        result.forEach(shareEntry => {
-            var usages = shareEntry.usages;
-
-            if (usages) {
-                if (usages == 0) {
-                    shareLinkUsed = true;
-                    db.deleteData('shared', { _id: shareEntry._id }, function () {
-                        console.log(`share link "${shareEntry.shareID}" deleted`);
-                    });
-                }
+    var error, result = await db.readDataPromise('shared', query)
+    result.forEach(shareEntry => {
+        var usages = shareEntry.usages;
+        if (usages != null) {
+            if (usages == 0) {
+                shareLinkUsed = true;
+                db.deleteDataPromise('shared', { _id: shareEntry._id }, function () {
+                    console.log(`share link "${shareEntry.shareID}" deleted`);
+                });
             }
-        });
+        }
     });
-
     return shareLinkUsed;
+}
+
+async function decreaseUsages(shareID) {
+    var actualUsages = await db.readDataPromise('shared', { shareID: shareID })
+    if (actualUsages[0].usages > 0) {
+        await db.updateDataPromise('shared', { shareID: shareID }, { $set: { usages: actualUsages[0].usages - 1 } })
+        return true;
+    }
 }
 
 function sendLink(receiver, shareID, fileName, callback) {
@@ -446,5 +449,7 @@ module.exports = {
     setExpirationDate: setExpirationDate,
     getSharedFiles: getSharedFiles,
     compressFolder: compressFolder,
-    spaceCheck: spaceCheck
+    spaceCheck: spaceCheck,
+    checkSharelinkUsages: checkSharelinkUsages,
+    decreaseUsages: decreaseUsages
 }
