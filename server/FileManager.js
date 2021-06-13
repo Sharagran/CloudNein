@@ -361,7 +361,7 @@ async function getSharedFiles(shareID) {
 //TODO: check before every download @Andre
 async function checkSharelinkExpirations(shareID) {
     var query = shareID ? { shareID: shareID } : {};
-    var shareLinkExpired;
+    var shareLinkExpired = true;
 
     var error, result = await db.readDataPromise('shared', query);
     result.forEach(shareEntry => {
@@ -377,6 +377,7 @@ async function checkSharelinkExpirations(shareID) {
 }
 
 //TODO: check before every download @Andre
+//Evtl überflüssig? Nach der Bestätigung kann nichts geladen werden und bei einem Refresh würde der link gelöscht werden
 async function checkSharelinkUsages(shareID) {
     var query = shareID ? { shareID: shareID } : {};
     var shareLinkUsed = false;

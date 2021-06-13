@@ -8,6 +8,7 @@ var fileID;
 var shareID;
 var confirmCounter = 0;
 var usages;
+var expired;
 
 export default class ShareFile extends Component {
 
@@ -29,27 +30,33 @@ export default class ShareFile extends Component {
     var shareInformation = {
       shareID: shareID
     }
-
+    try {
     //Check if Link is expired
     axios.post("http://localhost:80/checkSharelinkExpiration", {shareInformation}).then((res) => {
       if(res.data){
+        expired = res.data
         this.setState({message: "Sharelink is expired"})
-        return;
       }
     })
 
     //Get File Information
-    try {
+    
       axios.post("http://localhost:80/getShareInformation", {shareInformation}).then((res) => {
         fileID = res.data.id
       })
     } catch (error) {
       console.log(error)
+      this.setState({message: "Error while checking link information"})
     }
 }
 
   onSubmit(e){
     e.preventDefault();
+    try {
+    if(expired){
+      this.setState({message: "Download rejected because it's expired"})
+      return;
+    }
 
     var shareInformation = {
       shareID: shareID
@@ -63,21 +70,10 @@ export default class ShareFile extends Component {
     //Check for usages
 
     axios.post("http://localhost:80/checkSharelinkUsages", {shareInformation}).then((res) => {
+      console.log(res.data);
       if(!res.data){
         usages = res.data
-      }
-    })
-
-    //FIXME:  Wechsel von True auf False nach dem dein Eintrag in DB gelöscht wurde
-    if(usages){
-      this.setState({message: "No more usages available"})
-      return
-    }
-  
-
-    //Download
-    try {
-      axios({
+              axios({
         url: 'http://localhost:80/download/'+ fileID,
         method: 'GET',
         responseType: 'blob',
@@ -91,6 +87,15 @@ export default class ShareFile extends Component {
         this.setState({message: "Download successful"})
 
       });
+      }else{
+        this.setState({message: "No usages"})
+      }
+    })
+
+
+    //Download
+    
+
     } catch (error) {
         console.log(error)
         this.setState({message: "Error while preparing download"})
@@ -100,20 +105,31 @@ export default class ShareFile extends Component {
   onConfirmDownload(e){
     e.preventDefault();
 
-    var shareInformation = {
-      shareID: shareID
-    }
-    if(confirmCounter === 0){
-      axios.post("http://localhost:80/decreaseUsages", {shareInformation}).then((res) => {
-        console.log(res.data);
-        if(res.data){
-          this.setState({message: "Download confirmed"})
-          confirmCounter ++;
-          return;
-        }
-      })     
-    }else {
-      this.setState({message: "You have already confirmed the download"})
+    try {
+      if(expired){
+        this.setState({message: "Confirmation rejected because it's expired"})
+        return;
+      }
+  
+      var shareInformation = {
+        shareID: shareID
+      }
+
+      if(confirmCounter === 0){
+        axios.post("http://localhost:80/decreaseUsages", {shareInformation}).then((res) => {
+          console.log(res.data);
+          if(res.data){
+            this.setState({message: "Download confirmed"})
+            confirmCounter ++;
+            return;
+          }
+        })     
+      }else {
+        this.setState({message: "You have already confirmed the download"})
+      }
+    } catch (error) {
+      console.log(error);
+      this.setState({message: "Error while confirmation"})
     }
   }
 
