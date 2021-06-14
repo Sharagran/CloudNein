@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import GlobalVal from "./GlobalVal";
 import { getToken } from "../Authenticator";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+const Navbar = React.lazy(() => import('../Navbar'));
+
 export default class Home extends Component {
 
   // This is the constructor that stores the data.
@@ -34,12 +37,17 @@ export default class Home extends Component {
     }
     return (
 		<>
-      <div class="login-form">
+    <React.Suspense fallback={<FontAwesomeIcon icon='spinner' pulse />}>
+      <Navbar />
+    </React.Suspense>
+    <div id="main">
+    <div class="login-form">
         <h1>Home</h1>  <button class="logoutLblPos" onClick={this.goBack}>Logout</button>
           <Link to="/Storage"><button id="forgotPassword-btn" type="submit" >Storage</button></Link>
           <Link to="/Upload"><button id="forgotPassword-btn" type="submit" >Upload</button></Link>
           <Link to="/Settings"><button id="forgotPassword-btn" type="submit" >Settings</button></Link>
       </div>
+    </div>
     </>
     );
   }

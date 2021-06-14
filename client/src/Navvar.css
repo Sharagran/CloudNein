@@ -1,0 +1,74 @@
+#main {
+    transition: margin-left .5s;
+}
+
+.sidenav {
+    height: 100%;
+    width: 65px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    background-color: #111;
+    color: #818181;
+    white-space: nowrap;
+}
+
+.userdata * {
+    display: block;
+    transition: visibility 1s ease-in-out;
+}
+
+.userdata {
+    padding-bottom: 64px;
+}
+
+.sidenav a {
+    padding: 8px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidenav a:hover {
+    color: #f1f1f1;
+}
+
+
+/* Align text properly when using diffrent sized icons */
+
+.sidenav svg {
+    min-width: 2em;
+}
+
+.sidenav .togglebtn {
+    position: absolute;
+    bottom: 8px;
+    cursor: pointer;
+}
+
+
+/* https://developer.mozilla.org/de/docs/Web/CSS/transition */
+
+.ext-only {
+    transition: opacity 0.75s ease-in-out 0.25s;
+}
+
+.fade-out {
+    opacity: 0;
+    transition: opacity 0.25s ease-in-out;
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {
+        padding-top: 15px;
+    }
+    .sidenav a {
+        font-size: 18px;
+    }
+}
