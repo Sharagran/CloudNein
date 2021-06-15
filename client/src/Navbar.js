@@ -2,16 +2,34 @@ import React, { Component } from "react";
 import { Link } from 'react-router-dom';
 import './Navvar.css';
 import GlobalVal from "./pages/GlobalVal";
+import axios from 'axios';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class Navbar extends Component {
     constructor(props) {
         super(props);
-        this.state = { sidebar: false };
-
+        this.state = { 
+            sidebar: false,
+            data: ""
+        };
         this.toggleNav = this.toggleNav.bind(this)
+
     }
+
+    componentWillMount(){
+        try {
+            axios.post("http://localhost:80/getProfilePicture").then((res) => {
+                if(res.data){
+                    this.setState({data: res.data});
+                }else{
+                    this.setState({data: "https://via.placeholder.com/64"});
+                }
+              });
+        } catch (error) {
+            console.log(error);
+        }
+      }
 
     goBack(e) {
         e.preventDefault();
@@ -52,8 +70,8 @@ export default class Navbar extends Component {
         return (
             <div id="sideNav" class="sidenav">
                 <div class="userdata">
-                    <span class="ext-only fade-out">USERNAME</span>
-                    <img class="ext-only fade-out" src="https://via.placeholder.com/64" />
+                    <span class="ext-only fade-out">{GlobalVal.username}</span>
+                    <img class="ext-only fade-out" src={this.state.data} width="64" height="64"/>
                     <progress class="ext-only fade-out" id="file" max="100" value="70">70%</progress>
                     <span class="ext-only fade-out">3GB free of 10GB</span>
                 </div>

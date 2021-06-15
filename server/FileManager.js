@@ -21,6 +21,29 @@ cron.schedule('0 * * * *', () => {
 });
 
 //#region File management
+
+async function deleteProfilePicture(userID){
+    var filename =  fs.readdirSync(`${__dirname}/../ProfilePictures/`)
+    console.log(filename);
+    filename.forEach(file => {
+        if(file === userID+".png"){
+            fs.unlinkSync(`${__dirname}/../ProfilePictures/${userID}.png`)
+        }
+    })
+}
+
+function uploadProfilePicture(req, userID){
+    for (const key in req.files) {
+        const file = req.files[key];
+        file.originalname = userID;
+        const savePath = `${__dirname}/../ProfilePictures/${file.originalname}.png`;
+        fs.rename(file.path, savePath, function (error) {
+            if (error)
+                throw error;
+        })
+    } 
+}
+
 async function uploadFiles(req, userID, username, expires, tags = []) {
 
     var expirationDate = await db.readDataPromise('settings', { User: "Admin" })
@@ -115,6 +138,18 @@ async function getFiles(userID) {
     var error, files = await db.readDataPromise('file', { owner: userID })
     return files;
 }
+
+function getProfilePicture(userID){
+    try {
+        var img = fs.readFileSync(`${__dirname}/../ProfilePictures/${userID}.png`)
+        var base64 = Buffer.from(img).toString('base64');
+        base64='data:image/png;base64,'+ base64;
+        return base64; 
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 
 //#region //TODO untested
 async function getPath(fileID) {
@@ -452,5 +487,8 @@ module.exports = {
     compressFolder: compressFolder,
     spaceCheck: spaceCheck,
     checkSharelinkUsages: checkSharelinkUsages,
-    decreaseUsages: decreaseUsages
+    decreaseUsages: decreaseUsages,
+    getProfilePicture: getProfilePicture,
+    uploadProfilePicture: uploadProfilePicture,
+    deleteProfilePicture: deleteProfilePicture
 }
