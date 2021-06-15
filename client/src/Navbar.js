@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from 'react-router-dom';
-import './Navvar.css';
+import './Navbar.css';
 import GlobalVal from "./pages/GlobalVal";
 import axios from 'axios';
 

@@ -1,0 +1,79 @@
+/* * {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+} */
+
+@media screen and (max-width: 425px) {
+    #menubar {
+        align-items: center;
+        flex-direction: column;
+    }
+}
+
+#menubar {
+    color: lightgray;
+    background-color: #2B2B2B;
+    box-shadow: 0 4px;
+
+    font-size: 24px;
+    padding: 8px 16px;
+
+    display: flex;
+    justify-content: space-between;
+}
+
+#menubar div {
+    display: flex;
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+#menubar div:hover {
+    transform: scale(1.1);
+    color: #f1f1f1;
+
+}
+
+#fileContainer {
+    /* border: 1px dashed #ff0000; */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.file {
+    margin: 16px 4px 16px 4px;
+    padding: 16px;
+
+    font-size: 24px;
+    width: 128px;
+    height: 6.5em;
+    overflow: hidden;
+
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    transition: 0.3s;
+
+    /* border: 1px dashed black; */
+}
+
+.file:hover {
+    background-color: lightgray;
+}
+
+
+.file span {
+    display: block;
+    text-align: center;
+}
+
+.fileIcon {
+    height: 64px;
+}
+
+.fileName {
+    word-break: break-all;
+}
+
