@@ -14,6 +14,7 @@ import Upload from './pages/Upload';
 import Admin from './pages/Admin';
 import Storage from './pages/Storage';
 import ShareFile from './pages/ShareFile';
+import Fileexplorer from "./components/Fileexplorer";
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons';
@@ -39,6 +40,7 @@ function App() {
         <Route path="/Admin" component={Admin} />
         <Route path="/Storage" component={Storage} />
         <Route path="/ShareFile" component={ShareFile} />
+        <Route path="/test" component={Fileexplorer} />
       </Switch>
     </BrowserRouter>
   );
