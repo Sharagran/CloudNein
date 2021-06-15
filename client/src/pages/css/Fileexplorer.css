@@ -5,23 +5,20 @@
 } */
 
 #fileContainer {
-    border: 1px solid red;
-    /* display: flex;
+    border: 1px dashed #ff0000;
+    display: flex;
     justify-content: center;
-    align-items: center; */
-
-    /* flex-wrap: wrap; */
+    align-items: flex-start;
+    flex-wrap: wrap;
 }
 
 .file {
-    display: inline-block;
     margin: 16px 4px 16px 4px;
     padding: 16px;
-    vertical-align: top;
 
     font-size: 24px;
     width: 128px;
-    max-height: 6.5em;
+    height: 6.5em;
     overflow: hidden;
 
     cursor: pointer;
@@ -34,13 +31,13 @@
 }
 
 
-.fileIcon {
-    height: 64px;
-}
-
 .file span {
     display: block;
     text-align: center;
+}
+
+.fileIcon {
+    height: 64px;
 }
 
 .fileName {
