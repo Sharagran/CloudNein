@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import FileList from "./FileList";
 import Navbar from "../Navbar";
+import Menubar from "./Menubar";
+import FileList from "./FileList";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../pages/css/Fileexplorer.css';
 
@@ -97,6 +98,7 @@ export default function Fileexplorer() {
         <Navbar />
       </React.Suspense>
       <div id='main'>
+        <Menubar path="/home/" />
         <div id='fileContainer'>
         <FileList files={files} clickHandler={selectFile} />
         </div>
