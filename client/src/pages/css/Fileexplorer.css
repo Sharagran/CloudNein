@@ -4,10 +4,23 @@
     box-sizing: border-box;
 } */
 
+/* * {
+    user-select: none;
+} */
+
 @media screen and (max-width: 425px) {
     #menubar {
         align-items: center;
         flex-direction: column;
+    }
+
+    #menubar div {
+        width: 100%;
+        /* text-align: center; */
+    }
+    #menubar svg {
+        /* position: absolute; */
+        margin-right: 15%;
     }
 }
 
@@ -24,7 +37,6 @@
 }
 
 #menubar div {
-    display: flex;
     cursor: pointer;
 
     transition: 0.3s;
@@ -59,7 +71,7 @@
     /* border: 1px dashed black; */
 }
 
-.file:hover {
+.file:hover, .file-menu div:hover {
     background-color: lightgray;
 }
 
@@ -77,3 +89,11 @@
     word-break: break-all;
 }
 
+.file-menu div {
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.modal {
+    height: 100%;
+}

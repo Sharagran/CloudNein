@@ -1,6 +1,7 @@
 import React from 'react'
 import File from './File';
 
+
 export default function FileList({ files, clickHandler }) {
     return (
         files.map(file => {

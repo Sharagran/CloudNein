@@ -5,7 +5,6 @@ import FileList from "./FileList";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../pages/css/Fileexplorer.css';
 
-
 const testFiles = [
   {
     id: 1,
@@ -100,7 +99,7 @@ export default function Fileexplorer() {
       <div id='main'>
         <Menubar path="/home/" />
         <div id='fileContainer'>
-        <FileList files={files} clickHandler={selectFile} />
+          <FileList files={files} clickHandler={selectFile} />
         </div>
       </div>
     </>
