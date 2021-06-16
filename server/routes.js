@@ -124,10 +124,11 @@ router.get('/download/:id', async function (req, res) {
     fm.downloadFile(req.params.id, res);
 });
 
+//FIXME:Add download and adjust id
 router.get('/downloadZip/:id', async function (req, res) {
-   
+    var path = await fm.getPath("53d9a7c6-b0c2-4032-9a06-2be9e7e0d04a")
+    fm.compressFolder(path, "53d9a7c6-b0c2-4032-9a06-2be9e7e0d04a")
 });
-
 
 router.post('/storage', async function (req, res) {
     var files = await fm.getFiles(req.user.id);

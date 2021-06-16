@@ -155,12 +155,17 @@ function getProfilePicture(userID) {
 //#region //TODO untested
 async function getPath(fileID) {
     var file = await getFile(fileID);
+    console.log(file);
     var user = await db.readDataPromise('user', { id: file.owner });
     var username = user[0].username;
     var homePath = `${__dirname}/../UserFiles/${username}/`;
     var filePath = await getParentFolderpaths(fileID);
-
-    return join(homePath, filePath);
+    
+    if(file.isFolder){
+        return join(homePath);
+    }
+    
+    return join(homePath + filePath);
 }
 
 async function getParentFolderpaths(fileID) {
@@ -177,8 +182,10 @@ async function getParentFolderpaths(fileID) {
 }
 //#endregion
 
-function moveFile(fileID, path) {
-    throw { name: "NotImplementedError", message: "too lazy to implement" };
+async function moveFile(fileID, folderID) {
+    var file = await db.readDataPromise("file", { id: fileID })
+    await db.updateDataPromise('folder', { id: folderID }, { $push: { files: file[0] } })
+    //FIXME: Der vorherigen Eintrag löschen nach dem push
 }
 
 function deleteFile(fileID) {
@@ -360,11 +367,10 @@ async function compressFolder(path) {
 //FIXME: Eintrag in der DB erstellen damit die Daten geteilt werden können
 
 async function compressFolder(path, folderID) {
-    folderID = "44221bc7-e82a-4e99-9d3a-e2bc17dcde88" //FIXME: Test
 
     var archive = archiver('zip', { gzip: true, zlib: { level: 9 } });
-    var folder = await db.readDataPromise('folder', {id : folderID})
-    var output = fs.createWriteStream(`${__dirname}/../UserFiles/${folder[0].name}.zip`); //FIXME: Pfad anpassen
+    var folder = await db.readDataPromise('folder', { id: folderID })
+    var output = fs.createWriteStream(`${path}/${folder[0].name}.zip`); 
 
     archive.on('error', function (err) {
         throw err;
@@ -372,10 +378,9 @@ async function compressFolder(path, folderID) {
 
     archive.pipe(output);
 
-    //FIXME: auf das Array in Folders zugreifen
-    folder.forEach(file =>{
-        archive.file(path , { name: file.name });
-    })
+    for(var i = 0; i< folder[0].files.length; i++){
+        archive.file(path+folder[0].files[i].name , { name: folder[0].files[i].name });
+    }
 
     archive.finalize();
 }
