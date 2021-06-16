@@ -17,8 +17,35 @@ const file_type = [
     }
 ]
 
+const share_modal_props = {
+    label:'Share',
+    title:'Share file',
+    buttons:[{label: 'test', close:true, onClick: () => {console.log("click");}}]
+}
 
-export default function File({ name, isFolder, clickHandler }) {
+const edit_modal_props = {
+    label:'Edit',
+    title:'Share file',
+    content: <>
+    <input type="text" placeholder='comment' /> <br />
+    <input type="text" placeholder='tag' /> <br />
+    <label>Tags</label>
+    <ul>
+        <li>TestTag</li>
+        <li>TestTag</li>
+    </ul>
+    </>,
+    buttons:[{label: 'test', close:true, onClick: () => {console.log("click");}}]
+}
+
+const delete_modal_props = {
+    label: 'Delete',
+    title: `Delete file`,
+    content: 'Are you sure that you want to permanently delete this file?',
+    buttons: [{label: 'confirm', onClick: () => {console.log("click")}}]
+}
+
+export default function File({ name, isFolder, comment, tags }) {
     var fileIcon;
     if (isFolder) {
         fileIcon = 'folder';
@@ -37,12 +64,11 @@ export default function File({ name, isFolder, clickHandler }) {
     }
 
     const FileButton = React.forwardRef(({ open, ...props }, ref) => (
-        <div className="file" onClick={clickHandler} ref={ref} {...props}>
+        <div className="file" ref={ref} {...props}>
             <span className="fileIcon"><FontAwesomeIcon icon={fileIcon} size="2x" /></span>
             <span className="fileName">{name}</span>
         </div>
     ));
-
 
     return (
         <Popup
@@ -55,41 +81,40 @@ export default function File({ name, isFolder, clickHandler }) {
 
             <div className="file-menu">
                 <div className="menu-item">Download</div>
-                <div className="menu-item">Share</div>
-                <div className="menu-item">Edit</div>
-                <Popup trigger={<div className="menu-item">Delete</div>} modal nested>
+                <Modal {...share_modal_props} title={`Share ${name}`} />
+                <Modal {...edit_modal_props} title={`Edit ${name}`} comment={comment} tags={tags} />
+                <Modal {...delete_modal_props} title={`Delete ${name}`} />
+            </div>
+
+        </Popup>
+    )
+}
+
+
+ function Modal({ label, title, content, buttons, ...rest}) {
+    return (
+        <Popup trigger={<div className="menu-item">{label}</div>} modal nested>
                     {close => (
                         <div className=".modal-content">
                             <button className="close" onClick={close}>
                                 &times;
                             </button>
-                            <div className="header"> Modal Title </div>
-                            <div className="conten">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque, a nostrum.
-                                Dolorem, repellat quidem ut, minima sint vel eveniet quibusdam voluptates
-                                delectus doloremque, explicabo tempore dicta adipisci fugit amet dignissimos?
-                                <br />
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequatur sit
-                                commodi beatae optio voluptatum sed eius cumque, delectus saepe repudiandae
-                                explicabo nemo nam libero ad, doloribus, voluptas rem alias. Vitae?
+                            <div className="header">{title}</div>
+                            <div className="content">
+                                {content}
                             </div>
-                            <button className="button" onClick={() => {
-                                    console.log('modal closed ');
-                                    close();
+                            {buttons.map(button => {
+                                return <button className="button" onClick={() => {
+                                    button.onClick();
+                                    if(button.close) {
+                                        close();
+                                    }
                                 }}>
-                                Confirm deletion
-                            </button>
-                            <button className="button" onClick={() => {
-                                    console.log('modal closed ');
-                                    close();
-                                }}>
-                                close modal
-                            </button>
+                                    {button.label}
+                                </button>
+                            })}
                         </div>
                     )}
                 </Popup>
-            </div>
-
-        </Popup>
     )
 }
