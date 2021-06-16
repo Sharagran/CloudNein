@@ -74,8 +74,14 @@ router.post('/uploadCheck', async function (req, res) {
     }
 });
 
-router.post('/upload', upload.array("files"), async function (req, res) {
+router.post('/upload', upload.array("files"), function (req, res) {
     var responseJSON = fm.uploadFiles(req, req.user.id, req.user.username);
+    res.end(JSON.stringify(responseJSON));
+});
+
+router.post('/uploadProfilePicture', upload.array("files"), async function (req, res) {
+    await fm.deleteProfilePicture(req.user.id)
+    var responseJSON = fm.uploadProfilePicture(req, req.user.id);
     res.end(JSON.stringify(responseJSON));
 });
 
@@ -116,6 +122,12 @@ router.post('/storage', async function(req, res) {
     var files = await fm.getFiles(req.user.id);
     res.json(files);
 });
+
+
+router.post('/getProfilePicture', function(req, res) {
+    var img = fm.getProfilePicture(req.user.id)
+    res.send(img)
+})
 
 router.post('/checkSharelinkExpiration', async function (req, res) {
     var result = await fm.checkSharelinkExpirations(req.body.shareInformation.shareID);

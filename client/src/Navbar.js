@@ -2,15 +2,34 @@ import React, { Component } from "react";
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 import GlobalVal from "./pages/GlobalVal";
+import axios from 'axios';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class Navbar extends Component {
     constructor(props) {
         super(props);
-        this.state = { sidebar: false };
-
+        this.state = {
+            sidebar: false,
+            data: ""
+        };
         this.toggleNav = this.toggleNav.bind(this)
+
+    }
+
+
+    UNSAFE_componentWillMount() {
+        try {
+            axios.post("http://localhost:80/getProfilePicture").then((res) => {
+                if (res.data) {
+                    this.setState({ data: res.data });
+                } else {
+                    this.setState({ data: "https://via.placeholder.com/64" });
+                }
+            });
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     goBack(e) {
@@ -41,7 +60,6 @@ export default class Navbar extends Component {
                 element.classList.remove('fade-out');
             });
         }
-
     }
 
     updateUI() {
@@ -50,19 +68,19 @@ export default class Navbar extends Component {
 
     render() {
         return (
-            <div id="sideNav" class="sidenav">
-                <div class="userdata">
-                    <span class="ext-only fade-out">USERNAME</span>
-                    <img class="ext-only fade-out" src="https://via.placeholder.com/64" />
-                    <progress class="ext-only fade-out" id="file" max="100" value="70">70%</progress>
-                    <span class="ext-only fade-out">3GB free of 10GB</span>
+            <div id="sideNav" className="sidenav">
+                <div className="userdata">
+                    <span className="ext-only fade-out">{GlobalVal.username}</span>
+                    <img className="ext-only fade-out" src={this.state.data} width="64" height="64" />
+                    <progress className="ext-only fade-out" id="file" max="100" value="70">70%</progress>
+                    <span className="ext-only fade-out">3GB free of 10GB</span>
                 </div>
                 <Link to="/Storage"><FontAwesomeIcon icon='folder-open' /> Files</Link>
                 <Link to="/Upload"><FontAwesomeIcon icon='file-upload' /> Upload</Link>
                 <Link to="/Settings"><FontAwesomeIcon icon='sliders-h' /> Settings</Link>
                 <Link onClick={this.goBack}><FontAwesomeIcon icon='sign-out-alt' /> Logout</Link>
 
-                <a href="javascript:void(0)" class="togglebtn" onClick={this.toggleNav}><FontAwesomeIcon icon='bars' /></a>
+                <a href="javascript:void(0)" className="togglebtn" onClick={this.toggleNav}><FontAwesomeIcon icon='bars' /></a>
             </div>
         );
     }

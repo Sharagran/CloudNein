@@ -22,7 +22,7 @@ export default class ShareFile extends Component {
     };
   }
 
-  componentWillMount(){
+  UNSAFE_componentWillMount() {
     const queryParams = new URLSearchParams(window.location.search);
     shareID = queryParams.get('shareID');
     fileName = queryParams.get('fileName');
@@ -31,105 +31,98 @@ export default class ShareFile extends Component {
       shareID: shareID
     }
     try {
-    //Check if Link is expired
-    axios.post("http://localhost:80/checkSharelinkExpiration", {shareInformation}).then((res) => {
-      if(res.data){
-        expired = res.data
-        this.setState({message: "Sharelink is expired"})
-      }
-    })
+      //Check if Link is expired
+      axios.post("http://localhost:80/checkSharelinkExpiration", { shareInformation }).then((res) => {
+        if (res.data) {
+          expired = res.data
+          this.setState({ message: "Sharelink is expired" })
+        }
+      })
 
-    //Get File Information
-    
-      axios.post("http://localhost:80/getShareInformation", {shareInformation}).then((res) => {
+      //Get File Information
+      axios.post("http://localhost:80/getShareInformation", { shareInformation }).then((res) => {
         fileID = res.data.id
       })
     } catch (error) {
       console.log(error)
-      this.setState({message: "Error while checking link information"})
-    }
-}
-
-  onSubmit(e){
-    e.preventDefault();
-    try {
-    if(expired){
-      this.setState({message: "Download rejected because it's expired"})
-      return;
-    }
-
-    var shareInformation = {
-      shareID: shareID
-    }
-
-    if(confirmCounter > 0){
-      this.setState({message: "You already downloaded and confirmed the download"})
-      return;
-    }
-
-    //Check for usages
-
-    axios.post("http://localhost:80/checkSharelinkUsages", {shareInformation}).then((res) => {
-      console.log(res.data);
-      if(!res.data){
-        usages = res.data
-              axios({
-        url: 'http://localhost:80/download/'+ fileID,
-        method: 'GET',
-        responseType: 'blob',
-      }).then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', fileName); 
-        document.body.appendChild(link);
-        link.click();
-        this.setState({message: "Download successful"})
-
-      });
-      }else{
-        this.setState({message: "No usages"})
-      }
-    })
-
-
-    //Download
-    
-
-    } catch (error) {
-        console.log(error)
-        this.setState({message: "Error while preparing download"})
+      this.setState({ message: "Error while checking link information" })
     }
   }
 
-  onConfirmDownload(e){
+  onSubmit(e) {
     e.preventDefault();
-
     try {
-      if(expired){
-        this.setState({message: "Confirmation rejected because it's expired"})
+      if (expired) {
+        this.setState({ message: "Download rejected because it's expired" })
         return;
       }
-  
+
       var shareInformation = {
         shareID: shareID
       }
 
-      if(confirmCounter === 0){
-        axios.post("http://localhost:80/decreaseUsages", {shareInformation}).then((res) => {
-          console.log(res.data);
-          if(res.data){
-            this.setState({message: "Download confirmed"})
-            confirmCounter ++;
+      if (confirmCounter > 0) {
+        this.setState({ message: "You already downloaded and confirmed the download" })
+        return;
+      }
+
+      //Check for usages
+      axios.post("http://localhost:80/checkSharelinkUsages", { shareInformation }).then((res) => {
+        if (!res.data) {
+          usages = res.data
+          axios({
+            url: 'http://localhost:80/download/' + fileID,
+            method: 'GET',
+            responseType: 'blob',
+          }).then((response) => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            this.setState({ message: "Download successful" })
+
+          });
+        } else {
+          this.setState({ message: "No usages: redirect after 2 seconds" })
+          setTimeout(() => {
+            this.props.history.push('/');
+          }, 2000)
+        }
+      })
+    } catch (error) {
+      console.log(error)
+      this.setState({ message: "Error while preparing download" })
+    }
+  }
+
+  onConfirmDownload(e) {
+    e.preventDefault();
+    try {
+      if (expired) {
+        this.setState({ message: "Confirmation rejected because it's expired" })
+        return;
+      }
+
+      var shareInformation = {
+        shareID: shareID
+      }
+
+      if (confirmCounter === 0) {
+        axios.post("http://localhost:80/decreaseUsages", { shareInformation }).then((res) => {
+          if (res.data) {
+            this.setState({ message: "Download confirmed" })
+            confirmCounter++;
             return;
           }
-        })     
-      }else {
-        this.setState({message: "You have already confirmed the download"})
+        })
+      } else {
+        this.setState({ message: "You have already confirmed the download" })
       }
     } catch (error) {
       console.log(error);
-      this.setState({message: "Error while confirmation"})
+      this.setState({ message: "Error while confirmation" })
     }
   }
 
@@ -137,9 +130,9 @@ export default class ShareFile extends Component {
   // This following section will display the form that takes the input from the user.
   render() {
     return (
-        <>
-          <div className="login-form">
-            <Popup trigger={<input value={"Download " + fileName}></input>} position="bottom center">
+      <>
+        <div className="login-form">
+          <Popup trigger={<input value={"Download " + fileName}></input>} position="bottom center">
             <div>
               <form onSubmit={this.onUpdate}>
                 <input type="submit" value="Download " onClick={this.onSubmit}></input>
@@ -147,9 +140,9 @@ export default class ShareFile extends Component {
               </form>
             </div>
           </Popup>
-            <h1>{this.state.message}</h1>
-          </div>
-        </>
+          <h1>{this.state.message}</h1>
+        </div>
+      </>
     );
   }
 }
