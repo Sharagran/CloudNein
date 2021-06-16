@@ -7,7 +7,7 @@ const { join } = require('path');
 var cron = require('node-cron');
 const nodemailer = require("nodemailer");
 var { zip } = require('zip-a-folder');
-
+var archiver = require('archiver');
 
 // every minute==0 (every hour)
 cron.schedule('0 * * * *', () => {
@@ -22,17 +22,17 @@ cron.schedule('0 * * * *', () => {
 
 //#region File management
 
-async function deleteProfilePicture(userID){
-    var filename =  fs.readdirSync(`${__dirname}/../ProfilePictures/`)
+async function deleteProfilePicture(userID) {
+    var filename = fs.readdirSync(`${__dirname}/../ProfilePictures/`)
     console.log(filename);
     filename.forEach(file => {
-        if(file === userID+".png"){
+        if (file === userID + ".png") {
             fs.unlinkSync(`${__dirname}/../ProfilePictures/${userID}.png`)
         }
     })
 }
 
-function uploadProfilePicture(req, userID){
+function uploadProfilePicture(req, userID) {
     for (const key in req.files) {
         const file = req.files[key];
         file.originalname = userID;
@@ -41,7 +41,7 @@ function uploadProfilePicture(req, userID){
             if (error)
                 throw error;
         })
-    } 
+    }
     return true
 }
 
@@ -91,7 +91,7 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
 //TODO: max downloads for files/folders
 
 //TODO: expires for folder
-async function createFolder(parentID, name) {
+async function createFolder(parentID, name, userID) {
     const id = uuidv4();
     await db.createDataPromise('folder', {
         id: id,
@@ -140,12 +140,12 @@ async function getFiles(userID) {
     return files;
 }
 
-function getProfilePicture(userID){
+function getProfilePicture(userID) {
     try {
         var img = fs.readFileSync(`${__dirname}/../ProfilePictures/${userID}.png`)
         var base64 = Buffer.from(img).toString('base64');
-        base64='data:image/png;base64,'+ base64;
-        return base64; 
+        base64 = 'data:image/png;base64,' + base64;
+        return base64;
     } catch (error) {
         console.log(error);
     }
@@ -306,11 +306,11 @@ async function usedSpace(userID) {
     var size = 0;
     try {
         var error, result = await db.readDataPromise('file', { owner: userID });
-    
+
         result.forEach(file => {
             size += file.fileSize
         })
-        return parseFloat(size /1000000 ).toFixed(2);
+        return parseFloat(size / 1000000).toFixed(2);
     } catch (error) {
         console.log(error);
     }
@@ -347,11 +347,40 @@ async function checkUploadLimit(userID) {
 //#endregion
 
 //#region Download
+/*
 async function compressFolder(path) {
+
+
     var zipPath = path + '.zip';
     await zip(path, zipPath);
     return zipPath;
 }
+*/
+
+//FIXME: Eintrag in der DB erstellen damit die Daten geteilt werden können
+
+async function compressFolder(path, folderID) {
+    folderID = "44221bc7-e82a-4e99-9d3a-e2bc17dcde88" //FIXME: Test
+
+    var archive = archiver('zip', { gzip: true, zlib: { level: 9 } });
+    var folder = await db.readDataPromise('folder', {id : folderID})
+    var output = fs.createWriteStream(`${__dirname}/../UserFiles/${folder[0].name}.zip`); //FIXME: Pfad anpassen
+
+    archive.on('error', function (err) {
+        throw err;
+    });
+
+    archive.pipe(output);
+
+    //FIXME: auf das Array in Folders zugreifen
+    folder.forEach(file =>{
+        archive.file(path , { name: file.name });
+    })
+
+    archive.finalize();
+}
+
+
 
 async function downloadFile(id, res) {
     //TODO: check usages
@@ -508,5 +537,6 @@ module.exports = {
     getProfilePicture: getProfilePicture,
     uploadProfilePicture: uploadProfilePicture,
     deleteProfilePicture: deleteProfilePicture,
-    usedSpace: usedSpace
+    usedSpace: usedSpace,
+    getPath: getPath
 }

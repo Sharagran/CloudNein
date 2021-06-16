@@ -27,7 +27,7 @@ const excluded_urls = [
 app.use(express.static("public"));
 app.use(cors());
 app.use(parser.urlencoded({ extended: true, limit: "50mb" }));
-app.use(parser.json({extended: true, limit: "50mb"}))
+app.use(parser.json({ extended: true, limit: "50mb" }))
 app.use(express.json())
 
 // FIXME: debug only
