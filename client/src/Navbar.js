@@ -11,7 +11,11 @@ export default class Navbar extends Component {
         super(props);
         this.state = {
             sidebar: false,
-            data: ""
+            image: "",
+            usedSpace: "",
+            maxSpace: "",
+            usedSpacePercent: "",
+            freeSpace: ""
         };
         this.toggleNav = this.toggleNav.bind(this)
 
@@ -19,17 +23,33 @@ export default class Navbar extends Component {
 
 
     UNSAFE_componentWillMount() {
+        //Holt sich das Profilbild
         try {
             axios.post("http://localhost:80/getProfilePicture").then((res) => {
                 if (res.data) {
-                    this.setState({ data: res.data });
+                    this.setState({ image: res.data });
                 } else {
-                    this.setState({ data: "https://via.placeholder.com/64" });
+                    this.setState({ image: "https://via.placeholder.com/64" });
                 }
             });
         } catch (error) {
             console.log(error);
         }
+        //Holt sich den gesamten Speicher und den aktuell verwendeten speicher
+
+        try {
+            axios.post("http://localhost:80/getStorageSpaceInformation").then((res) => {
+                this.setState({
+                    maxSpace: res.data.dataLimit,
+                    usedSpace: res.data.usedSpace,
+                    usedSpacePercent: 100 / res.data.dataLimit * res.data.usedSpace,
+                    freeSpace: res.data.dataLimit - res.data.usedSpace
+                })
+            })
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
     goBack(e) {
@@ -71,9 +91,9 @@ export default class Navbar extends Component {
             <div id="sideNav" className="sidenav">
                 <div className="userdata">
                     <span className="ext-only fade-out">{GlobalVal.username}</span>
-                    <img className="ext-only fade-out" src={this.state.data} width="64" height="64" />
-                    <progress className="ext-only fade-out" id="file" max="100" value="70">70%</progress>
-                    <span className="ext-only fade-out">3GB free of 10GB</span>
+                    <img className="ext-only fade-out" src={this.state.image} width="64" height="64" />
+                    <progress className="ext-only fade-out" id="file" max="100" value={this.state.usedSpacePercent}></progress>
+                    <span className="ext-only fade-out">{this.state.freeSpace}MB free of {this.state.maxSpace}MB </span>
                 </div>
                 <Link to="/Storage"><FontAwesomeIcon icon='folder-open' /> Files</Link>
                 <Link to="/Upload"><FontAwesomeIcon icon='file-upload' /> Upload</Link>

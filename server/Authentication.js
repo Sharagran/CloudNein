@@ -157,15 +157,15 @@ function createUserHomeDirectory(username) {
 
 async function forgotPassword(email) {
 
-  var email = await db.readDataPromise('user', { email: email })
-    if (email.length < 1) {
+  var emailCheck = await db.readDataPromise('user', { email: email })
+    if (emailCheck.length < 1) {
       console.log("Email nicht gefunden");
     } else {
-      newPassword = generatePassword();
+      var newPassword = generatePassword();
       hash_password(newPassword, async (error, hash) => {
         if (error) throw error;
         await db.updateDataPromise("user", { email: email }, { $set: { password: hash } })
-        sendNewPassword(result[0].email, newPassword, (error, info) => {
+        sendNewPassword(email, newPassword, (error, info) => {
           if (error) throw error;
           return true;
         });
