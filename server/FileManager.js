@@ -310,7 +310,6 @@ async function usedSpace(userID) {
         result.forEach(file => {
             size += file.fileSize
         })
-        
         return parseFloat(size /1000000 ).toFixed(2);
     } catch (error) {
         console.log(error);
