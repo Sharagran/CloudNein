@@ -39,26 +39,24 @@ export default class Storage extends Component {
   }
 
   onChangeTag(e) {
-    this.setState({tag: e.target.value});
+    this.setState({ tag: e.target.value });
   }
 
   onChangeComment(e) {
-    this.setState({comment: e.target.value});
+    this.setState({ comment: e.target.value });
   }
 
   onChangEmail(e) {
-    this.setState({email: e.target.value});
+    this.setState({ email: e.target.value });
   }
 
   onChangeDays(e) {
-    this.setState({days: e.target.value});
+    this.setState({ days: e.target.value });
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     try {
-      axios
-        .post("http://localhost:80/storage")
-        .then((res) => {
+      axios.post("http://localhost:80/storage").then((res) => {
           data = res.data
 
           //Split für Filename
@@ -73,7 +71,7 @@ export default class Storage extends Component {
             var th1 = document.createElement('th');
             tr.appendChild(th1);
             th1.name = "Andre"
-            th1.innerHTML +=  data[j].name; //fileName[j];
+            th1.innerHTML += data[j].name; //fileName[j];
             var th2 = document.createElement('th');
             tr.appendChild(th2);
             th2.id = "tag" + j
@@ -94,8 +92,8 @@ export default class Storage extends Component {
           }
         });
     } catch (error) {
-        console.log(error);
-        this.setState({ message: "Error while loading Files" })
+      console.log(error);
+      this.setState({ message: "Error while loading Files" })
     }
   }
 
@@ -111,28 +109,26 @@ export default class Storage extends Component {
           }
 
           console.log(fileInforamtion)
-          axios.post("http://localhost:80/updateFileInformation", { fileInforamtion }).then((res) => {
-            console.log(res.data)
-          })
+          axios.post("http://localhost:80/updateFileInformation", { fileInforamtion })
 
-          if(fileInforamtion.tag.length > 0) {
-            document.getElementById("tag" + i).innerHTML = document.getElementById("tag" + i).innerHTML +"," + fileInforamtion.tag;
+          if (fileInforamtion.tag.length > 0) {
+            document.getElementById("tag" + i).innerHTML = document.getElementById("tag" + i).innerHTML + "," + fileInforamtion.tag;
           }
 
-          if(fileInforamtion.comment.length > 0){
+          if (fileInforamtion.comment.length > 0) {
             document.getElementById("comment" + i).innerHTML = fileInforamtion.comment;
           }
 
           this.setState({ message: "Updated" })
-          this.setState({tag: ""})
+          this.setState({ tag: "" })
           break;
-        }else {
+        } else {
           this.setState({ message: "Select a File" })
         }
       }
     } catch (error) {
-        console.log(error)
-        this.setState({ message: "Error while updating tags and comments" })
+      console.log(error)
+      this.setState({ message: "Error while updating tags and comments" })
     }
   }
 
@@ -145,7 +141,7 @@ export default class Storage extends Component {
           fileID = data[i].id;
           file = data[i].name;
           break;
-        } else if(i === data.length - 1 && !document.getElementById(data.length - 1).checked) {
+        } else if (i === data.length - 1 && !document.getElementById(data.length - 1).checked) {
           this.setState({ message: "Select a File" })
           return
         }
@@ -163,11 +159,11 @@ export default class Storage extends Component {
         link.setAttribute('download', file);
         document.body.appendChild(link);
         link.click();
-        this.setState({ message: ""})
+        this.setState({ message: "" })
       });
     } catch (error) {
-        console.log(error)
-        this.setState({ message: "Error while preparing download" })
+      console.log(error)
+      this.setState({ message: "Error while preparing download" })
     }
   }
 
@@ -180,31 +176,28 @@ export default class Storage extends Component {
           var counter;
           fileID = data[i].id;
 
-          if(document.getElementById("deleteAfterDownload").checked){
+          if (document.getElementById("deleteAfterDownload").checked) {
             counter = allEmails.length
           }
-          
+
           const shareInformation = {
             email: allEmails,
             days: this.state.days,
             fileID: data[i].id,
             fileName: data[i].name,
-            usages: counter 
+            usages: counter
           }
 
-          axios.post("http://localhost:80/share", { shareInformation }).then((res) => {
-            console.log(res.data)
-          })
-          
-          this.setState({ message: "Links send"})
+          axios.post("http://localhost:80/share", { shareInformation })
+          this.setState({ message: "Links send" })
           break;
         } else if (i === data.length - 1 && !document.getElementById(data.length - 1).checked) {
           this.setState({ message: "Select a File" })
         }
       }
     } catch (error) {
-        console.log(error)
-        this.setState({ message: "Error while creating the share Link " })
+      console.log(error)
+      this.setState({ message: "Error while creating the share Link " })
     }
   }
 

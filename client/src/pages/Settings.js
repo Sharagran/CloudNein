@@ -15,10 +15,11 @@ export default class Settings extends Component {
     this.onSubmitMail = this.onSubmitMail.bind(this);
     this.goBack = this.goBack.bind(this)
     this.onFileUpload = this.onFileUpload.bind(this)
+    this.onFileChange = this.onFileChange.bind(this)
 
     this.state = {
       username: "",
-      mail: "", 
+      mail: "",
       previousUsername: "",
       data: "",
       selectedFile: null,
@@ -26,27 +27,26 @@ export default class Settings extends Component {
     };
   }
 
-
-
   // These methods will update the state properties.
   onChangeUsername(e) {
-    this.setState({username: e.target.value});
+    this.setState({ username: e.target.value });
   }
 
   onChangeMail(e) {
-	this.setState({mail: e.target.value});  
+    this.setState({ mail: e.target.value });
   }
 
-  goBack(e){
+  goBack(e) {
     e.preventDefault();
     this.props.history.push("/home");
   }
 
-  onFileChange = event => {
-    this.setState({ selectedFile: event.target.files});
-  };
+  onFileChange(e) {
+    e.preventDefault();
+    this.setState({ selectedFile: e.target.files });
+  }
 
-// This function will handle the submission.
+  // This function will handle the submission.
   onSubmitUsername(e) {
     e.preventDefault();
 
@@ -56,13 +56,13 @@ export default class Settings extends Component {
       previousUsername: GlobalVal.username
     };
 
-    axios
-      .post("http://localhost:80/settings", {user})
-      .then((res) => console.log(res.data));
-
-  
-    GlobalVal.username = user.username; 
-    console.log(GlobalVal.username)
+    try {
+      axios.post("http://localhost:80/settings", { user })
+      GlobalVal.username = user.username;
+      this.setState({ message: "Updated Username"})
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   onSubmitMail(e) {
@@ -72,37 +72,34 @@ export default class Settings extends Component {
     const user = {
       mail: this.state.mail,
     };
-    
-    axios
-      .post("http://localhost:80/settings", {user})
-      .then((res) => console.log(res.data));
-
-    GlobalVal.email = user.mail; 
-  }
-
-  onFileUpload (e) {
-    e.preventDefault();
     try {
-
-          // Create an object of formData
-      const formData = new FormData();
-      for(var x = 0; x < this.state.selectedFile.length; x++){
-        formData.append("files", this.state.selectedFile[x])
-      }
-      console.log(formData);
-
-      console.log(formData)
-      axios.post("http://localhost:80/uploadProfilePicture", formData);
-      document.getElementById("upload").value = "";
-      this.setState({selectedFile: null})
-    }catch (error) {
+      axios.post("http://localhost:80/settings", { user })
+      GlobalVal.email = user.mail;
+      this.setState({ message: "Updated E-Mail"})
+    } catch (error) {
       console.log(error);
     }
-  } 
+  }
+
+  onFileUpload(e) {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      for (var x = 0; x < this.state.selectedFile.length; x++) {
+        formData.append("files", this.state.selectedFile[x])
+      }
+      axios.post("http://localhost:80/uploadProfilePicture", formData);
+      document.getElementById("upload").value = "";
+      this.setState({ selectedFile: null })
+      this.setState({ message: "Uploaded Picture"})
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   // This following section will display the form that takes the input from the user.
   render() {
-    if(getToken === ""){
+    if (getToken === "") {
       return (
         <>
           <div className="login-form">
@@ -112,23 +109,24 @@ export default class Settings extends Component {
       );
     }
     return (
-			<>
-			<div className="register-form">
-				<h1>Settings</h1> <button className="logoutLblPos" onClick={this.goBack}>zurück</button>
-				<form action="/settings" method="POST" onSubmit={this.onSubmitUsername}>
-					<input type="text" name="username" placeholder="Username (6 characters minimum)"  minLength="6" onChange={this.onChangeUsername} required></input>
-          <input type="submit" value="Update Username"></input>
-        </form>
-        <form onSubmit={this.onSubmitMail}>
-          <input type="text" name="mail" placeholder="E-Mail" minLength="6" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeMail} required ></input>
-					<input type="submit" value="Update E-Mail"></input>
-        </form>
-        <form>
-          <input id="upload" type="file" name="files "accept="image/png" onChange={this.onFileChange}></input>
-          <input type="submit" value="Upload Picture" onClick={this.onFileUpload}></input>
-        </form>
-			</div>
-			</>
+      <>
+        <div className="register-form">
+          <h1>Settings</h1> <button className="logoutLblPos" onClick={this.goBack}>zurück</button>
+          <form action="/settings" method="POST" onSubmit={this.onSubmitUsername}>
+            <input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
+            <input type="submit" value="Update Username"></input>
+          </form>
+          <form onSubmit={this.onSubmitMail}>
+            <input type="text" name="mail" placeholder="E-Mail" minLength="6" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeMail} required ></input>
+            <input type="submit" value="Update E-Mail"></input>
+          </form>
+          <form>
+            <input id="upload" type="file" name="files " accept="image/png" onChange={this.onFileChange}></input>
+            <input type="submit" value="Upload Picture" onClick={this.onFileUpload}></input>
+          </form>
+          <h1>{this.state.message}</h1>
+        </div>
+      </>
     );
   }
 }

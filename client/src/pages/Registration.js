@@ -9,37 +9,37 @@ export default class Registration extends Component {
 
     this.onChangeUsername = this.onChangeUsername.bind(this);
     this.onChangePassword = this.onChangePassword.bind(this);
-	  this.onChangeMail = this.onChangeMail.bind(this);
+    this.onChangeMail = this.onChangeMail.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.goBack = this.goBack.bind(this)
 
     this.state = {
       username: "",
       password: "",
-	    mail: "",
+      mail: "",
       message: ""
     };
   }
 
   // These methods will update the state properties.
   onChangeUsername(e) {
-    this.setState({username: e.target.value});
+    this.setState({ username: e.target.value });
   }
 
   onChangeMail(e) {
-	  this.setState({mail: e.target.value});  
+    this.setState({ mail: e.target.value });
   }
 
   onChangePassword(e) {
-    this.setState({password: e.target.value});
+    this.setState({ password: e.target.value });
   }
 
-  goBack(e){
+  goBack(e) {
     e.preventDefault();
-    this.props.history.goBack();
+    this.props.history.push('/');
   }
 
-// This function will handle the submission.
+  // This function will handle the submission.
   onSubmit(e) {
     e.preventDefault();
 
@@ -49,42 +49,37 @@ export default class Registration extends Component {
         password: this.state.password,
         mail: this.state.mail
       };
-  
+
       axios
-        .post("http://localhost:80/register", {user})
+        .post("http://localhost:80/register", { user })
         .then((res) => {
-          if (res.data === true){
+          if (res.data === true) {
             this.props.history.push('/success')
-          }else{
+          } else {
             this.props.history.push('/failed')
           }
         });
-    }catch (error){
+    } catch (error) {
       console.log(error)
-      this.setState({message: "Error while registration"})
+      this.setState({ message: "Error while registration" })
     }
-    // When post request is sent to the create url, axios will add a new record(user) to the database.
-
-
-    // We will empty the state after posting the data to the database
-
   }
 
   // This following section will display the form that takes the input from the user.
   render() {
     return (
-			<>
-			<div class="register-form"> 
-				<h1>Registration</h1> <button class="logoutLblPos" onClick={this.goBack}>zurück</button>
-				<form action="/Registration" method="POST" onSubmit={this.onSubmit}>
-					<input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
-					<input type="text" name="mail" placeholder="E-Mail" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeMail} required ></input>
-					<input id="password"type="password" name="password" placeholder="Password (6 characters minimum)" minLength="6" onChange={this.onChangePassword} required ></input>
-					<input type="submit" value="Create Account"></input>
-				</form>
-        <h1>{this.state.message}</h1>
-			</div>
-			</>
+      <>
+        <div className="register-form">
+          <h1>Registration</h1> <button className="logoutLblPos" onClick={this.goBack}>zurück</button>
+          <form action="/Registration" method="POST" onSubmit={this.onSubmit}>
+            <input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
+            <input type="text" name="mail" placeholder="E-Mail" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeMail} required ></input>
+            <input id="password" type="password" name="password" placeholder="Password (6 characters minimum)" minLength="6" onChange={this.onChangePassword} required ></input>
+            <input type="submit" value="Create Account"></input>
+          </form>
+          <h1>{this.state.message}</h1>
+        </div>
+      </>
     );
   }
 }

@@ -35,9 +35,9 @@ export default function File({ name, isFolder, clickHandler }) {
     }
 
     return (
-        <div class="file" onClick={clickHandler}>
-            <span class="fileIcon"><FontAwesomeIcon icon={fileIcon} size="2x" /></span>
-            <span class="fileName">{name}</span>
+        <div className="file" onClick={clickHandler}>
+            <span className="fileIcon"><FontAwesomeIcon icon={fileIcon} size="2x" /></span>
+            <span className="fileName">{name}</span>
         </div>
     )
 }
