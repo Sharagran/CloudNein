@@ -46,7 +46,7 @@ export default function File({ name, isFolder, clickHandler }) {
 
     return (
         <Popup
-            trigger={<FileButton />} {/* TODO add tooltip */}
+            trigger={<FileButton />}
             position="bottom"
             // contentStyle={{ padding: '0px', border: 'none' }}
             arrow={true}
@@ -55,8 +55,8 @@ export default function File({ name, isFolder, clickHandler }) {
 
             <div className="file-menu">
                 <div className="menu-item">Download</div>
-                <div className="menu-item">Share</div> {/* TODO Add modal */}
-                <div className="menu-item">Edit</div> {/* TODO Add modal */}
+                <div className="menu-item">Share</div>
+                <div className="menu-item">Edit</div>
                 <Popup trigger={<div className="menu-item">Delete</div>} modal nested>
                     {close => (
                         <div className=".modal-content">
