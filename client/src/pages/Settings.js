@@ -59,7 +59,7 @@ export default class Settings extends Component {
     try {
       axios.post("http://localhost:80/settings", { user })
       GlobalVal.username = user.username;
-      this.setState({ message: "Updated Username"})
+      this.setState({ message: "Updated Username" })
     } catch (error) {
       console.log(error);
     }
@@ -75,7 +75,7 @@ export default class Settings extends Component {
     try {
       axios.post("http://localhost:80/settings", { user })
       GlobalVal.email = user.mail;
-      this.setState({ message: "Updated E-Mail"})
+      this.setState({ message: "Updated E-Mail" })
     } catch (error) {
       console.log(error);
     }
@@ -88,10 +88,15 @@ export default class Settings extends Component {
       for (var x = 0; x < this.state.selectedFile.length; x++) {
         formData.append("files", this.state.selectedFile[x])
       }
-      axios.post("http://localhost:80/uploadProfilePicture", formData);
+      axios.post("http://localhost:80/uploadProfilePicture", formData).then(res => {
+        if (res.data) {
+          this.setState({ message: "Uploaded Picture" })
+        } else {
+          this.setState({ message: "Error while uploading picture Picture" })
+        }
+      });
       document.getElementById("upload").value = "";
       this.setState({ selectedFile: null })
-      this.setState({ message: "Uploaded Picture"})
     } catch (error) {
       console.log(error);
     }

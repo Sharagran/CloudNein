@@ -81,8 +81,14 @@ router.post('/upload', upload.array("files"), function (req, res) {
 
 router.post('/uploadProfilePicture', upload.array("files"), async function (req, res) {
     await fm.deleteProfilePicture(req.user.id)
-    var responseJSON = fm.uploadProfilePicture(req, req.user.id);
-    res.end(JSON.stringify(responseJSON));
+    var result = fm.uploadProfilePicture(req, req.user.id);
+    res.send(result)
+});
+
+router.post('/getStorageSpaceInformation', async function (req, res) {
+    var dataLimit = await fm.getDataLimit()
+    var usedSpace = await fm.usedSpace(req.user.id)
+    res.send({dataLimit, usedSpace})
 });
 
 router.post("/share", async function (req, res) {

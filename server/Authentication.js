@@ -24,7 +24,7 @@ function hash_password(password, callback) {
     console.log('Your hash: ', hash);
     callback(error, hash);
   });
-};
+}
 
 //Vergleicht zwei hashes
 function compare_hash(password, hashFromDB, callback) {
@@ -35,17 +35,17 @@ function compare_hash(password, hashFromDB, callback) {
       callback(error, match);
     }
   });
-};
+}
 
 //Passwort vergessen funktion
 function sendNewPassword(receiver, newPassword, callback) {
 
   const transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'cloudneinofficial@gmail.com', pass: 'CloudNein' }, });
-  var mailOptions = { 
-    from: 'cloudneinofficial@gmail.com', 
-    to: receiver, 
-    subject: 'Your CloudNein Password', 
-    text: "Your new password: " + newPassword 
+  var mailOptions = {
+    from: 'cloudneinofficial@gmail.com',
+    to: receiver,
+    subject: 'Your CloudNein Password',
+    text: "Your new password: " + newPassword
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
@@ -65,13 +65,13 @@ function generatePassword() {
   return newPW
 };
 
-async function changeUsername(userID, newUsername, previousUsername){
-  var error, usernameCheck = await db.readDataPromise('user', {username: newUsername})
+async function changeUsername(userID, newUsername, previousUsername) {
+  var error, usernameCheck = await db.readDataPromise('user', { username: newUsername })
   console.log(usernameCheck);
-  if(usernameCheck.length == 0){
-    var error, result = await db.updateDataPromise('user', {id: userID}, {$set: {username: newUsername}})
+  if (usernameCheck.length == 0) {
+    var error, result = await db.updateDataPromise('user', { id: userID }, { $set: { username: newUsername } })
     console.log(result);
-    fs.rename("../UserFiles/"+ previousUsername, "../UserFiles/"+ newUsername, function(err) {
+    fs.rename("../UserFiles/" + previousUsername, "../UserFiles/" + newUsername, function (err) {
       if (err) {
         console.error(err)
       } else {
@@ -79,13 +79,13 @@ async function changeUsername(userID, newUsername, previousUsername){
       }
     })
   }
-} 
+}
 
-async function changeMail(userID, newMail){
-  var error, mailCheck = await db.readDataPromise('user', {email: newMail})
+async function changeMail(userID, newMail) {
+  var error, mailCheck = await db.readDataPromise('user', { email: newMail })
   console.log(mailCheck);
-  if(mailCheck.length == 0){
-    var error, result = await db.updateDataPromise('user', {id: userID}, {$set: {email: newMail}})
+  if (mailCheck.length == 0) {
+    var error, result = await db.updateDataPromise('user', { id: userID }, { $set: { email: newMail } })
     console.log(result);
   }
 }
@@ -118,63 +118,62 @@ async function login(username, password) {
 
 async function register(email, username, password) {
   //prüfen, ob Name und Email vorhanden sind, wen nicht dann hashen und speichern
-    try {
-      var error, resultUsername = await db.readDataPromise("user", { username: username});
-      if(resultUsername.length > 0){
-        console.log("Username already taken");
+  try {
+    var error, resultUsername = await db.readDataPromise("user", { username: username });
+    if (resultUsername.length > 0) {
+      console.log("Username already taken");
+      return false
+    } else {
+      var error, resultEmail = await readDataPromise("user", { email: email });
+      if (resultEmail.length > 0) {
+        console.log("Mail already taken");
         return false
-      }else {
-        var error, resultEmail = await readDataPromise("user", {email: email });
-        if(resultEmail.length > 0){
-          console.log("Mail already taken");
-          return false
-        }else{
-          hash_password(password, (error, hash) => {
-            if (error) throw error;
-            const id = uuidv4();
-            db.createDataPromise('user', {
-              id: id,
-              username: username,
-              password: hash,
-              email: email
-            });
-            createUserHomeDirectory(username);
+      } else {
+        hash_password(password, (error, hash) => {
+          if (error) throw error;
+          const id = uuidv4();
+          db.createDataPromise('user', {
+            id: id,
+            username: username,
+            password: hash,
+            email: email
+          });
+          createUserHomeDirectory(username);
         })
         return true
       }
     }
-    } catch (error) {
-      console.log(error);
-    }
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 function createUserHomeDirectory(username) {
   //var folderPath = join(__dirname, '../UserFiles', username);
   var folderPath = join(`${__dirname}/../UserFiles/${username}`);
-
   fs.mkdirSync(folderPath);
 }
 
 async function forgotPassword(email) {
 
-  var email = await db.readDataPromise('user', { email: email })
-    if (email.length < 1) {
-      console.log("Email nicht gefunden");
-    } else {
-      newPassword = generatePassword();
-      hash_password(newPassword, async (error, hash) => {
+  var emailCheck = await db.readDataPromise('user', { email: email })
+  if (emailCheck.length < 1) {
+    console.log("Email nicht gefunden");
+  } else {
+    var newPassword = generatePassword();
+    hash_password(newPassword, async (error, hash) => {
+      if (error) throw error;
+      await db.updateDataPromise("user", { email: email }, { $set: { password: hash } })
+      sendNewPassword(email, newPassword, (error, info) => {
         if (error) throw error;
-        await db.updateDataPromise("user", { email: email }, { $set: { password: hash } })
-        sendNewPassword(result[0].email, newPassword, (error, info) => {
-          if (error) throw error;
-          return true;
-        });
-      })
-    };
+        return true;
+      });
+    })
   }
+}
 
 function sign(user) {
-  const payload = {id: user.id, username: user.username, email: user.email };
+  const payload = { id: user.id, username: user.username, email: user.email };
   const token = jwt.sign(payload, config.secret, { expiresIn: '30m' }); //FIXME: expiresIn
 
   return token;

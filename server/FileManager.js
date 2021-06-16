@@ -42,6 +42,7 @@ function uploadProfilePicture(req, userID){
                 throw error;
         })
     } 
+    return true
 }
 
 async function uploadFiles(req, userID, username, expires, tags = []) {
@@ -293,8 +294,26 @@ function createUploadSettings() {
 }
 
 async function getDataLimit() {
-    var error, result = await db.readDataPromise('settings', { User: "Admin" });
-    return result[0].limit / 1000000;
+    try {
+        var error, result = await db.readDataPromise('settings', { User: "Admin" });
+        return result[0].limit / 1000000;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function usedSpace(userID) {
+    var size = 0;
+    try {
+        var error, result = await db.readDataPromise('file', { owner: userID });
+    
+        result.forEach(file => {
+            size += file.fileSize
+        })
+        return parseFloat(size /1000000 ).toFixed(2);
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 async function getExpirationDate() {
@@ -411,8 +430,6 @@ async function checkSharelinkExpirations(shareID) {
     return shareLinkExpired;
 }
 
-//TODO: check before every download @Andre
-//Evtl überflüssig? Nach der Bestätigung kann nichts geladen werden und bei einem Refresh würde der link gelöscht werden
 async function checkSharelinkUsages(shareID) {
     var query = shareID ? { shareID: shareID } : {};
     var shareLinkUsed = false;
@@ -490,5 +507,6 @@ module.exports = {
     decreaseUsages: decreaseUsages,
     getProfilePicture: getProfilePicture,
     uploadProfilePicture: uploadProfilePicture,
-    deleteProfilePicture: deleteProfilePicture
+    deleteProfilePicture: deleteProfilePicture,
+    usedSpace: usedSpace
 }

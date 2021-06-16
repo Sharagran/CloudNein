@@ -74,8 +74,8 @@ export default class ShareFile extends Component {
             url: 'http://localhost:80/download/' + fileID,
             method: 'GET',
             responseType: 'blob',
-          }).then((response) => {
-            const url = window.URL.createObjectURL(new Blob([response.data]));
+          }).then((res) => {
+            const url = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', fileName);
