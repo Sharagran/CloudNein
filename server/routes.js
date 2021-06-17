@@ -112,8 +112,8 @@ router.post("/share", async function (req, res) {
 
 router.post('/getShareInformation', async (req, res) => {
     var sharedFiles = await fm.getSharedFiles(req.body.shareInformation.shareID)
-    var files = await fm.getFile(sharedFiles)
-    res.send(files)
+    var files = await fm.getFile(sharedFiles.sharedItem)
+    res.send({ files: files, sharedFiles: sharedFiles })
 })
 
 router.get('/share/:id', function (req, res) {
@@ -157,12 +157,12 @@ router.post('/adjustUsages', async function (req, res) {
     var decrease = await fm.decreaseUsages(req.body.shareInformation.shareID)
     var increase = await fm.increaseDownloads(req.body.shareInformation.fileID)
 
-    if(increase && decrease){
+    if (increase && decrease) {
         res.send(true)
-    }else {
+    } else {
         res.send(false)
     }
-    
+
 })
 
 router.post('/updateFileInformation', (req, res) => {
@@ -189,7 +189,7 @@ router.get('/', function (req, res) {
 router.get('/dbtest', async function (req, res) {
     // fm.share('af3916d7-244e-4351-85a3-cf68d20e8a86', 7, null);
     console.log(req.user.id);
-    if(req.user.id) {
+    if (req.user.id) {
         // fm.createFolder(null, 'TestFolder', req.user.id);
         var test = fm.moveFile('7dfeba13-43c4-4463-bdb3-a5386c244794', '7dfeba13-43c4-4463-bdb3-a5386c244794');
         console.log(test);

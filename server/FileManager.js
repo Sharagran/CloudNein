@@ -435,7 +435,7 @@ async function share(itemID, expires, usages, callback) {
 
 async function getSharedFiles(shareID) {
     var error, result = await db.readDataPromise('shared', { shareID: shareID })
-    return result[0].sharedItem
+    return result[0]
 }
 
 //TODO: check before every download @Andre

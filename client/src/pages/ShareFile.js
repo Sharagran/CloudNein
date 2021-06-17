@@ -41,10 +41,13 @@ export default class ShareFile extends Component {
 
       //Get File Information
       axios.post("http://localhost:80/getShareInformation", { shareInformation }).then((res) => {
-        fileID = res.data.id
-        this.setState({ fileName: res.data.name })
-        console.log(res.data);
+        fileID = res.data.files.id
+        usages = res.data.sharedFiles.usages
+        this.setState({ fileName: res.data.files.name })
       })
+
+
+
     } catch (error) {
       console.log(error)
       this.setState({ message: "Error while checking link information" })
@@ -86,7 +89,10 @@ export default class ShareFile extends Component {
             this.setState({ message: "Download successful" })
           });
         } else {
-
+          this.setState({ message: "No usages: redirect after 2 seconds" })
+          setTimeout(() => {
+            this.props.history.push('/');
+          }, 2000)
         }
       })
     } catch (error) {
@@ -133,20 +139,37 @@ export default class ShareFile extends Component {
 
   // This following section will display the form that takes the input from the user.
   render() {
-    return (
-      <>
-        <div className="login-form">
-          <Popup trigger={<input value={"Download " + this.state.fileName}></input>} position="bottom center">
-            <div>
-              <form onSubmit={this.onUpdate}>
-                <input type="submit" value="Download " onClick={this.onSubmit}></input>
-                <input type="submit" value="Confirm successful download" onClick={this.onConfirmDownload}></input>
-              </form>
-            </div>
-          </Popup>
-          <h1>{this.state.message}</h1>
-        </div>
-      </>
-    );
+    if (usages == null) {
+      return (
+        <>
+          <div className="login-form">
+            <Popup trigger={<input value={"Download " + this.state.fileName}></input>} position="bottom center">
+              <div>
+                <form onSubmit={this.onUpdate}>
+                  <input type="submit" value="Download " onClick={this.onSubmit}></input>
+                </form>
+              </div>
+            </Popup>
+            <h1>{this.state.message}</h1>
+          </div>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <div className="login-form">
+            <Popup trigger={<input value={"Download " + this.state.fileName}></input>} position="bottom center">
+              <div>
+                <form onSubmit={this.onUpdate}>
+                  <input type="submit" value="Download " onClick={this.onSubmit}></input>
+                  <input type="submit" value="Confirm successful download" onClick={this.onConfirmDownload}></input>
+                </form>
+              </div>
+            </Popup>
+            <h1>{this.state.message}</h1>
+          </div>
+        </>
+      );
+    }
   }
 }
