@@ -131,7 +131,8 @@ router.get('/downloadZip/:id', async function (req, res) {
 });
 
 router.post('/storage', async function (req, res) {
-    var files = await fm.getFiles(req.user.id);
+    var files = await fm.getFolderContent(req.body.folderid);
+    // var files = await fm.getFiles(req.user.id);
     res.json(files);
 });
 
@@ -178,9 +179,19 @@ router.get('/', function (req, res) {
     res.sendFile(__dirname + '/public/login.html');
 });
 
-router.get('/dbtest', function (req, res) {
-    fm.share('af3916d7-244e-4351-85a3-cf68d20e8a86', 7, null);
-    res.send(200);
+router.get('/dbtest', async function (req, res) {
+    // fm.share('af3916d7-244e-4351-85a3-cf68d20e8a86', 7, null);
+    console.log(req.user.id);
+    if(req.user.id) {
+        // fm.createFolder(null, 'TestFolder', req.user.id);
+        var test = fm.moveFile('7dfeba13-43c4-4463-bdb3-a5386c244794', '7dfeba13-43c4-4463-bdb3-a5386c244794');
+        console.log(test);
+        // var p = await fm.getPath('225b8b2b-b866-4316-a8c6-44b993ab4ad0');
+        // fm.compressFolder(p, '225b8b2b-b866-4316-a8c6-44b993ab4ad0');
+        res.send(200);
+    } else {
+        res.send(500);
+    }
 });
 
 router.get('/upload', function (req, res) {

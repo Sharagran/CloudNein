@@ -32,7 +32,10 @@ export default function File({ name, isFolder, comment, tags }) {
         label:'Edit',
         title:'Share file',
         content: <>
-        <input type="text" placeholder='comment' /> <br />
+        <label>Comment:
+            <input type="text" placeholder='Comment' />
+        </label>
+        <br />
         <label>Tags:</label>
         <ul className='tag-list'>
             <li><Link to="#">ExtremlyLongTag ExtremlyLongTag ExtremlyLongTag</Link></li>
@@ -85,6 +88,7 @@ export default function File({ name, isFolder, comment, tags }) {
         >
 
             <div className="file-menu">
+                <div className="menu-item">{isFolder ? 'Open' : 'View'}</div>
                 <div className="menu-item">Download</div>
                 <Modal {...share_modal_props} title={`Share ${name}`} />
                 <Modal {...edit_modal_props} title={`Edit ${name}`} comment={comment} tags={tags} />
@@ -94,7 +98,6 @@ export default function File({ name, isFolder, comment, tags }) {
         </Popup>
     )
 }
-
 
  function Modal({ label, title, content, buttons, ...rest}) {
     return (

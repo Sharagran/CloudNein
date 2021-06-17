@@ -93,13 +93,7 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
 //TODO: expires for folder
 async function createFolder(parentID, name, userID) {
     const id = uuidv4();
-    await db.createDataPromise('folder', {
-        id: id,
-        name: name,
-        files: []
-    });
 
-    //TODO fix link between file & folder, change path to name
     await db.createDataPromise('file', {
         id: id,
         name: name,
@@ -117,18 +111,9 @@ async function createFolder(parentID, name, userID) {
     return true;
 }
 
-async function getFolder(id) {
-    var [attributes1] = await db.readDataPromise('folder', { id: id });
-    var attributes2 = await getFile(id)
-
-    /*
-    * attributes1 {id, name, files}
-    * attributes2 {id, name, comment, owner, tags, fileSize, expires, parent, isFolder, downloads, maxDownloads}
-    * folder {id, name, files, comment, owner, tags, fileSize, expires, parent, isFolder, downloads, maxDownloads}
-    */
-    var folder = { ...attributes1, ...attributes2 };
-
-    return folder;
+async function getFolderContent(id) {
+    var files = await db.readDataPromise('file', {parent: id});
+    return files;
 }
 
 async function getFile(id) {
@@ -184,9 +169,14 @@ async function getParentFolderpaths(fileID) {
 //#endregion
 
 async function moveFile(fileID, folderID) {
-    //var file = await db.readDataPromise("file", { id: fileID })
-    await db.updateDataPromise('folder', { id: folderID }, { $push: { files: fileID } })
-    //FIXME: Der vorherigen Eintrag löschen nach dem push
+    if(fileID == folderID) return false;
+
+    var folder = await getFile(folderID);
+    if(folder.isFolder == false) return false;
+
+    await db.updateDataPromise('file', { id: fileID }, { $set: { parent: folderID }});
+
+    return true;
 }
 
 function deleteFile(fileID) {
@@ -355,22 +345,14 @@ async function checkUploadLimit(userID) {
 //#endregion
 
 //#region Download
-/*
-async function compressFolder(path) {
-
-
-    var zipPath = path + '.zip';
-    await zip(path, zipPath);
-    return zipPath;
-}
-*/
 
 //FIXME: Eintrag in der DB erstellen damit die Daten geteilt werden können
 
 async function compressFolder(path, folderID) {
 
     var archive = archiver('zip', { gzip: true, zlib: { level: 9 } });
-    var folder = await getFolder(folderID);
+    var files = await getFolderContent(folderID);
+    var folder = await getFile(folderID);
     var output = fs.createWriteStream(`${path}/${folder.name}.zip`);
 
     archive.on('error', function (err) {
@@ -379,8 +361,9 @@ async function compressFolder(path, folderID) {
 
     archive.pipe(output);
 
-    for (var i = 0; i < folder.files.length; i++) {
-        var file = await getFile(folder.files[i])
+    
+    for (var i = 0; i < files.length; i++) {
+        const file = files[i];
         archive.file(path + file.name, { name: file.name });
     }
 
@@ -545,5 +528,6 @@ module.exports = {
     uploadProfilePicture: uploadProfilePicture,
     deleteProfilePicture: deleteProfilePicture,
     usedSpace: usedSpace,
-    getPath: getPath
+    getPath: getPath,
+    getFolderContent: getFolderContent
 }
