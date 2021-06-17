@@ -20,7 +20,7 @@ const file_type = [
     }
 ]
 
-export default function File({ id, name, isFolder, comment, tags }) {
+export default function File({ id, name, isFolder, comment, tags, cd }) {
     const { addToast } = useToasts();
 
     const share_modal_props = {
@@ -64,7 +64,11 @@ export default function File({ id, name, isFolder, comment, tags }) {
             const url = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', name);
+            if(isFolder) {
+                link.setAttribute('download', `${name}.zip`);
+            } else {
+                link.setAttribute('download', name);
+            }
             document.body.appendChild(link);
             link.click();
             link.remove();
@@ -108,7 +112,7 @@ export default function File({ id, name, isFolder, comment, tags }) {
         >
 
             <div className="file-menu">
-                <div className="menu-item">{isFolder ? 'Open' : 'View'}</div>
+                <div className="menu-item" onClick={() => {cd(id);}}>{isFolder ? 'Open' : 'View'}</div>
                 <div className="menu-item" onClick={download}>Download</div>
                 <Modal {...share_modal_props} title={`Share ${name}`} />
                 <Modal {...edit_modal_props} title={`Edit ${name}`} comment={comment} tags={tags} />

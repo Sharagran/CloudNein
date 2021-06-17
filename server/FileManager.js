@@ -156,7 +156,12 @@ async function getActualPath(fileID) {
     var homePath = `${__dirname}/../UserFiles/${username}/`;
     var filePath = file.name;
 
-    return join(homePath + filePath);
+    if(file.isFolder) {
+        return join(homePath);
+    } else {
+        return join(homePath + filePath);
+    }
+    
 }
 
 async function getParentFolderpaths(fileID) {
@@ -358,7 +363,8 @@ async function compressFolder(path, folderID) {
     var archive = archiver('zip', { gzip: true, zlib: { level: 9 } });
     var files = await getFolderContent(folderID);
     var folder = await getFile(folderID);
-    var output = fs.createWriteStream(`${path}/${folder.name}.zip`);
+    var outputPath = `${path}/${folder.name}.zip`;
+    var output = fs.createWriteStream(outputPath);
 
     archive.on('error', function (err) {
         throw err;
@@ -372,7 +378,8 @@ async function compressFolder(path, folderID) {
         archive.file(path + file.name, { name: file.name });
     }
 
-    archive.finalize();
+    await archive.finalize();
+    return outputPath;
 }
 
 
@@ -389,11 +396,19 @@ async function downloadFile(id, res) {
         return;
     }
 
-    // var filePath = await getVirtualPath(file.id);
     var filePath = await getActualPath(file.id);
     console.log('filePath: ', filePath);
-    res.download(filePath);
 
+    if(file.isFolder) {
+        var zipPath = await compressFolder(filePath, file.id);
+        zipPath = join(zipPath);
+        console.log(zipPath);
+        await new Promise(r => setTimeout(r, 500)); // 500ms delay need or downloaded zip file will be invalid
+        res.download(zipPath);
+    } else {
+        res.download(filePath);
+    }
+    
     //countdown usages in db?
     //check for deletion?
 }

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useToasts } from 'react-toast-notifications';
+
 import Navbar from "../Navbar";
 import Menubar from "./Menubar";
 import FileList from "./FileList";
 import axios from 'axios';
-import { useToasts } from 'react-toast-notifications';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../pages/css/Fileexplorer.css';
 
@@ -76,8 +77,13 @@ export default function Fileexplorer() {
   const [files, setFiles] = useState([]);
 
   useEffect(() => {
-    cd('225b8b2b-b866-4316-a8c6-44b993ab4ad0');
+    cd(null);
   }, [])
+
+  // useEffect(() => {
+
+  // }, files);
+
 
   function cd(folderid) {
     // setFiles(testFiles);
@@ -87,7 +93,7 @@ export default function Fileexplorer() {
       setFiles(newFiles);
     }).catch(error => {
       addToast(error.toString(), { appearance: 'error' });
-    })
+    });
   }
 
   return (
@@ -98,7 +104,7 @@ export default function Fileexplorer() {
       <div id='main'>
         <Menubar path="/home/" />
         <div id='fileContainer'>
-          <FileList files={files} />
+          <FileList files={files} cd={cd}/>
         </div>
       </div>
     </>
