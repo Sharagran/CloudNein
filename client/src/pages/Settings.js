@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import axios from 'axios';
 import GlobalVal from "./GlobalVal";
 import { getToken } from "../Authenticator";
-import { useToasts } from 'react-toast-notifications';
 
 
 export default class Settings extends Component {
@@ -17,9 +16,6 @@ export default class Settings extends Component {
     this.goBack = this.goBack.bind(this)
     this.onFileUpload = this.onFileUpload.bind(this)
     this.onFileChange = this.onFileChange.bind(this)
-    const { addToast } = useToasts();
-    this.addToast = addToast
-    //this.addToast = this.addToast.bind(this)
 
     this.state = {
       username: "",
