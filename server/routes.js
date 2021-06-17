@@ -95,7 +95,6 @@ router.post("/share", async function (req, res) {
     var days = parseInt(req.body.shareInformation.days)
     var fileID = req.body.shareInformation.fileID
     var email = req.body.shareInformation.email
-    var fileName = req.body.shareInformation.fileName
     var usages = req.body.shareInformation.usages
 
     fm.share(fileID, days, usages, function (error, shareID) {
@@ -104,7 +103,7 @@ router.post("/share", async function (req, res) {
             res.send(500);
         }
         email.forEach(function (email) {
-            fm.sendLink(email, shareID, fileName, (error, info) => {
+            fm.sendLink(email, shareID, (error, info) => {
                 if (error) throw error;
             })
         })
@@ -113,7 +112,8 @@ router.post("/share", async function (req, res) {
 
 router.post('/getShareInformation', async (req, res) => {
     var sharedFiles = await fm.getSharedFiles(req.body.shareInformation.shareID)
-    res.send(sharedFiles[0].sharedItem)
+    var files = await fm.getFile(sharedFiles.sharedItem)
+    res.send({ files: files, sharedFiles: sharedFiles })
 })
 
 router.get('/share/:id', function (req, res) {
@@ -153,9 +153,16 @@ router.post('/checkSharelinkUsages', async function (req, res) {
     res.send(result);
 })
 
-router.post('/decreaseUsages', async function (req, res) {
-    var result = await fm.decreaseUsages(req.body.shareInformation.shareID)
-    res.send(result)
+router.post('/adjustUsages', async function (req, res) {
+    var decrease = await fm.decreaseUsages(req.body.shareInformation.shareID)
+    var increase = await fm.increaseDownloads(req.body.shareInformation.fileID)
+
+    if (increase && decrease) {
+        res.send(true)
+    } else {
+        res.send(false)
+    }
+
 })
 
 router.post('/updateFileInformation', (req, res) => {
@@ -182,7 +189,7 @@ router.get('/', function (req, res) {
 router.get('/dbtest', async function (req, res) {
     // fm.share('af3916d7-244e-4351-85a3-cf68d20e8a86', 7, null);
     console.log(req.user.id);
-    if(req.user.id) {
+    if (req.user.id) {
         // fm.createFolder(null, 'TestFolder', req.user.id);
         var test = fm.moveFile('7dfeba13-43c4-4463-bdb3-a5386c244794', '7dfeba13-43c4-4463-bdb3-a5386c244794');
         console.log(test);
