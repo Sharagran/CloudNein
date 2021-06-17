@@ -28,14 +28,15 @@ const edit_modal_props = {
     title:'Share file',
     content: <>
     <input type="text" placeholder='comment' /> <br />
-    <input type="text" placeholder='tag' /> <br />
-    <label>Tags</label>
-    <ul>
-        <li>TestTag</li>
-        <li>TestTag</li>
+    <label>Tags:</label>
+    <ul className='tag-list'>
+        <li><a href="">ExtremlyLongTag ExtremlyLongTag ExtremlyLongTag</a></li>
+        <li><a href="">Tag 2</a></li>
+        <li><a href="">Tag 3</a></li>
+        <li><a href="">+</a></li>
     </ul>
     </>,
-    buttons:[{label: 'test', close:true, onClick: () => {console.log("click");}}]
+    buttons:[{label: 'Confirm', close:true, onClick: () => {console.log("click");}}]
 }
 
 const delete_modal_props = {
