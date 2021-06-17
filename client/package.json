@@ -17,6 +17,7 @@
     "react-html5-camera-photo": "^1.5.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
+    "react-toast-notifications": "^2.4.4",
     "react-voice-recorder": "^2.1.0",
     "reactjs-popup": "^2.0.4",
     "web-vitals": "^1.1.2"

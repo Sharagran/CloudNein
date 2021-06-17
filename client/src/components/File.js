@@ -1,7 +1,9 @@
 import React from "react";
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Popup from 'reactjs-popup';
+import { useToasts } from 'react-toast-notifications';
 
 const file_type = [
 
@@ -17,36 +19,38 @@ const file_type = [
     }
 ]
 
-const share_modal_props = {
-    label:'Share',
-    title:'Share file',
-    buttons:[{label: 'test', close:true, onClick: () => {console.log("click");}}]
-}
-
-const edit_modal_props = {
-    label:'Edit',
-    title:'Share file',
-    content: <>
-    <input type="text" placeholder='comment' /> <br />
-    <label>Tags:</label>
-    <ul className='tag-list'>
-        <li><a href="">ExtremlyLongTag ExtremlyLongTag ExtremlyLongTag</a></li>
-        <li><a href="">Tag 2</a></li>
-        <li><a href="">Tag 3</a></li>
-        <li><a href="">+</a></li>
-    </ul>
-    </>,
-    buttons:[{label: 'Confirm', close:true, onClick: () => {console.log("click");}}]
-}
-
-const delete_modal_props = {
-    label: 'Delete',
-    title: `Delete file`,
-    content: 'Are you sure that you want to permanently delete this file?',
-    buttons: [{label: 'confirm', onClick: () => {console.log("click")}}]
-}
-
 export default function File({ name, isFolder, comment, tags }) {
+    const { addToast } = useToasts();
+
+    const share_modal_props = {
+        label:'Share',
+        title:'Share file',
+        buttons:[{label: 'test', close:true, onClick: () => {console.log("click");}}]
+    }
+    
+    const edit_modal_props = {
+        label:'Edit',
+        title:'Share file',
+        content: <>
+        <input type="text" placeholder='comment' /> <br />
+        <label>Tags:</label>
+        <ul className='tag-list'>
+            <li><Link to="#">ExtremlyLongTag ExtremlyLongTag ExtremlyLongTag</Link></li>
+            <li><Link to="#">Tag 2</Link></li>
+            <li><Link to="#">Tag 3</Link></li>
+            <li><a href="javascript:void(0)">+</a></li>
+        </ul>
+        </>,
+        buttons:[{label: 'Confirm', close:true, onClick: () => {addToast('File updated successfully', { appearance: 'success' });}}]
+    }
+    
+    const delete_modal_props = {
+        label: 'Delete',
+        title: `Delete file`,
+        content: 'Are you sure that you want to permanently delete this file?',
+        buttons: [{label: 'confirm', onClick: () => {console.log("click")}}]
+    }
+    
     var fileIcon;
     if (isFolder) {
         fileIcon = 'folder';
@@ -96,7 +100,7 @@ export default function File({ name, isFolder, comment, tags }) {
     return (
         <Popup trigger={<div className="menu-item">{label}</div>} modal nested>
                     {close => (
-                        <div className=".modal-content">
+                        <div className="modal-content">
                             <button className="close" onClick={close}>
                                 &times;
                             </button>

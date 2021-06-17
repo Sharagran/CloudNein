@@ -5,6 +5,8 @@ import FileList from "./FileList";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../pages/css/Fileexplorer.css';
 
+import { ToastProvider } from 'react-toast-notifications';
+
 const testFiles = [
   {
     id: 1,
@@ -69,7 +71,6 @@ const testFiles = [
 ]
 
 export default function Fileexplorer() {
-
   const [files, setFiles] = useState(testFiles)
 
   useEffect(() => {
@@ -92,7 +93,7 @@ export default function Fileexplorer() {
   }
 
   return (
-    <>
+    <ToastProvider placement="bottom-right">
       <React.Suspense fallback={<FontAwesomeIcon icon='spinner' pulse />}>
         <Navbar />
       </React.Suspense>
@@ -102,6 +103,6 @@ export default function Fileexplorer() {
           <FileList files={files} clickHandler={selectFile} />
         </div>
       </div>
-    </>
+    </ToastProvider>
   )
 }

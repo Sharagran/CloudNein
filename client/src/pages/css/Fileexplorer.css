@@ -95,12 +95,22 @@
     cursor: pointer;
 }
 
+/* #region Modal */
+.popup-content[role="dialog"] {
+    background-color: #2B2B2B;
+    border-color: #2B2B2B;
+}
+
+.modal-content {
+    color: white;
+    background-color: #2B2B2B;
+}
+/* #endregion */
 
 
 .tag-list {
     /* border: 1px dashed red; */
     padding: 0;
-    background-color: black;
 }
 
 .tag-list li {
