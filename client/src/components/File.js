@@ -109,7 +109,7 @@ export default function File({ id, name, isFolder, comment, tags }) {
 
             <div className="file-menu">
                 <div className="menu-item">{isFolder ? 'Open' : 'View'}</div>
-                <div className="menu-item"><a onClick={download} download>Download</a></div>
+                <div className="menu-item" onClick={download}>Download</div>
                 <Modal {...share_modal_props} title={`Share ${name}`} />
                 <Modal {...edit_modal_props} title={`Edit ${name}`} comment={comment} tags={tags} />
                 <Modal {...delete_modal_props} title={`Delete ${name}`} />
