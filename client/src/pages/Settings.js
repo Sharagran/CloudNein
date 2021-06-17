@@ -99,6 +99,7 @@ export default class Settings extends Component {
       this.setState({ selectedFile: null })
     } catch (error) {
       console.log(error);
+      this.setState({ message: "Seleact a Picture" })
     }
   }
 
@@ -116,7 +117,7 @@ export default class Settings extends Component {
     return (
       <>
         <div className="register-form">
-          <h1>Settings</h1> <button className="logoutLblPos" onClick={this.goBack}>zurück</button>
+          <h1>Settings</h1> <button className="logoutLblPos" onClick={this.goBack}>Back</button>
           <form action="/settings" method="POST" onSubmit={this.onSubmitUsername}>
             <input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
             <input type="submit" value="Update Username"></input>

@@ -114,7 +114,7 @@ export default class Admin extends Component {
       <>
         <div className="login-form">
           <h1>Admin</h1>
-          <button className="logoutLblPos" onClick={this.goBack}>zurück</button>
+          <button className="logoutLblPos" onClick={this.goBack}>Back</button>
           <table>
             <tr>
               <th>Datalimit in MB</th>
