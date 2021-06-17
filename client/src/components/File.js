@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
 
 import Popup from 'reactjs-popup';
 import { useToasts } from 'react-toast-notifications';
@@ -19,7 +20,7 @@ const file_type = [
     }
 ]
 
-export default function File({ name, isFolder, comment, tags }) {
+export default function File({ id, name, isFolder, comment, tags }) {
     const { addToast } = useToasts();
 
     const share_modal_props = {
@@ -52,6 +53,25 @@ export default function File({ name, isFolder, comment, tags }) {
         title: `Delete file`,
         content: 'Are you sure that you want to permanently delete this file?',
         buttons: [{label: 'confirm', onClick: () => {console.log("click")}}]
+    }
+
+    function download() {
+        axios({
+            url: 'http://localhost:80/download/' + id,
+            method: 'GET',
+            responseType: 'blob',
+          }).then(res =>{
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', name);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+          }).catch(error => {
+            console.log(error);
+            addToast(error.toString(), { appearance: 'error' });
+        });
     }
     
     var fileIcon;
@@ -89,7 +109,7 @@ export default function File({ name, isFolder, comment, tags }) {
 
             <div className="file-menu">
                 <div className="menu-item">{isFolder ? 'Open' : 'View'}</div>
-                <div className="menu-item">Download</div>
+                <div className="menu-item"><a onClick={download} download>Download</a></div>
                 <Modal {...share_modal_props} title={`Share ${name}`} />
                 <Modal {...edit_modal_props} title={`Edit ${name}`} comment={comment} tags={tags} />
                 <Modal {...delete_modal_props} title={`Delete ${name}`} />

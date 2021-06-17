@@ -139,17 +139,22 @@ function getProfilePicture(userID) {
 
 
 //#region //TODO untested
-async function getPath(fileID) {
+async function getVirtualPath(fileID) {
     var file = await getFile(fileID);
-    console.log(file);
     var user = await db.readDataPromise('user', { id: file.owner });
     var username = user[0].username;
     var homePath = `${__dirname}/../UserFiles/${username}/`;
     var filePath = await getParentFolderpaths(fileID);
 
-    if (file.isFolder) {
-        return join(homePath);
-    }
+    return join(homePath + filePath);
+}
+
+async function getActualPath(fileID) {
+    var file = await getFile(fileID);
+    var user = await db.readDataPromise('user', { id: file.owner });
+    var username = user[0].username;
+    var homePath = `${__dirname}/../UserFiles/${username}/`;
+    var filePath = file.name;
 
     return join(homePath + filePath);
 }
@@ -384,7 +389,9 @@ async function downloadFile(id, res) {
         return;
     }
 
-    var filePath = await getPath(file.id);
+    // var filePath = await getVirtualPath(file.id);
+    var filePath = await getActualPath(file.id);
+    console.log('filePath: ', filePath);
     res.download(filePath);
 
     //countdown usages in db?
@@ -528,6 +535,7 @@ module.exports = {
     uploadProfilePicture: uploadProfilePicture,
     deleteProfilePicture: deleteProfilePicture,
     usedSpace: usedSpace,
-    getPath: getPath,
+    getVirtualPath: getVirtualPath,
+    getActualPath: getActualPath,
     getFolderContent: getFolderContent
 }
