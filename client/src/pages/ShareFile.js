@@ -25,7 +25,7 @@ export default class ShareFile extends Component {
   UNSAFE_componentWillMount() {
     const queryParams = new URLSearchParams(window.location.search);
     shareID = queryParams.get('shareID');
-    
+
 
     var shareInformation = {
       shareID: shareID
@@ -42,7 +42,7 @@ export default class ShareFile extends Component {
       //Get File Information
       axios.post("http://localhost:80/getShareInformation", { shareInformation }).then((res) => {
         fileID = res.data.id
-        this.setState({fileName: res.data.name})
+        this.setState({ fileName: res.data.name })
         console.log(res.data);
       })
     } catch (error) {
@@ -86,10 +86,7 @@ export default class ShareFile extends Component {
             this.setState({ message: "Download successful" })
           });
         } else {
-          this.setState({ message: "No usages: redirect after 2 seconds" })
-          setTimeout(() => {
-            this.props.history.push('/');
-          }, 2000)
+
         }
       })
     } catch (error) {
@@ -107,15 +104,22 @@ export default class ShareFile extends Component {
       }
 
       var shareInformation = {
-        shareID: shareID
+        shareID: shareID,
+        fileID: fileID
       }
+      console.log(shareInformation);
 
       if (confirmCounter === 0) {
-        axios.post("http://localhost:80/decreaseUsages", { shareInformation }).then((res) => {
+        axios.post("http://localhost:80/adjustUsages", { shareInformation }).then((res) => {
           if (res.data) {
             this.setState({ message: "Download confirmed" })
             confirmCounter++;
             return;
+          } else {
+            this.setState({ message: "No usages: redirect after 2 seconds" })
+            setTimeout(() => {
+              this.props.history.push('/');
+            }, 2000)
           }
         })
       } else {
@@ -126,7 +130,6 @@ export default class ShareFile extends Component {
       this.setState({ message: "Error while confirmation" })
     }
   }
-
 
   // This following section will display the form that takes the input from the user.
   render() {

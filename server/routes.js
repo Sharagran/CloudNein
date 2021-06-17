@@ -153,9 +153,16 @@ router.post('/checkSharelinkUsages', async function (req, res) {
     res.send(result);
 })
 
-router.post('/decreaseUsages', async function (req, res) {
-    var result = await fm.decreaseUsages(req.body.shareInformation.shareID)
-    res.send(result)
+router.post('/adjustUsages', async function (req, res) {
+    var decrease = await fm.decreaseUsages(req.body.shareInformation.shareID)
+    var increase = await fm.increaseDownloads(req.body.shareInformation.fileID)
+
+    if(increase && decrease){
+        res.send(true)
+    }else {
+        res.send(false)
+    }
+    
 })
 
 router.post('/updateFileInformation', (req, res) => {

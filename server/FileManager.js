@@ -483,6 +483,12 @@ async function decreaseUsages(shareID) {
     }
 }
 
+async function increaseDownloads(fileID) {
+    var file = await db.readDataPromise('file', { id: fileID})
+    await db.updateDataPromise('file', { id: fileID }, { $set: { downloads: file[0].downloads + 1 } })
+    return true;
+}
+
 function sendLink(receiver, shareID, callback) {
 
     const transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'cloudneinofficial@gmail.com', pass: 'CloudNein' }, });
@@ -537,5 +543,6 @@ module.exports = {
     usedSpace: usedSpace,
     getVirtualPath: getVirtualPath,
     getActualPath: getActualPath,
-    getFolderContent: getFolderContent
+    getFolderContent: getFolderContent,
+    increaseDownloads: increaseDownloads
 }
