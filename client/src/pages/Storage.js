@@ -184,7 +184,6 @@ export default class Storage extends Component {
             email: allEmails,
             days: this.state.days,
             fileID: data[i].id,
-            fileName: data[i].name,
             usages: counter
           }
 

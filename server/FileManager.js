@@ -432,7 +432,7 @@ async function share(itemID, expires, usages, callback) {
 
     db.createData("shared", {
         shareID: shareID,
-        sharedItem: file,
+        sharedItem: itemID,
         usages: usages,
         expires: expires
     }, function () {
@@ -445,7 +445,7 @@ async function share(itemID, expires, usages, callback) {
 
 async function getSharedFiles(shareID) {
     var error, result = await db.readDataPromise('shared', { shareID: shareID })
-    return result
+    return result[0].sharedItem
 }
 
 //TODO: check before every download @Andre
@@ -493,14 +493,14 @@ async function decreaseUsages(shareID) {
     }
 }
 
-function sendLink(receiver, shareID, fileName, callback) {
+function sendLink(receiver, shareID, callback) {
 
     const transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'cloudneinofficial@gmail.com', pass: 'CloudNein' }, });
     var mailOptions = {
         from: 'cloudneinofficial@gmail.com',
         to: receiver,
         subject: 'CloudNein Files',
-        text: "Link to files: " + "https://localhost:3000/sharefile?shareID=" + shareID + "&fileName=" + fileName
+        text: "Link to files: " + "https://localhost:3000/sharefile?shareID=" + shareID
     };
 
     transporter.sendMail(mailOptions, function (error, info) {

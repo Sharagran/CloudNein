@@ -3,7 +3,6 @@ import axios from 'axios';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 
-var fileName;
 var fileID;
 var shareID;
 var confirmCounter = 0;
@@ -18,14 +17,15 @@ export default class ShareFile extends Component {
     this.onConfirmDownload = this.onConfirmDownload.bind(this);
 
     this.state = {
-      message: ""
+      message: "",
+      fileName: ""
     };
   }
 
   UNSAFE_componentWillMount() {
     const queryParams = new URLSearchParams(window.location.search);
     shareID = queryParams.get('shareID');
-    fileName = queryParams.get('fileName');
+    
 
     var shareInformation = {
       shareID: shareID
@@ -42,6 +42,8 @@ export default class ShareFile extends Component {
       //Get File Information
       axios.post("http://localhost:80/getShareInformation", { shareInformation }).then((res) => {
         fileID = res.data.id
+        this.setState({fileName: res.data.name})
+        console.log(res.data);
       })
     } catch (error) {
       console.log(error)
@@ -78,11 +80,10 @@ export default class ShareFile extends Component {
             const url = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', fileName);
+            link.setAttribute('download', this.state.fileName);
             document.body.appendChild(link);
             link.click();
             this.setState({ message: "Download successful" })
-
           });
         } else {
           this.setState({ message: "No usages: redirect after 2 seconds" })
@@ -132,7 +133,7 @@ export default class ShareFile extends Component {
     return (
       <>
         <div className="login-form">
-          <Popup trigger={<input value={"Download " + fileName}></input>} position="bottom center">
+          <Popup trigger={<input value={"Download " + this.state.fileName}></input>} position="bottom center">
             <div>
               <form onSubmit={this.onUpdate}>
                 <input type="submit" value="Download " onClick={this.onSubmit}></input>
