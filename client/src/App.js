@@ -19,11 +19,13 @@ import Fileexplorer from "./components/Fileexplorer";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons'
+import { ToastProvider } from 'react-toast-notifications';
 
 library.add(fas, fab);
 
 function App() {
   return (
+    <ToastProvider placement="bottom-right" autoDismiss="true">
     <BrowserRouter>
       <Switch>
         <Route exact path="/"component={Login} />
@@ -43,6 +45,7 @@ function App() {
         <Route path="/test" component={Fileexplorer} />
       </Switch>
     </BrowserRouter>
+    </ToastProvider>
   );
 }
 
