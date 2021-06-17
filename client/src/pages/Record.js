@@ -88,7 +88,7 @@ export default class Record extends Component {
     return (
       <>
         <div className="login-form" >
-          <button className="logoutLblPos" onClick={this.goBack}>zurück</button>
+          <button className="logoutLblPos" onClick={this.goBack}>Back</button>
           <Recorder
             record={true}
             title={"New recording"}

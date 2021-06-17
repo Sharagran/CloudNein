@@ -40,9 +40,14 @@ export default class Admin extends Component {
       const settings = {
         dataSizeNew: this.state.dataSizeNew
       };
-      axios.post("http://localhost:80/setDataLimit", { settings })
-      this.setState({ dataSize: settings.dataSizeNew / 1000000 })
-      this.setState({ message: "Updated datalimit" })
+
+      if (settings.dataSizeNew <= 0) {
+        this.setState({ message: "Invalid datalimit" })
+      } else {
+        axios.post("http://localhost:80/setDataLimit", { settings })
+        this.setState({ dataSize: settings.dataSizeNew / 1000000 })
+        this.setState({ message: "Updated datalimit" })
+      }
     } catch (error) {
       console.log(error)
       this.setState({ message: "Error while updating datalimit" })
@@ -55,9 +60,14 @@ export default class Admin extends Component {
       const settings = {
         daysNew: this.state.daysNew
       };
-      axios.post("http://localhost:80/setExpirationDate", { settings })
-      this.setState({ days: settings.daysNew })
-      this.setState({ message: "Updated exploration date" })
+
+      if (settings.daysNew <= 0) {
+        this.setState({ message: "Invalid exploration date" })
+      } else {
+        axios.post("http://localhost:80/setExpirationDate", { settings })
+        this.setState({ days: settings.daysNew })
+        this.setState({ message: "Updated exploration date" })
+      }
     } catch (error) {
       console.log(error)
       this.setState({ message: "Error while updating exploration date" })
@@ -102,26 +112,31 @@ export default class Admin extends Component {
     }
     return (
       <>
-        <h1>Admin</h1> <button className="logoutLblPos" onClick={this.goBack}>zurück</button>
-        <table>
-          <tr>
-            <th>Datenmenge aktuell in MB</th>
-            <th>Datenmenge neu</th>
-            <th>Datenmenge eingeben</th>
-            <th>Speicherdauer aktuell</th>
-            <th>Speicherdauer neu</th>
-            <th>Speicherdauer eingeben</th>
-          </tr>
-          <tr>
-            <td>{this.state.dataSize}</td>
-            <td><input type="number" min="1" onChange={this.onChangeDataSize}></input></td>
-            <td><button onClick={this.onSubmitDataSize} >Bestätigen</button></td>
-            <td>{this.state.days}</td>
-            <td><input type="number" min="1" onChange={this.onChangeDays}></input></td>
-            <td><button onClick={this.onSubmitDays}>Bestätigen</button></td>
-          </tr>
-        </table>
-        <h1>{this.state.message}</h1>
+        <div className="login-form">
+          <h1>Admin</h1>
+          <button className="logoutLblPos" onClick={this.goBack}>Back</button>
+          <table>
+            <tr>
+              <th>Datalimit in MB</th>
+              <th>New datalimit</th>
+            </tr>
+            <tr>
+              <td>{this.state.dataSize}</td>
+              <td><input type="number" min="1" onChange={this.onChangeDataSize}></input></td>
+              <td><button onClick={this.onSubmitDataSize} >Submit</button></td>
+            </tr>
+            <tr>
+              <th>Expiress in days</th>
+              <th>new storage duration </th>
+            </tr>
+            <tr>
+              <td>{this.state.days}</td>
+              <td><input type="number" min="1" onChange={this.onChangeDays}></input></td>
+              <td><button onClick={this.onSubmitDays}>Submit</button></td>
+            </tr>
+          </table>
+          <h1>{this.state.message}</h1>
+        </div>
       </>
     );
   }

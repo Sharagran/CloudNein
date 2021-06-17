@@ -73,7 +73,7 @@ export default class Upload extends Component {
     return (
       <>
         <div className="login-form">
-          <h1>Upload</h1> <button className="logoutLblPos" onClick={this.goBack}>zurück</button>
+          <h1>Upload</h1> <button className="logoutLblPos" onClick={this.goBack}>Back</button>
           <div>
             <input id="upload" type="file" name="files" onChange={this.onFileChange} multiple />
             <input type="submit" value="Upload " onClick={this.onFileUpload}></input>

@@ -59,3 +59,7 @@ code {
   right:10px;
   top:5px;
 }
+
+tr,th,tr{
+  text-align: center;
+}

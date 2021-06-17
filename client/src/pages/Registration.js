@@ -70,7 +70,7 @@ export default class Registration extends Component {
     return (
       <>
         <div className="register-form">
-          <h1>Registration</h1> <button className="logoutLblPos" onClick={this.goBack}>zurück</button>
+          <h1>Registration</h1> <button className="logoutLblPos" onClick={this.goBack}>Back</button>
           <form action="/Registration" method="POST" onSubmit={this.onSubmit}>
             <input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
             <input type="text" name="mail" placeholder="E-Mail" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeMail} required ></input>
