@@ -7,14 +7,14 @@ const read = util.promisify(readData);
 const update = util.promisify(updateData);
 const _delete = util.promisify(deleteData);
 
-function connect () {
-    mongo.connect("mongodb://localhost:27017/", {useNewUrlParser: true, useUnifiedTopology: true}, (error, client) => {
-        if(error) throw error;
+function connect() {
+    mongo.connect("mongodb://localhost:27017/", { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
+        if (error) throw error;
         db = client.db("cloudnein");
     });
 }
 
-function createData (collectionName, data, callback = defaultCallBack) {
+function createData(collectionName, data, callback = defaultCallBack) {
     var collection = db.collection(collectionName);
     if (!Array.isArray(data)) {
         collection.insertOne(data, (error, result) => {
@@ -30,7 +30,7 @@ function createData (collectionName, data, callback = defaultCallBack) {
     }
 }
 
-function readData (collectionName, query = {}, callback = defaultCallBack, sort = {}) {
+function readData(collectionName, query = {}, callback = defaultCallBack, sort = {}) {
     var collection = db.collection(collectionName);
     collection.find(query).sort(sort).toArray(function (error, result) {
         if (error) throw error;
@@ -38,7 +38,7 @@ function readData (collectionName, query = {}, callback = defaultCallBack, sort 
     });
 }
 
-function updateData (collectionName, query = {}, values = {}, callback = defaultCallBack) {
+function updateData(collectionName, query = {}, values = {}, callback = defaultCallBack) {
     var collection = db.collection(collectionName);
     collection.updateMany(query, values, (error, result) => {
         if (error) throw error;
@@ -46,7 +46,7 @@ function updateData (collectionName, query = {}, values = {}, callback = default
     });
 }
 
-function deleteData (collectionName, query = {}, callback = defaultCallBack) {
+function deleteData(collectionName, query = {}, callback = defaultCallBack) {
     var collection = db.collection(collectionName);
     collection.deleteMany(query, (error, result) => {
         if (error) throw error;
