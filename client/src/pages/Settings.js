@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from 'axios';
 import GlobalVal from "./GlobalVal";
 import { getToken } from "../Authenticator";
+import { useToasts } from 'react-toast-notifications';
 
 
 export default class Settings extends Component {
@@ -16,6 +17,7 @@ export default class Settings extends Component {
     this.goBack = this.goBack.bind(this)
     this.onFileUpload = this.onFileUpload.bind(this)
     this.onFileChange = this.onFileChange.bind(this)
+
 
     this.state = {
       username: "",
@@ -90,7 +92,8 @@ export default class Settings extends Component {
       }
       axios.post("http://localhost:80/uploadProfilePicture", formData).then(res => {
         if (res.data) {
-          this.setState({ message: "Uploaded Picture" })
+          //this.setState({ message: "Uploaded Picture" })
+          this.addToast('Uploaded PictureUploaded Picture', { appearance: 'success' });
         } else {
           this.setState({ message: "Error while uploading picture Picture" })
         }
@@ -104,6 +107,9 @@ export default class Settings extends Component {
 
   // This following section will display the form that takes the input from the user.
   render() {
+    const { addToast } = useToasts();
+    this.addToast = addToast
+    this.addToast = this.addToast.bind(this)
     if (getToken === "") {
       return (
         <>

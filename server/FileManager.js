@@ -118,8 +118,8 @@ async function createFolder(parentID, name, userID) {
 }
 
 async function getFolder(id) {
-    var attributes1 = await db.readDataPromise('folder', { id: id });
-    var attributes2 = await db.readDataPromise('file', { id: id });
+    var [attributes1] = await db.readDataPromise('folder', { id: id });
+    var attributes2 = await getFile(id)
 
     /*
     * attributes1 {id, name, files}
@@ -127,6 +127,7 @@ async function getFolder(id) {
     * folder {id, name, files, comment, owner, tags, fileSize, expires, parent, isFolder, downloads, maxDownloads}
     */
     var folder = { ...attributes1, ...attributes2 };
+
     return folder;
 }
 
@@ -160,11 +161,11 @@ async function getPath(fileID) {
     var username = user[0].username;
     var homePath = `${__dirname}/../UserFiles/${username}/`;
     var filePath = await getParentFolderpaths(fileID);
-    
-    if(file.isFolder){
+
+    if (file.isFolder) {
         return join(homePath);
     }
-    
+
     return join(homePath + filePath);
 }
 
@@ -183,8 +184,8 @@ async function getParentFolderpaths(fileID) {
 //#endregion
 
 async function moveFile(fileID, folderID) {
-    var file = await db.readDataPromise("file", { id: fileID })
-    await db.updateDataPromise('folder', { id: folderID }, { $push: { files: file[0] } })
+    //var file = await db.readDataPromise("file", { id: fileID })
+    await db.updateDataPromise('folder', { id: folderID }, { $push: { files: fileID } })
     //FIXME: Der vorherigen Eintrag löschen nach dem push
 }
 
@@ -369,8 +370,8 @@ async function compressFolder(path) {
 async function compressFolder(path, folderID) {
 
     var archive = archiver('zip', { gzip: true, zlib: { level: 9 } });
-    var folder = await db.readDataPromise('folder', { id: folderID })
-    var output = fs.createWriteStream(`${path}/${folder[0].name}.zip`); 
+    var folder = await getFolder(folderID);
+    var output = fs.createWriteStream(`${path}/${folder.name}.zip`);
 
     archive.on('error', function (err) {
         throw err;
@@ -378,8 +379,9 @@ async function compressFolder(path, folderID) {
 
     archive.pipe(output);
 
-    for(var i = 0; i< folder[0].files.length; i++){
-        archive.file(path+folder[0].files[i].name , { name: folder[0].files[i].name });
+    for (var i = 0; i < folder.files.length; i++) {
+        var file = await getFile(folder.files[i])
+        archive.file(path + file.name, { name: file.name });
     }
 
     archive.finalize();
