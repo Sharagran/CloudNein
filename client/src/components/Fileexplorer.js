@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../Navbar";
 import Menubar from "./Menubar";
 import FileList from "./FileList";
+import axios from 'axios';
+import { useToasts } from 'react-toast-notifications';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../pages/css/Fileexplorer.css';
 
@@ -69,26 +71,23 @@ const testFiles = [
 ]
 
 export default function Fileexplorer() {
-
-  const [files, setFiles] = useState(testFiles)
+  // Hooks
+  const { addToast } = useToasts();
+  const [files, setFiles] = useState([]);
 
   useEffect(() => {
-    setTimeout(() => {
-      cd(null);
-    }, 1000);
+    cd('225b8b2b-b866-4316-a8c6-44b993ab4ad0');
   }, [])
 
-  function cd(folder) {
-    const newFiles = [...files, {
-      id: 13,
-      name: 'lol',
-      isFolder: true
-    }];
-    setFiles(newFiles);
-  }
+  function cd(folderid) {
+    // setFiles(testFiles);
 
-  function selectFile() {
-    console.log("file selected");
+    axios.post("http://localhost:80/storage", {folderid: folderid}).then(res => {
+      var newFiles = res.data;
+      setFiles(newFiles);
+    }).catch(error => {
+      addToast(error.toString(), { appearance: 'error' });
+    })
   }
 
   return (
@@ -99,7 +98,7 @@ export default function Fileexplorer() {
       <div id='main'>
         <Menubar path="/home/" />
         <div id='fileContainer'>
-          <FileList files={files} clickHandler={selectFile} />
+          <FileList files={files} />
         </div>
       </div>
     </>

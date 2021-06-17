@@ -159,6 +159,7 @@ export default class Storage extends Component {
         link.setAttribute('download', file);
         document.body.appendChild(link);
         link.click();
+        link.remove();
         this.setState({ message: "" })
       });
     } catch (error) {

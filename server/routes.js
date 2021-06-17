@@ -126,12 +126,13 @@ router.get('/download/:id', async function (req, res) {
 
 //FIXME:Add download and adjust id
 router.get('/downloadZip/:id', async function (req, res) {
-    var path = await fm.getPath("53d9a7c6-b0c2-4032-9a06-2be9e7e0d04a")
+    var path = await fm.getActualPath("53d9a7c6-b0c2-4032-9a06-2be9e7e0d04a")
     fm.compressFolder(path, "53d9a7c6-b0c2-4032-9a06-2be9e7e0d04a")
 });
 
 router.post('/storage', async function (req, res) {
-    var files = await fm.getFiles(req.user.id);
+    var files = await fm.getFolderContent(req.body.folderid);
+    // var files = await fm.getFiles(req.user.id);
     res.json(files);
 });
 
@@ -178,9 +179,19 @@ router.get('/', function (req, res) {
     res.sendFile(__dirname + '/public/login.html');
 });
 
-router.get('/dbtest', function (req, res) {
-    fm.share('af3916d7-244e-4351-85a3-cf68d20e8a86', 7, null);
-    res.send(200);
+router.get('/dbtest', async function (req, res) {
+    // fm.share('af3916d7-244e-4351-85a3-cf68d20e8a86', 7, null);
+    console.log(req.user.id);
+    if(req.user.id) {
+        // fm.createFolder(null, 'TestFolder', req.user.id);
+        var test = fm.moveFile('7dfeba13-43c4-4463-bdb3-a5386c244794', '7dfeba13-43c4-4463-bdb3-a5386c244794');
+        console.log(test);
+        // var p = await fm.getActualPath('225b8b2b-b866-4316-a8c6-44b993ab4ad0');
+        // fm.compressFolder(p, '225b8b2b-b866-4316-a8c6-44b993ab4ad0');
+        res.send(200);
+    } else {
+        res.send(500);
+    }
 });
 
 router.get('/upload', function (req, res) {

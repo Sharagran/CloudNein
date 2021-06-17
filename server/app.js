@@ -17,8 +17,8 @@ const excluded_urls = [
     '/register',
     '/forgotPassword',
 
-    '/dbtest',
-    '/test',
+    // '/dbtest',
+    // '/test',
     '/error'
 ];
 
