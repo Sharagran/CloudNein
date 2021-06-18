@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
@@ -20,17 +20,25 @@ const file_type = [
     }
 ]
 
+var cachedTags;
+
 export default function File({ id, name, isFolder, comment, tags, cd }) {
     const [fileProperties, setFileProperties] = useState({
         comment: comment,
-        tags: tags,
         visible: true
     });
+
+    useEffect(() => {
+        setFileProperties({...fileProperties, tags: tags});
+        cachedTags = tags;
+    }, []);
+
     const { addToast } = useToasts();
     const commentRef = useRef();
     const emailRef = useRef();
     const expiresRef = useRef();
     const usagesRef = useRef();
+    const tagRef = useRef();
 
     const share_modal_props = {
         label: 'Share',
@@ -54,6 +62,18 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
         </>
     }
 
+    const addTag_modal_props = {
+        label: '+',
+        title: `Add Tag to ${name}`,
+        content: <>
+        <div className='label-container'>
+            <label htmlFor='comment'>Tag:</label>
+            <input id='comment' type="text" ref={tagRef} placeholder='Tag' />
+        </div>
+        </>,
+        buttons: [{ label: 'Add', close: true, onClick: addTag }]
+    }
+
     const edit_modal_props = {
         label: 'Edit',
         title: 'Share file',
@@ -64,16 +84,18 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
             </div>
             <label>Tags:</label>
             <ul className='tag-list'>
-                {tags && tags.map(tag => {
+                {fileProperties.tags ? fileProperties.tags.map(tag => {
                     return <li>
                         <Link to="#">{tag}</Link>
                     </li>
-                })}
-                <li><addTagModal title='Add Tag' label='+' content='test' /></li>
-                {/* <li><a href="javascript:void(0)">+</a></li> */}
+                }) : 'test'
+                }
+                <li><AddTagModal {...addTag_modal_props} /></li>
             </ul>
         </>,
-        buttons: [{ label: 'Confirm', close: true, onClick: edit }]
+        buttons: [{ label: 'Confirm', close: true, onClick: edit }],
+        onOpen: () => { cachedTags = [...fileProperties.tags]; }, //copy array (non-reference copy)
+        onClose: editModalClosed
     }
 
     const delete_modal_props = {
@@ -134,6 +156,15 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
 
     }
 
+    function addTag() {
+        var tag = tagRef.current.value;
+        var tmpTags = fileProperties.tags;
+        tmpTags.push(tag);
+        
+        var newFileProperties = {...fileProperties, tags: tmpTags}
+        setFileProperties(newFileProperties);
+    }
+
     function edit() {
         const data = {
             tags: fileProperties.tags,
@@ -144,17 +175,23 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
         axios.post("http://localhost:80/updateFileInformation", {
             fileInforamtion: data
         }).then(res => {
-            addToast('File updated', { appearance: 'success' });
-
-            var newFileProperties = {...fileProperties, comment: data.comment};
-            console.log(newFileProperties);
+            var newFileProperties = {...fileProperties, comment: data.comment, tags: data.tags};
             setFileProperties(newFileProperties);
+            cachedTags = data.tags;
+
+            addToast('File updated', { appearance: 'success' });
         }).catch(error => {
             console.error(error);
             addToast('Failed updating file information', { appearance: 'error' });
         })
 
     }
+
+    function editModalClosed() {
+        var newFileProperties = {...fileProperties, tags: cachedTags};
+        setFileProperties(newFileProperties);
+    }
+
 
     function _delete() {
         var data = {
@@ -225,14 +262,14 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
 }
 
 
-//TODO: edit this function so that trigger doesnt have div anymore and pass div bc this function reference in a constant will not be rendered
-function Modal({ label, title, content, buttons, ...rest }) {
+function Modal({ label, title, content, buttons, ...args }) {
     return (
         <Popup
             trigger={<div className="menu-item">{label}</div>}
             closeOnDocumentClick={false}
             modal
             nested
+            {...args}
         >
             {close => (
                 <div className="modal-content">
@@ -259,8 +296,7 @@ function Modal({ label, title, content, buttons, ...rest }) {
     )
 }
 
-// TODO: remove this
-function addTagModal({ label, title, content, buttons, ...rest }) {
+function AddTagModal({ label, title, content, buttons }) {
     return (
         <Popup
             trigger={<a href="javascript:void(0)">{label}</a>}
