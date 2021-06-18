@@ -60,7 +60,7 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
         content: <>
             <div className='label-container'>
                 <label htmlFor='comment'>Comment:</label>
-                <input id='comment' type="text" ref={commentRef} placeholder='Comment' value={comment} />
+                <input id='comment' type="text" ref={commentRef} placeholder='Comment' defaultValue={fileProperties.comment} />
             </div>
             <label>Tags:</label>
             <ul className='tag-list'>
@@ -134,16 +134,18 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
     function edit() {
         const data = {
             tags: fileProperties.tags,
-            comment: fileProperties.comment,
+            comment: commentRef.current.value,
             fileID: id
         };
-        //TODO implement
-        console.log(commentRef.current.value);
 
         axios.post("http://localhost:80/updateFileInformation", {
             fileInforamtion: data
         }).then(res => {
             addToast('File updated', { appearance: 'success' });
+
+            var newFileProperties = {...fileProperties, comment: data.comment};
+            console.log(newFileProperties);
+            setFileProperties(newFileProperties);
         }).catch(error => {
             console.error(error);
             addToast('Failed updating file information', { appearance: 'error' });
@@ -211,7 +213,7 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
                 <div className="menu-item" onClick={() => { cd(id); }}>{isFolder ? 'Open' : 'View'}</div>
                 <div className="menu-item" onClick={download}>Download</div>
                 <Modal {...share_modal_props} title={`Share ${name}`} />
-                <Modal {...edit_modal_props} title={`Edit ${name}`} comment={comment} tags={tags} />
+                <Modal {...edit_modal_props} title={`Edit ${name}`} />
                 <Modal {...delete_modal_props} title={`Delete ${name}`} />
             </div>
 

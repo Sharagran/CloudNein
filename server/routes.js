@@ -181,7 +181,6 @@ router.post('/adjustUsages', async function (req, res) {
 })
 
 router.post('/updateFileInformation', async (req, res) => {
-    //FIXME untested
     var tags = req.body.fileInforamtion.tags || [];
     var comment = req.body.fileInforamtion.comment || '';
     var fileID = req.body.fileInforamtion.fileID;
@@ -191,7 +190,7 @@ router.post('/updateFileInformation', async (req, res) => {
             fm.addTag(fileID, tag);
         });
 
-        fm.commentFile(fileID, req.user.id, comment);
+        fm.commentFile(fileID, comment);
 
         res.send(200);
     } catch (error) {

@@ -198,9 +198,8 @@ async function deleteFile(fileID) {
 //#endregion
 
 //#region File attributes
-async function commentFile(fileID, userID, text) {
-    console.log(fileID, userID, comment);
-    var error, comment = await db.updateDataPromise('file', { owner: userID, id: fileID }, { $set: { comment: text } })
+function commentFile(fileID, text) {
+    db.updateData('file', { id: fileID }, { $set: { comment: text } })
 }
 
 async function addTag(fileID, tag) {
