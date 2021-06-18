@@ -102,12 +102,27 @@ router.post("/share", async function (req, res) {
             console.error(error.message);
             res.send(500);
         }
-        email.forEach(function (email) {
-            fm.sendLink(email, shareID, (error, info) => {
-                if (error) throw error;
-            })
+        fm.sendLink(email, shareID, (error, info) => {
+            if (error) {
+                console.error(error.message);
+            }
         })
+
+        res.send({shareID: shareID});
     });
+});
+
+router.post('/deleteFile', async function (req, res) {
+    var fileID = req.body.fileID;
+    console.log(fileID); //FIXME debug only
+    res.send(200); //FIXME debug only
+    return; //FIXME debug only
+    // fm.deleteFile(fileID).then(result => {
+    //     res.send(200);
+    // }).catch(error => {
+    //     console.error(error);
+    //     res.send(500);
+    // });
 });
 
 router.post('/getShareInformation', async (req, res) => {
@@ -165,16 +180,23 @@ router.post('/adjustUsages', async function (req, res) {
 
 })
 
-router.post('/updateFileInformation', (req, res) => {
-    var tag = req.body.fileInforamtion.tag;
-    var comment = req.body.fileInforamtion.comment;
-    var fileID = req.body.fileInforamtion.fileID
+router.post('/updateFileInformation', async (req, res) => {
+    //FIXME untested
+    var tags = req.body.fileInforamtion.tags || [];
+    var comment = req.body.fileInforamtion.comment || '';
+    var fileID = req.body.fileInforamtion.fileID;
 
-    if (tag) {
-        fm.addTag(fileID, tag);
-    }
-    if (comment) {
-        fm.commentFile(fileID, req.user.id, comment)
+    try {
+        tags.forEach(tag => {
+            fm.addTag(fileID, tag);
+        });
+
+        fm.commentFile(fileID, req.user.id, comment);
+
+        res.send(200);
+    } catch (error) {
+        console.error(error);
+        res.send(500);
     }
 })
 
@@ -187,18 +209,9 @@ router.get('/', function (req, res) {
 });
 
 router.get('/dbtest', async function (req, res) {
-    // fm.share('af3916d7-244e-4351-85a3-cf68d20e8a86', 7, null);
-    console.log(req.user.id);
-    if (req.user.id) {
-        // fm.createFolder(null, 'TestFolder', req.user.id);
-        var test = fm.moveFile('7dfeba13-43c4-4463-bdb3-a5386c244794', '7dfeba13-43c4-4463-bdb3-a5386c244794');
-        console.log(test);
-        // var p = await fm.getActualPath('225b8b2b-b866-4316-a8c6-44b993ab4ad0');
-        // fm.compressFolder(p, '225b8b2b-b866-4316-a8c6-44b993ab4ad0');
-        res.send(200);
-    } else {
-        res.send(500);
-    }
+    var file = await fm.getFile('7dfeba13-43c4-4463-bdb3-a5386c244794');
+    console.log(file);
+    res.send(200);
 });
 
 router.get('/upload', function (req, res) {

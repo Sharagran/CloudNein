@@ -189,8 +189,8 @@ async function moveFile(fileID, folderID) {
     return true;
 }
 
-function deleteFile(fileID) {
-    db.deleteData('file', { id: fileID }, function () {
+async function deleteFile(fileID) {
+    await db.deleteDataPromise('file', { id: fileID }, function () {
         console.log(`${fileID} deleted`);
     });
 }
@@ -205,6 +205,13 @@ async function commentFile(fileID, userID, text) {
 
 async function addTag(fileID, tag) {
     //TODO: fix callback hell & remove useless callbacks
+    var file = await getFile(fileID);
+    if(file.tags.includes(tag)) {
+        //FIXME untested
+        // File already has tag -> tag already has file
+        console.log(`tag: '${tag}' already linked to ${fileID}`);
+        return;
+    }
 
     var error, result = await db.readDataPromise('tag', { name: tag });
     if (error)
@@ -421,6 +428,8 @@ async function downloadFile(id, res) {
 async function share(itemID, expires, usages, callback) {
     //TODO: delete file/folder after X downloads
     //TODO: link usages
+
+    //TODO: @Filip make expires/usages == null work (no limit)
     var file = await getFile(itemID);
     console.log(file);
 
@@ -559,5 +568,6 @@ module.exports = {
     getVirtualPath: getVirtualPath,
     getActualPath: getActualPath,
     getFolderContent: getFolderContent,
-    increaseDownloads: increaseDownloads
+    increaseDownloads: increaseDownloads,
+    deleteFile: deleteFile,
 }

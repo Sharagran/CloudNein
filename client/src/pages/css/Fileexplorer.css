@@ -95,6 +95,8 @@
     cursor: pointer;
 }
 
+/* #endregion */
+
 /* #region Modal */
 .popup-content[role="dialog"] {
     background-color: #2B2B2B;
@@ -104,9 +106,11 @@
 .modal-content {
     color: white;
     background-color: #2B2B2B;
+    padding: 8px;
 }
 /* #endregion */
 
+/* #region Tags */
 
 .tag-list {
     /* border: 1px dashed red; */
@@ -126,7 +130,7 @@
     background-color: rgba( 103, 193, 245, 0.2 );
     border-radius: 4px;
 
-    max-width: 200px;
+    max-width: 128px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -152,4 +156,19 @@
     
     border: 1px solid black;
     border-radius: 2px;
+}
+
+.popup-content button {
+    margin-top: 16px;
+}
+
+
+.label-container input {
+    width: 100%;
+}
+
+.copy-to-clipboard {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
 }
