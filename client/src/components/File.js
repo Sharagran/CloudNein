@@ -64,10 +64,13 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
             </div>
             <label>Tags:</label>
             <ul className='tag-list'>
-                <li><Link to="#">ExtremlyLongTag ExtremlyLongTag ExtremlyLongTag</Link></li>
-                <li><Link to="#">Tag 2</Link></li>
-                <li><Link to="#">Tag 3</Link></li>
-                <li><a href="javascript:void(0)">+</a></li>
+                {tags && tags.map(tag => {
+                    return <li>
+                        <Link to="#">{tag}</Link>
+                    </li>
+                })}
+                <li><addTagModal title='Add Tag' label='+' content='test' /></li>
+                {/* <li><a href="javascript:void(0)">+</a></li> */}
             </ul>
         </>,
         buttons: [{ label: 'Confirm', close: true, onClick: edit }]
@@ -221,10 +224,46 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
     )
 }
 
+
+//TODO: edit this function so that trigger doesnt have div anymore and pass div bc this function reference in a constant will not be rendered
 function Modal({ label, title, content, buttons, ...rest }) {
     return (
         <Popup
             trigger={<div className="menu-item">{label}</div>}
+            closeOnDocumentClick={false}
+            modal
+            nested
+        >
+            {close => (
+                <div className="modal-content">
+                    <button className="close" onClick={close}>
+                        &times;
+                    </button>
+                    <div className="header">{title}</div>
+                    <div className="content">
+                        {content}
+                    </div>
+                    {buttons && buttons.map(button => {
+                        return <button className="button" onClick={() => {
+                            button.onClick();
+                            if (button.close) {
+                                close();
+                            }
+                        }}>
+                            {button.label}
+                        </button>
+                    })}
+                </div>
+            )}
+        </Popup>
+    )
+}
+
+// TODO: remove this
+function addTagModal({ label, title, content, buttons, ...rest }) {
+    return (
+        <Popup
+            trigger={<a href="javascript:void(0)">{label}</a>}
             closeOnDocumentClick={false}
             modal
             nested
