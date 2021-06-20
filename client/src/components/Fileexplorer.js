@@ -8,92 +8,32 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../pages/css/Fileexplorer.css';
 
-const testFiles = [
-  {
-    id: 1,
-    name: 'image.png',
-    isFolder: false
-  },
-  {
-    id: 2,
-    name: 'audio.webm',
-    isFolder: false
-  },
-  {
-    id: 3,
-    name: 'textfile.txt',
-    isFolder: false
-  },
-  {
-    id: 4,
-    name: 'ExtremelylongfoldernameExtremelylongfoldernameExtremelylongfoldernameExtremelylongfoldernameExtremelylongfoldername',
-    isFolder: true
-  },
-  {
-    id: 5,
-    name: 'image.png',
-    isFolder: false
-  },
-  {
-    id: 6,
-    name: 'audio.webm',
-    isFolder: false
-  },
-  {
-    id: 7,
-    name: 'textfile.txt',
-    isFolder: false
-  },
-  {
-    id: 8,
-    name: 'folder',
-    isFolder: true
-  },
-  {
-    id: 9,
-    name: 'image.png',
-    isFolder: false
-  },
-  {
-    id: 10,
-    name: 'audio.webm',
-    isFolder: false
-  },
-  {
-    id: 11,
-    name: 'textfile.txt',
-    isFolder: false
-  },
-  {
-    id: 12,
-    name: 'folder',
-    isFolder: true
-  },
-]
 
 export default function Fileexplorer() {
   // Hooks
   const { addToast } = useToasts();
   const [files, setFiles] = useState([]);
+  var folderHistory = [];
 
   useEffect(() => {
     cd(null);
-  }, [])
-
-  // useEffect(() => {
-
-  // }, files);
+  }, []);
 
 
   function cd(folderid) {
-    // setFiles(testFiles);
-
     axios.post("http://localhost:80/storage", {folderid: folderid}).then(res => {
       var newFiles = res.data;
       setFiles(newFiles);
+      folderHistory.push(folderid);
     }).catch(error => {
       addToast(error.toString(), { appearance: 'error' });
     });
+  }
+
+  function navigateBack() {
+    console.log('navigate up');
+    var previousFolder = folderHistory.pop();
+    cd(previousFolder);
   }
 
   return (
@@ -102,7 +42,7 @@ export default function Fileexplorer() {
         <Navbar />
       </React.Suspense>
       <div id='main'>
-        <Menubar path="/home/" />
+        <Menubar path="/home/" navigateBack={navigateBack} />
         <div id='fileContainer'>
           <FileList files={files} cd={cd}/>
         </div>
