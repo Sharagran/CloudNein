@@ -13,6 +13,8 @@ export default function Fileexplorer() {
   // Hooks
   const { addToast } = useToasts();
   const [files, setFiles] = useState([]);
+  const [path, setPath] = useState('/home');
+
   var folderHistory = [];
 
   useEffect(() => {
@@ -25,6 +27,7 @@ export default function Fileexplorer() {
       var newFiles = res.data;
       setFiles(newFiles);
       folderHistory.push(folderid);
+      setPath(folderid);
     }).catch(error => {
       addToast(error.toString(), { appearance: 'error' });
     });
@@ -42,7 +45,7 @@ export default function Fileexplorer() {
         <Navbar />
       </React.Suspense>
       <div id='main'>
-        <Menubar path="/home/" navigateBack={navigateBack} />
+        <Menubar path={path} navigateBack={navigateBack} />
         <div id='fileContainer'>
           <FileList files={files} cd={cd}/>
         </div>

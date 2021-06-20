@@ -7,9 +7,9 @@ export default function Menubar({path, navigateBack}) {
             <div id="pathContainer">
                 <FontAwesomeIcon icon="folder-open" />{path}
             </div>
-            <div id="downloadContainer">
+            {/* <div id="downloadContainer">
                 <FontAwesomeIcon icon="download" />Download
-            </div>
+            </div> */}
             <div id="gobackContainer" onClick={navigateBack}>
                 <FontAwesomeIcon icon="level-up-alt" /> Zurück
             </div>

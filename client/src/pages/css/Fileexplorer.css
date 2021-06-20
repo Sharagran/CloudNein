@@ -45,6 +45,13 @@
     color: #f1f1f1;
 
 }
+
+#menubar div#pathContainer:hover {
+    transform: revert;
+    color: revert;
+    cursor: default;
+
+}
 /* #endregion */
 
 /* #region Files */
