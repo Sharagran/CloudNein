@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useToasts } from 'react-toast-notifications';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 
 import Navbar from "../Navbar";
 import Menubar from "./Menubar";
 import FileList from "./FileList";
 import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../pages/css/Fileexplorer.css';
 
 var folderHistory;
@@ -33,10 +34,14 @@ export default function Fileexplorer() {
         p += folder.name + '/';
       });
       setPath(p);
-      
+
     }).catch(error => {
       addToast(error.toString(), { appearance: 'error' });
     });
+  }
+
+  function createFolder() {
+    console.log('createFolder');
   }
 
   function navigateBack() {
@@ -61,6 +66,34 @@ export default function Fileexplorer() {
           <FileList files={files} cd={cd} />
         </div>
       </div>
+
+      <ContextMenuTrigger ref={c => contextTrigger = c} id="fileexplorer-context-menu">
+      </ContextMenuTrigger>
+      <ContextMenu id="fileexplorer-context-menu" className='fileexplorer-context-menu'>
+        <MenuItem onClick={createFolder} attributes={{className: 'create-folder'}} >
+          Create Folder
+        </MenuItem>
+      </ContextMenu>
     </>
   )
+}
+
+var contextTrigger = null;
+
+function toggleMenu(e) {
+  if(contextTrigger) {
+      contextTrigger.handleContextClick(e);
+  }
+}
+// Add context menu listener
+if (document.addEventListener) {
+  document.addEventListener('contextmenu', function(e) {
+    toggleMenu(e);
+    e.preventDefault();
+  }, false);
+} else {
+  document.attachEvent('oncontextmenu', function() {
+    toggleMenu(e);
+    window.event.returnValue = false;
+  });
 }

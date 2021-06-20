@@ -79,7 +79,7 @@
     /* border: 1px dashed black; */
 }
 
-.file:hover, .file-menu div:hover {
+.file:hover, .file-menu div:hover, .create-folder:hover {
     background-color: lightgray;
 }
 
@@ -177,5 +177,23 @@
 .copy-to-clipboard {
     color: blue;
     text-decoration: underline;
+    cursor: pointer;
+}
+
+
+/* Context menu */
+.fileexplorer-context-menu {
+    margin: auto;
+    background: rgb(255, 255, 255);
+    padding: 5px;
+    
+    border: 1px solid #d7d7d7;
+
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 3px;
+    border-radius: 5px;
+}
+
+.create-folder {
+    padding-right: 20px;
     cursor: pointer;
 }
