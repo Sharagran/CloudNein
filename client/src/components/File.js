@@ -105,6 +105,10 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
         buttons: [{ label: 'confirm', close: true, onClick: _delete }]
     }
 
+    function openClickHandler() {
+        cd({id: id, name: name});
+    }
+
     function download() {
         axios({
             url: 'http://localhost:80/download/' + id,
@@ -192,7 +196,6 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
         setFileProperties(newFileProperties);
     }
 
-
     function _delete() {
         var data = {
             fileID: id
@@ -250,7 +253,7 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
         >
 
             <div className="file-menu">
-                <div className="menu-item" onClick={() => { cd(id); }}>{isFolder ? 'Open' : 'View'}</div>
+                <div className="menu-item" onClick={openClickHandler}>{isFolder ? 'Open' : 'View'}</div>
                 <div className="menu-item" onClick={download}>Download</div>
                 <Modal {...share_modal_props} title={`Share ${name}`} />
                 <Modal {...edit_modal_props} title={`Edit ${name}`} />

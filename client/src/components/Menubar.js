@@ -11,7 +11,7 @@ export default function Menubar({path, navigateBack}) {
                 <FontAwesomeIcon icon="download" />Download
             </div> */}
             <div id="gobackContainer" onClick={navigateBack}>
-                <FontAwesomeIcon icon="level-up-alt" /> Zurück
+                <FontAwesomeIcon icon="level-up-alt" /> back
             </div>
         </div>
     )

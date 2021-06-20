@@ -8,34 +8,45 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../pages/css/Fileexplorer.css';
 
+var folderHistory;
+const home = {id: null, name: '/home'};
 
 export default function Fileexplorer() {
   // Hooks
   const { addToast } = useToasts();
   const [files, setFiles] = useState([]);
-  const [path, setPath] = useState('/home');
-
-  var folderHistory = [];
+  const [path, setPath] = useState('');
 
   useEffect(() => {
-    cd(null);
+    folderHistory = [];
+    cd(home);
   }, []);
 
-
-  function cd(folderid) {
-    axios.post("http://localhost:80/storage", {folderid: folderid}).then(res => {
+  function cd(folder) {
+    axios.post("http://localhost:80/storage", {folderid: folder.id}).then(res => {
       var newFiles = res.data;
       setFiles(newFiles);
-      folderHistory.push(folderid);
-      setPath(folderid);
+
+      folderHistory.push(folder);
+      var p = '';
+      folderHistory.forEach(folder => {
+        p += folder.name + '/';
+      });
+      setPath(p);
+      
     }).catch(error => {
       addToast(error.toString(), { appearance: 'error' });
     });
   }
 
   function navigateBack() {
-    console.log('navigate up');
+    //current folder
+    folderHistory.pop();
     var previousFolder = folderHistory.pop();
+
+    // no previous Folder
+    if(!previousFolder) previousFolder = home;
+
     cd(previousFolder);
   }
 
@@ -47,7 +58,7 @@ export default function Fileexplorer() {
       <div id='main'>
         <Menubar path={path} navigateBack={navigateBack} />
         <div id='fileContainer'>
-          <FileList files={files} cd={cd}/>
+          <FileList files={files} cd={cd} />
         </div>
       </div>
     </>
