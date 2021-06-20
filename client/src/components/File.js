@@ -253,7 +253,7 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
         >
 
             <div className="file-menu">
-                <div className="menu-item" onClick={openClickHandler}>{isFolder ? 'Open' : 'View'}</div>
+                {isFolder && <div className="menu-item" onClick={openClickHandler}>Open</div>}
                 <div className="menu-item" onClick={download}>Download</div>
                 <Modal {...share_modal_props} title={`Share ${name}`} />
                 <Modal {...edit_modal_props} title={`Edit ${name}`} />
