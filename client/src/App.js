@@ -40,9 +40,8 @@ function App() {
         <Route path="/SendEmail" component={SendEmail} />
         <Route path="/Upload" component={Upload} />
         <Route path="/Admin" component={Admin} />
-        <Route path="/Storage" component={Storage} />
+        <Route path="/Storage" component={Fileexplorer} />
         <Route path="/ShareFile" component={ShareFile} />
-        <Route path="/test" component={Fileexplorer} />
       </Switch>
     </BrowserRouter>
     </ToastProvider>
