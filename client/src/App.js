@@ -15,11 +15,13 @@ import Admin from './pages/Admin';
 import Storage from './pages/Storage';
 import ShareFile from './pages/ShareFile';
 import Fileexplorer from "./components/Fileexplorer";
+import LoginDemo from "./pages/LoginDemo";
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons'
 import { ToastProvider } from 'react-toast-notifications';
+
 
 library.add(fas, fab);
 
@@ -42,6 +44,7 @@ function App() {
         <Route path="/Admin" component={Admin} />
         <Route path="/Storage" component={Fileexplorer} />
         <Route path="/ShareFile" component={ShareFile} />
+        <Route path="/demo" component={LoginDemo} />
       </Switch>
     </BrowserRouter>
     </ToastProvider>

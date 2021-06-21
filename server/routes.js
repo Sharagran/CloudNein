@@ -5,6 +5,7 @@ const multer = require('multer');
 const auth = require("./Authentication");
 const fm = require('./FileManager');
 const express = require("express");
+const uuidv4 = require('uuid').v4;
 
 
 var upload = multer({ dest: `${__dirname}/../UserFiles/` });
@@ -28,6 +29,14 @@ router.post('/register', async (req, res) => {
         res.send(false)
     }
 });
+
+router.get('/newUserid', function (req, res) {
+    res.send(uuidv4());
+});
+
+router.post('/parse', function (req, res) {
+    console.log(req);
+})
 
 //Erzeugt ein neues Passwort, updatet dies in der DB und sendet eine Mail an den User
 router.post('/forgotPassword', (req, res) => {
