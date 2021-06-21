@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import axios from 'axios';
 import GlobalVal from "./GlobalVal";
 import { getToken } from "../Authenticator";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Navbar from "../Navbar";
 
 
 export default class Settings extends Component {
@@ -116,7 +118,11 @@ export default class Settings extends Component {
     }
     return (
       <>
-        <div className="register-form">
+      <React.Suspense fallback={<FontAwesomeIcon icon='spinner' pulse />}>
+        <Navbar />
+      </React.Suspense>
+      <div id='main'>
+      <div className="register-form">
           <h1>Settings</h1> <button className="logoutLblPos" onClick={this.goBack}>Back</button>
           <form action="/settings" method="POST" onSubmit={this.onSubmitUsername}>
             <input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
@@ -132,6 +138,7 @@ export default class Settings extends Component {
           </form>
           <h1>{this.state.message}</h1>
         </div>
+      </div>
       </>
     );
   }
