@@ -85,6 +85,20 @@ router.post('/uploadProfilePicture', upload.array("files"), async function (req,
     res.send(result)
 });
 
+router.post('/createFolder', async function (req, res) {
+    try {
+        var folderName = req.body.folderName;
+        var parentID = req.body.parentID;
+        var userID = req.user.id;
+
+        fm.createFolder(parentID, folderName, userID);
+        res.send(200);
+    } catch (error) {
+        console.error(error);
+        res.send(500);
+    }
+});
+
 router.post('/getStorageSpaceInformation', async function (req, res) {
     var dataLimit = await fm.getDataLimit()
     var usedSpace = await fm.usedSpace(req.user.id)
