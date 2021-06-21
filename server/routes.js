@@ -128,15 +128,12 @@ router.post("/share", async function (req, res) {
 
 router.post('/deleteFile', async function (req, res) {
     var fileID = req.body.fileID;
-    console.log(fileID); //FIXME debug only
-    res.send(200); //FIXME debug only
-    return; //FIXME debug only
-    // fm.deleteFile(fileID).then(result => {
-    //     res.send(200);
-    // }).catch(error => {
-    //     console.error(error);
-    //     res.send(500);
-    // });
+    fm.deleteFile(fileID).then(result => {
+        res.send(200);
+    }).catch(error => {
+        console.error(error);
+        res.send(500);
+    });
 });
 
 router.post('/getShareInformation', async (req, res) => {
@@ -160,8 +157,7 @@ router.get('/downloadZip/:id', async function (req, res) {
 });
 
 router.post('/storage', async function (req, res) {
-    var files = await fm.getFolderContent(req.body.folderid);
-    // var files = await fm.getFiles(req.user.id);
+    var files = await fm.getFolderContent(req.body.folderid, req.user.id);
     res.json(files);
 });
 

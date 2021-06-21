@@ -111,8 +111,13 @@ async function createFolder(parentID, name, userID) {
     return true;
 }
 
-async function getFolderContent(id) {
-    var files = await db.readDataPromise('file', {parent: id});
+async function getFolderContent(id, userid) {
+    var files;
+    if(id) {
+        files = await db.readDataPromise('file', {parent: id});
+    } else {
+        files = await getFiles(userid);
+    }
     return files;
 }
 
