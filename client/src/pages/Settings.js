@@ -118,27 +118,27 @@ export default class Settings extends Component {
     }
     return (
       <>
-      <React.Suspense fallback={<FontAwesomeIcon icon='spinner' pulse />}>
-        <Navbar />
-      </React.Suspense>
-      <div id='main'>
-      <div className="register-form">
-          <h1>Settings</h1> <button className="logoutLblPos" onClick={this.goBack}>Back</button>
-          <form action="/settings" method="POST" onSubmit={this.onSubmitUsername}>
-            <input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
-            <input type="submit" value="Update Username"></input>
-          </form>
-          <form onSubmit={this.onSubmitMail}>
-            <input type="text" name="mail" placeholder="E-Mail" minLength="6" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeMail} required ></input>
-            <input type="submit" value="Update E-Mail"></input>
-          </form>
-          <form>
-            <input id="upload" type="file" name="files " accept="image/png" onChange={this.onFileChange}></input>
-            <input type="submit" value="Upload Picture" onClick={this.onFileUpload}></input>
-          </form>
-          <h1>{this.state.message}</h1>
+        <React.Suspense fallback={<FontAwesomeIcon icon='spinner' pulse />}>
+          <Navbar />
+        </React.Suspense>
+        <div id='main'>
+          <div className="register-form">
+            <h1>Settings</h1> <button className="logoutLblPos" onClick={this.goBack}>Back</button>
+            <form action="/settings" method="POST" onSubmit={this.onSubmitUsername}>
+              <input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
+              <input type="submit" value="Update Username"></input>
+            </form>
+            <form onSubmit={this.onSubmitMail}>
+              <input type="text" name="mail" placeholder="E-Mail" minLength="6" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeMail} required ></input>
+              <input type="submit" value="Update E-Mail"></input>
+            </form>
+            <form>
+              <input id="upload" type="file" name="files " accept="image/png" onChange={this.onFileChange}></input>
+              <input type="submit" value="Upload Picture" onClick={this.onFileUpload}></input>
+            </form>
+            <h1>{this.state.message}</h1>
+          </div>
         </div>
-      </div>
       </>
     );
   }

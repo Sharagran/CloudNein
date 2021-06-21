@@ -4,6 +4,9 @@ import 'react-html5-camera-photo/build/css/index.css';
 import axios from 'axios';
 import { getToken } from "../Authenticator";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Navbar from "../Navbar";
+
 var spaceCheck;
 
 export default class Photo extends Component {
@@ -69,12 +72,18 @@ export default class Photo extends Component {
         }
         return (
             <>
-                <h1>Take Photo</h1>
-                <button className="logoutLblPos" onClick={this.goBack}>Back</button>
-                <Camera
-                    onTakePhoto={(dataUri) => { this.handleTakePhoto(dataUri); }}
-                />
-                <h1>{this.state.message}</h1>
+                <React.Suspense fallback={<FontAwesomeIcon icon='spinner' pulse />}>
+                    <Navbar />
+                </React.Suspense>
+                <div id='main'>
+                    <h1>Take Photo</h1>
+                    <button className="logoutLblPos" onClick={this.goBack}>Back</button>
+                    <Camera
+                        onTakePhoto={(dataUri) => { this.handleTakePhoto(dataUri); }}
+                    />
+                    <h1>{this.state.message}</h1>
+                </div>
+
             </>
         );
 

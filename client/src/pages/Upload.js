@@ -75,20 +75,20 @@ export default class Upload extends Component {
     }
     return (
       <>
-      <React.Suspense fallback={<FontAwesomeIcon icon='spinner' pulse />}>
-        <Navbar />
-      </React.Suspense>
-      <div id='main'>
-        <div className="login-form">
-          <h1>Upload</h1> <button className="logoutLblPos" onClick={this.goBack}>Back</button>
-          <div>
-            <input id="upload" type="file" name="files" onChange={this.onFileChange} multiple />
-            <input type="submit" value="Upload " onClick={this.onFileUpload}></input>
-            <Link to="/Photo"><button id="forgotPassword-btn" type="submit" >Take Photo</button></Link>
-            <Link to="/Record"><button id="forgotPassword-btn" type="submit" >Record Audio</button></Link>
+        <React.Suspense fallback={<FontAwesomeIcon icon='spinner' pulse />}>
+          <Navbar />
+        </React.Suspense>
+        <div id='main'>
+          <div className="login-form">
+            <h1>Upload</h1> <button className="logoutLblPos" onClick={this.goBack}>Back</button>
+            <div>
+              <input id="upload" type="file" name="files" onChange={this.onFileChange} multiple />
+              <input type="submit" value="Upload " onClick={this.onFileUpload}></input>
+              <Link to="/Photo"><button id="forgotPassword-btn" type="submit" >Take Photo</button></Link>
+              <Link to="/Record"><button id="forgotPassword-btn" type="submit" >Record Audio</button></Link>
+            </div>
+            <h1>{this.state.message}</h1>
           </div>
-          <h1>{this.state.message}</h1>
-        </div>
         </div>
       </>
     );

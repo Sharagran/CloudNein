@@ -4,6 +4,9 @@ import './css/recorder.css'
 import axios from 'axios';
 import { getToken } from "../Authenticator";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Navbar from "../Navbar";
+
 var spaceCheck;
 export default class Record extends Component {
 
@@ -87,19 +90,24 @@ export default class Record extends Component {
     }
     return (
       <>
-        <div className="login-form" >
-          <button className="logoutLblPos" onClick={this.goBack}>Back</button>
-          <Recorder
-            record={true}
-            title={"New recording"}
-            audioURL={this.state.audioDetails.url}
-            showUIAudio
-            handleAudioStop={data => this.handleAudioStop(data)}
-            handleAudioUpload={data => this.handleAudioUpload(data)}
-            handleReset={() => this.handleReset()}
-            mimeTypeToUseWhenRecording={`audio/webm`}
-          />
-          <h1>{this.state.message}</h1>
+        <React.Suspense fallback={<FontAwesomeIcon icon='spinner' pulse />}>
+          <Navbar />
+        </React.Suspense>
+        <div id='main'>
+          <div className="login-form" >
+            <button className="logoutLblPos" onClick={this.goBack}>Back</button>
+            <Recorder
+              record={true}
+              title={"New recording"}
+              audioURL={this.state.audioDetails.url}
+              showUIAudio
+              handleAudioStop={data => this.handleAudioStop(data)}
+              handleAudioUpload={data => this.handleAudioUpload(data)}
+              handleReset={() => this.handleReset()}
+              mimeTypeToUseWhenRecording={`audio/webm`}
+            />
+            <h1>{this.state.message}</h1>
+          </div>
         </div>
       </>
     );
