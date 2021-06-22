@@ -76,6 +76,9 @@ export default function Fileexplorer() {
 
     axios.post("http://localhost:80/moveFolder", { folderID: folderID, fileID: fileID}).then(res => {
       addToast('File/Folder moved', { appearance: 'success' });
+      //reload folder
+      var currentFolder = folderHistory.pop();
+      cd(currentFolder);
     }).catch(error => {
       console.error(error);
       addToast(error.toString(), { appearance: 'error' });
