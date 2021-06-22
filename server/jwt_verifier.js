@@ -20,7 +20,6 @@ function jwt_verifier(exluded_urls) {
 
 }
 
-//TODO: error handeling inside app.js? no responses in this file to avoid long stacks? (router.use(verifier))
 function authenticate (req, res, next) {
     const authHeader = req.headers.authorization;
 
@@ -32,7 +31,6 @@ function authenticate (req, res, next) {
                 if(err.name == 'TokenExpiredError') {
                     console.log("Expired");
                     return next(); //TODO: redirect to login page (login expired)
-                    
                 } else {
                     console.error(err.stack);
                     return res.sendStatus(403);
@@ -45,7 +43,6 @@ function authenticate (req, res, next) {
     } else {
         console.log('No token specified');
         //TODO: Send user to login page?
-        //res.sendStatus(401);
         next();
     }
 };

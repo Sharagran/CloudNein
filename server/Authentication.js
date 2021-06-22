@@ -7,11 +7,9 @@ const config = require('./config.json');
 const jwt = require('jsonwebtoken');
 const util = require('util');
 const { readDataPromise } = require('./Database');
-const fm = require('./FileManager');
 const uuidv4 = require('uuid').v4;
 const { join } = require('path');
 
-//TODO: alle callbacks durch promises ersetzen
 const readData = util.promisify(db.readData);
 const comp_hash = util.promisify(compare_hash);
 
@@ -50,7 +48,7 @@ function sendNewPassword(receiver, newPassword, callback) {
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-      console.error(error);
+      console.error(error.stack);
       throw error;
     } else {
       console.log('Email sent: ' + info.response);
@@ -73,7 +71,7 @@ async function changeUsername(userID, newUsername, previousUsername) {
     console.log(result);
     fs.rename("../UserFiles/" + previousUsername, "../UserFiles/" + newUsername, function (err) {
       if (err) {
-        console.error(err)
+        console.error(error.stack)
       } else {
         console.log("Successfully renamed the directory.")
       }

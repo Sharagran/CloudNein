@@ -59,12 +59,6 @@ export default class Storage extends Component {
       axios.post("http://localhost:80/storage").then((res) => {
           data = res.data
 
-          //Split für Filename
-          // for (var i = 0; i < res.data.length; i++) {
-          //   var str = data[i].path  //FIXME path -> name
-          //   fileName[i] = str.substring(str.lastIndexOf("/") + 1, str.length)
-          // }
-
           for (var j = 0; j < res.data.length; j++) {
             var tr = document.createElement('tr');
             document.getElementById('storageData').appendChild(tr);

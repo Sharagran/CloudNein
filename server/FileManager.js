@@ -16,7 +16,7 @@ cron.schedule('0 * * * *', () => {
         checkSharelinkExpirations();
     } catch (error) {
         console.error("Error during Scheduled task");
-        console.error(error);
+        console.error(error.stack);
     }
 });
 
@@ -57,12 +57,10 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
         fs.rename(file.path, savePath, function (error) {
             if (error)
                 throw error;
-            console.log(file.destination); //FIXME: debug only
 
             const id = uuidv4();
             var date = new Date();
             date.setDate(date.getDate() + parseInt(expirationDate[0].days))
-            //expires = expires || new Date('2038');
             expires = date.toISOString();
             console.log(expires);
 
@@ -72,9 +70,9 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
                 comment: "",
                 owner: userID,
                 tags: tags,
-                fileSize: file.size,    //FIXME: might be wrong format
+                fileSize: file.size,
                 expires: expires,
-                parent: null,   //TODO parent ID
+                parent: null,
                 isFolder: false,
                 downloads: 0,
                 maxDownloads: null
@@ -89,8 +87,6 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
 
 }
 //TODO: max downloads for files/folders
-
-//TODO: expires for folder
 async function createFolder(parentID, name, userID) {
     const id = uuidv4();
 
@@ -98,7 +94,7 @@ async function createFolder(parentID, name, userID) {
         id: id,
         name: name,
         comment: "",
-        owner: userID,  //FIXME
+        owner: userID,
         tags: [],
         fileSize: null,
         expires: null,
@@ -143,18 +139,6 @@ function getProfilePicture(userID) {
     }
 }
 
-
-//#region //TODO untested
-async function getVirtualPath(fileID) {
-    var file = await getFile(fileID);
-    var user = await db.readDataPromise('user', { id: file.owner });
-    var username = user[0].username;
-    var homePath = `${__dirname}/../UserFiles/${username}/`;
-    var filePath = await getParentFolderpaths(fileID);
-
-    return join(homePath + filePath);
-}
-
 async function getActualPath(fileID) {
     var file = await getFile(fileID);
     var user = await db.readDataPromise('user', { id: file.owner });
@@ -170,25 +154,15 @@ async function getActualPath(fileID) {
 
 }
 
-async function getParentFolderpaths(fileID) {
-    var file = await getFile(fileID);
-
-    if (file.parent) {
-        var parent = await getFile(file.parent);
-        var fullPath = await getParentFolderpaths(parent.id);
-
-        return `${fullPath}/${file.name}`;
-    } else {
-        return file.name;
-    }
-}
-//#endregion
-
 async function moveFile(fileID, folderID) {
     if (fileID == folderID) return false;
 
-    var folder = await getFile(folderID);
-    if (folder.isFolder == false) return false;
+    if(folderID == 'null') {
+        folderID = null;
+    } else {
+        var folder = await getFile(folderID);
+        if (folder.isFolder == false) return false;
+    }
 
     await db.updateDataPromise('file', { id: fileID }, { $set: { parent: folderID } });
 
@@ -196,7 +170,6 @@ async function moveFile(fileID, folderID) {
 }
 
 async function deleteItem(fileID) {
-    //TODO test if this works after folder changes
     var file = await getFile(fileID);
 
     if (file.isFolder) {
@@ -226,7 +199,7 @@ async function deleteFile(fileID) {
     // remove from disk
     fs.unlink(path, function (error) {
         if (error) {
-            console.error(error);
+            console.error(error.stack);
             return;
         }
     });
@@ -244,10 +217,8 @@ function commentFile(fileID, text) {
 }
 
 async function addTag(fileID, tag) {
-    //TODO: fix callback hell & remove useless callbacks
     var file = await getFile(fileID);
     if (file.tags.includes(tag)) {
-        //FIXME untested
         // File already has tag -> tag already has file
         console.log(`tag: '${tag}' already linked to ${fileID}`);
         return;
@@ -255,14 +226,14 @@ async function addTag(fileID, tag) {
 
     var error, result = await db.readDataPromise('tag', { name: tag });
     if (error)
-        console.error(error);
+        console.error(error.stack);
 
     var tagExists = result.length > 0;
 
     if (tagExists) {
         var error2, result2 = await db.updateDataPromise('tag', { name: tag }, { $push: { files: fileID } });
         if (error2)
-            console.error(error2);
+            console.error(error2.stack);
 
         console.log("tag updated");
     } else {
@@ -272,7 +243,7 @@ async function addTag(fileID, tag) {
             files: [fileID]
         });
         if (error3)
-            console.error(error3);
+            console.error(error3.stack);
 
         console.log("tag created");
     }
@@ -280,7 +251,7 @@ async function addTag(fileID, tag) {
     // update file tags
     var error4, result4 = await db.updateData('file', { id: fileID }, { $push: { tags: tag } });
     if (error4)
-        console.error(error4);
+        console.error(error4.stack);
 
     console.log("file tags updated");
 }
@@ -396,9 +367,6 @@ async function checkUploadLimit(userID) {
 //#endregion
 
 //#region Download
-
-//FIXME: Eintrag in der DB erstellen damit die Daten geteilt werden können
-
 async function compressFolder(path, folderID) {
 
     var archive = archiver('zip', { gzip: true, zlib: { level: 9 } });
@@ -559,7 +527,7 @@ function sendLink(receiver, shareID, callback) {
 
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
-            console.error(error);
+            console.error(error.stack);
             throw error;
         } else {
             console.log('Email sent: ' + info.response);
@@ -599,7 +567,6 @@ module.exports = {
     uploadProfilePicture: uploadProfilePicture,
     deleteProfilePicture: deleteProfilePicture,
     usedSpace: usedSpace,
-    getVirtualPath: getVirtualPath,
     getActualPath: getActualPath,
     getFolderContent: getFolderContent,
     increaseDownloads: increaseDownloads,

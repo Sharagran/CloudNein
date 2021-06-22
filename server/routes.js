@@ -95,7 +95,7 @@ router.post('/createFolder', async function (req, res) {
         fm.createFolder(parentID, folderName, userID);
         res.send(200);
     } catch (error) {
-        console.error(error);
+        console.error(error.stack);
         res.send(500);
     }
 });
@@ -105,7 +105,7 @@ router.post('/moveFolder', async function (req, res) {
         await fm.moveFile(req.body.fileID, req.body.folderID)
         res.send(200);
     } catch (error) {
-        console.error(error);
+        console.error(error.stack);
         res.send(500);
     }
 })
@@ -124,12 +124,12 @@ router.post("/share", async function (req, res) {
 
     fm.share(fileID, days, usages, function (error, shareID) {
         if (error) {
-            console.error(error.message);
+            console.error(error.stack);
             res.send(500);
         }
         fm.sendLink(email, shareID, (error, info) => {
             if (error) {
-                console.error(error.message);
+                console.error(error.stack);
             }
         })
 
@@ -142,7 +142,7 @@ router.post('/deleteFile', async function (req, res) {
     fm.deleteItem(fileID).then(result => {
         res.send(200);
     }).catch(error => {
-        console.error(error);
+        console.error(error.stack);
         res.send(500);
     });
 });
@@ -215,7 +215,7 @@ router.post('/updateFileInformation', async (req, res) => {
 
         res.send(200);
     } catch (error) {
-        console.error(error);
+        console.error(error.stack);
         res.send(500);
     }
 })

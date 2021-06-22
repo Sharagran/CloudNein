@@ -151,7 +151,7 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
             link.click();
             link.remove();
         }).catch(error => {
-            console.error(error);
+            console.error(error.stack);
             addToast('Download attempt failed', { appearance: 'error' });
         });
     }
@@ -178,7 +178,7 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
             }}>copy link</span></div>, { appearance: 'success' });
 
         }).catch(error => {
-            console.error(error);
+            console.error(error.stack);
             addToast('File share failed', { appearance: 'error' });
         });
 
@@ -209,7 +209,7 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
 
             addToast('File updated', { appearance: 'success' });
         }).catch(error => {
-            console.error(error);
+            console.error(error.stack);
             addToast('Failed updating file information', { appearance: 'error' });
         })
 
@@ -231,7 +231,7 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
             var newFileProperties = {...fileProperties, visible: false};
             setFileProperties(newFileProperties);
         }).catch(error => {
-            console.error(error);
+            console.error(error.stack);
             addToast('Failed deleting file', { appearance: 'error' });
         });
     }

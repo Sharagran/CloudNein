@@ -40,7 +40,7 @@ export default function Fileexplorer() {
       setPath(p);
 
     }).catch(error => {
-      console.error(error);
+      console.error(error.stack);
       addToast(error.toString(), { appearance: 'error' });
     });
   }
@@ -54,7 +54,7 @@ export default function Fileexplorer() {
       folderHistory.pop();
       cd(currentFolder);
     }).catch(error => {
-      console.error(error);
+      console.error(error.stack);
       addToast(error.toString(), { appearance: 'error' });
     });
   }
@@ -65,13 +65,11 @@ export default function Fileexplorer() {
     return folder
 }
 
-//FIXME: Move up doesen't work
   function moveFile(fileID, folderID) {
 
     if(folderID === null){
-      folerID = folderHistory.slice(-2).id //FIXME: FolderID could be undefined in home directory
+      folerID = folderHistory.slice(-2).id;
     }
-
     console.log(fileID, " ", folderID);
 
     axios.post("http://localhost:80/moveFolder", { folderID: folderID, fileID: fileID}).then(res => {
@@ -80,7 +78,7 @@ export default function Fileexplorer() {
       var currentFolder = folderHistory.pop();
       cd(currentFolder);
     }).catch(error => {
-      console.error(error);
+      console.error(error.stack);
       addToast(error.toString(), { appearance: 'error' });
     });
   }
