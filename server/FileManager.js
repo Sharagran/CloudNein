@@ -315,21 +315,10 @@ function isExpired(shareEntry) {
     return false;
 }
 
-async function spaceCheck(req, userID) {
-    var fileSize = 0
-    for (const key in req.files) {
-        const file = req.files[key];
-        fileSize += file.size
-        console.log(fileSize);
-    }
-
+async function spaceCheck(fileSize, userID) {
     var folderSize = await checkUploadLimit(userID)
     var dataLimit = await getDataLimit() * 1000000
-
-
-
-
-
+    
     if (folderSize + fileSize <= dataLimit) {
         console.log("enough space")
         return true;

@@ -44,7 +44,16 @@ export default class Upload extends Component {
         formData.append("files", this.state.selectedFile[x])
       }
 
-      axios.post("http://localhost:80/uploadCheck").then((res => {
+      var sizeFiles = 0;
+      for (var i = 0; i < this.state.selectedFile.length; i++) {
+        sizeFiles += document.getElementById('upload').files[i].size;
+      }
+
+      const fileSize = {
+        fileSize: sizeFiles
+      }
+
+      axios.post("http://localhost:80/uploadCheck", { fileSize }).then((res => {
         spaceCheck = res.data
         if (spaceCheck) {
           axios.post("http://localhost:80/upload", formData);
