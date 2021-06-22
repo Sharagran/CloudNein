@@ -76,16 +76,20 @@ async function changeUsername(userID, newUsername, previousUsername) {
         console.log("Successfully renamed the directory.")
       }
     })
+    return true;
   }
+  return false;
 }
 
 async function changeMail(userID, newMail) {
   var error, mailCheck = await db.readDataPromise('user', { email: newMail })
-  console.log(mailCheck);
+
   if (mailCheck.length == 0) {
-    var error, result = await db.updateDataPromise('user', { id: userID }, { $set: { email: newMail } })
-    console.log(result);
+    await db.updateDataPromise('user', { id: userID }, { $set: { email: newMail } });
+    return true;
   }
+
+  return false;
 }
 
 async function login(username, password) {

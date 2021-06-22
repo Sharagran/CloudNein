@@ -76,9 +76,12 @@ router.post('/settings', async (req, res) => {
     var previousUsername = req.body.user.previousUsername
 
     if (username) {
-        await auth.changeUsername(req.user.id, username, previousUsername)
-    } else if (mail) {
-        await auth.changeMail(req.user.id, mail)
+        var resultUsername = await auth.changeUsername(req.user.id, username, previousUsername);
+        res.send(resultUsername);
+    }
+    if (mail) {
+        var resultEmail = await auth.changeMail(req.user.id, mail)
+        res.send(resultEmail);
     }
 })
 
@@ -150,7 +153,7 @@ router.post("/share", async function (req, res) {
             }
         })
 
-        res.send({shareID: shareID});
+        res.send({ shareID: shareID });
     });
 });
 

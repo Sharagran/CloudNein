@@ -3,7 +3,6 @@ import { Recorder } from 'react-voice-recorder'
 import './css/recorder.css'
 import axios from 'axios';
 import { getToken } from "../Authenticator";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Navbar from "../Navbar";
 
@@ -11,8 +10,8 @@ var spaceCheck;
 export default class Record extends Component {
 
   constructor(props) {
-    super(props)
-    this.goBack = this.goBack.bind(this)
+    super(props);
+    this.goBack = this.goBack.bind(this);
 
     this.state = {
       audioDetails: {
@@ -25,8 +24,8 @@ export default class Record extends Component {
           s: 0
         }
       },
-      message: " "
-    }
+      message: ""
+    };
   }
 
   handleAudioStop(data) {
@@ -34,32 +33,37 @@ export default class Record extends Component {
   }
 
   handleAudioUpload(file) {
+
+    var today = new Date();
+    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    var time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
+    var dateTime = date + "@" + time;
+
+
+
     try {
-      var today = new Date();
-      var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-      var time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
-      var dateTime = date + "@" + time;
       const formData = new FormData();
-      formData.append("files", file, dateTime + ".webm")
-      // Request made to the backend api
-      // Send formData object
+      formData.append("files", file, dateTime + ".webm");
 
       const fileSize = {
         fileSize: file.size
-      }
+      };
 
       axios.post("http://localhost:80/uploadCheck", { fileSize }).then((res => {
         spaceCheck = res.data
         if (spaceCheck) {
-          axios.post("http://localhost:80/upload", formData)
-          this.setState({ message: "Uploaded audio" })
+          axios.post("http://localhost:80/upload", formData);
+          this.setState({ message: "Uploaded audio" });
         } else {
-          this.setState({ message: "Not enough space" })
+          this.setState({ message: "Not enough space" });
         }
-      }));
+      })).catch(error => {
+        console.error(error.stack);
+        this.setState({ message: "Error while uploading audio" });
+      });
     } catch (error) {
-      console.log(error);
-      this.setState({ message: "Error while uploading audio" })
+      console.error(error.stack);
+      this.setState({ message: "Reacord audio before uploading" });
     }
   }
 

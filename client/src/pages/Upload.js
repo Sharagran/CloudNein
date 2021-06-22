@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { getToken } from "../Authenticator";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Navbar from "../Navbar";
 
@@ -12,9 +11,9 @@ export default class Upload extends Component {
 
   constructor(props) {
     super(props);
-    this.goBack = this.goBack.bind(this)
-    this.onFileChange = this.onFileChange.bind(this)
-    this.onFileUpload = this.onFileUpload.bind(this)
+    this.goBack = this.goBack.bind(this);
+    this.onFileChange = this.onFileChange.bind(this);
+    this.onFileUpload = this.onFileUpload.bind(this);
 
     this.state = {
       // Initially, no file is selected
@@ -36,10 +35,10 @@ export default class Upload extends Component {
   // On file upload (click the upload button)
   onFileUpload(e) {
     e.preventDefault();
-    try {
-      // Create an object of formData
-      const formData = new FormData();
 
+    // Create an object of formData
+    const formData = new FormData();
+    try {
       for (var x = 0; x < this.state.selectedFile.length; x++) {
         formData.append("files", this.state.selectedFile[x])
       }
@@ -53,21 +52,25 @@ export default class Upload extends Component {
         fileSize: sizeFiles
       }
 
-      axios.post("http://localhost:80/uploadCheck", { fileSize }).then((res => {
-        spaceCheck = res.data
+
+      axios.post("http://localhost:80/uploadCheck", { fileSize }).then(res => {
+        spaceCheck = res.data;
         if (spaceCheck) {
           axios.post("http://localhost:80/upload", formData);
-          this.setState({ message: "Uploaded" })
+          this.setState({ message: "Uploaded" });
           document.getElementById("upload").value = "";
-          this.setState({ selectedFile: null })
+          this.setState({ selectedFile: null });
         } else {
-          this.setState({ message: "Not enough space" })
-          this.setState({ selectedFile: null })
+          this.setState({ message: "Not enough space" });
+          this.setState({ selectedFile: null });
         }
-      }));
+      }).catch(error => {
+        console.error(error.stack);
+        this.setState({ message: "Error while uploading file" });
+      });
     } catch (error) {
       console.log(error);
-      this.setState({ message: "Select a File" })
+      this.setState({ message: "Select a File" });
     }
   }
 
