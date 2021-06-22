@@ -63,3 +63,20 @@ code {
 tr,th,tr{
   text-align: center;
 }
+
+.shareLink-container {
+  width: 300px;
+  margin: 0 auto;
+  font-family: Tahoma, Geneva, sans-serif;
+
+  margin-top: 64px;
+
+  text-align: center;
+}
+
+.shareLink-container h1 {
+  text-align: center;
+  color: #4d4d4d;
+  font-size: 24px;
+  padding: 20px 0 20px 0;
+}

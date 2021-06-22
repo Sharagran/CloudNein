@@ -184,7 +184,7 @@
 }
 
 
-/* Context menu */
+/* #region Context-menu */
 .fileexplorer-context-menu {
     margin: auto;
     background: rgb(255, 255, 255);
@@ -200,3 +200,5 @@
     padding-right: 20px;
     cursor: pointer;
 }
+
+/* #endregion */

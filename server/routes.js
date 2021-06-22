@@ -165,9 +165,9 @@ router.post('/deleteFile', async function (req, res) {
 });
 
 router.post('/getShareInformation', async (req, res) => {
-    var sharedFiles = await fm.getSharedFiles(req.body.shareInformation.shareID)
-    var files = await fm.getFile(sharedFiles.sharedItem)
-    res.send({ files: files, sharedFiles: sharedFiles })
+    var sharedFiles = await fm.getSharedFiles(req.body.shareInformation.shareID);
+    var file = await fm.getFile(sharedFiles.sharedItem);
+    res.send({ files: file, sharedFiles: sharedFiles, isFolder: file.isFolder });
 })
 
 router.get('/download/:id', async function (req, res) {

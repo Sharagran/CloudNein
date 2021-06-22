@@ -10,9 +10,6 @@ var confirmCounter = 0;
 var usages;
 var expired;
 
-var file = {name: this.state.fileName, id: fileID};
-var files = [];
-
 export default class ShareFile extends Component {
 
   constructor(props) {
@@ -23,6 +20,7 @@ export default class ShareFile extends Component {
     this.state = {
       message: "",
       fileName: "",
+      files: []
     };
   }
 
@@ -47,7 +45,13 @@ export default class ShareFile extends Component {
       axios.post("http://localhost:80/getShareInformation", { shareInformation }).then((res) => {
         fileID = res.data.files.id
         usages = res.data.sharedFiles.usages
+        var isFolder = res.data.isFolder;
         this.setState({ fileName: res.data.files.name })
+        if(isFolder) {
+          this.getFiles(fileID);
+        } else {
+          this.setState({...this.state, files: [{name: this.state.fileName, id: fileID}]});
+        }
       })
 
 
@@ -58,8 +62,7 @@ export default class ShareFile extends Component {
     }
   }
 
-  onSubmit(e) {
-    e.preventDefault();
+  onSubmit(fileID, fileName) {
     try {
       if (expired) {
         this.setState({ message: "Download rejected because it's expired" })
@@ -87,7 +90,7 @@ export default class ShareFile extends Component {
             const url = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', this.state.fileName);
+            link.setAttribute('download', fileName);
             document.body.appendChild(link);
             link.click();
             this.setState({ message: "Download successful" })
@@ -105,8 +108,7 @@ export default class ShareFile extends Component {
     }
   }
 
-  onConfirmDownload(e) {
-    e.preventDefault();
+  onConfirmDownload() {
     try {
       if (expired) {
         this.setState({ message: "Confirmation rejected because it's expired" })
@@ -141,10 +143,10 @@ export default class ShareFile extends Component {
     }
   }
 
-  getFiles() {
+  getFiles(fileID) {
     axios.post("http://localhost:80/storage", { folderid: fileID }).then(res => {
       var newFiles = res.data;
-      setFiles(newFiles);
+      this.setState({...this.state, files: newFiles});
 
     }).catch(error => {
       console.error(error.stack);
@@ -154,13 +156,13 @@ export default class ShareFile extends Component {
 
   // This following section will display the form that takes the input from the user.
   render() {
-    var file = {name: this.state.fileName, id: fileID};
     return (
       <>
       <div id='fileContainer'>
-        <FileList files={[file]} cd={() =>{}} getFolders={() =>{return []}} moveFile={() =>{}} areSharedFiles={true} shareDownload={this.onSubmit} shareConfirm={this.onConfirmDownload}/>
+        <FileList files={this.state.files} cd={() =>{}} getFolders={() =>{return []}} moveFile={() =>{}} areSharedFiles={true} shareDownload={this.onSubmit} />
       </div>
-      <div className="login-form">
+      <div className="shareLink-container">
+        <button onClick={this.onConfirmDownload}>Confirm Download</button>
         <h1>{this.state.message}</h1>
       </div>
       </>

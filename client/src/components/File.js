@@ -23,7 +23,7 @@ const file_type = [
 
 var cachedTags;
 
-export default function File({ id, name, isFolder, comment, tags, cd, getFolders, moveFile, areSharedFiles, shareDownload, shareConfirm }) {
+export default function File({ id, name, isFolder, comment, tags, cd, getFolders, moveFile, areSharedFiles, shareDownload }) {
     // Hooks
     const { addToast } = useToasts();
     const commentRef = useRef();
@@ -313,12 +313,12 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
         <Popup
             trigger={<FileButton />}
             position="bottom"
-            // contentStyle={{ padding: '0px', border: 'none' }}
             arrow={true}
             nested
         >
 
             <div className="file-menu">
+                {/* Storage file options */}
                 {isFolder && <div className="menu-item" onClick={openClickHandler}>Open</div>}
                 {!areSharedFiles &&
                 <>
@@ -330,14 +330,8 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
                 <Modal {...delete_modal_props} title={`Delete ${name}`} />
                 </>
                 }
-                {areSharedFiles &&
-                <>
-                <div className="menu-item" onClick={shareDownload}>Download</div>
-                <div className="menu-item" onClick={shareConfirm}>Confirm Download</div>
-                </>
-                }
-
-                
+                {/* Share link file options */}
+                {areSharedFiles && <div className="menu-item" onClick={() => {shareDownload(id, name)}}>Download</div>}
             </div>
 
         </Popup>
