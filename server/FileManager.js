@@ -1,12 +1,9 @@
-/* eslint-disable no-unused-vars */
-
 const fs = require("fs");
 const db = require("./Database");
 const uuidv4 = require('uuid').v4;
 const { join } = require('path');
 var cron = require('node-cron');
 const nodemailer = require("nodemailer");
-var { zip } = require('zip-a-folder');
 var archiver = require('archiver');
 
 // every minute==0 (every hour)
@@ -121,11 +118,6 @@ async function getFolderContent(id, userid) {
 async function getFile(id) {
     var file = await db.readDataPromise('file', { id: id })
     return file[0];
-}
-
-async function getFiles(userID) {
-    var error, files = await db.readDataPromise('file', { owner: userID })
-    return files;
 }
 
 function getProfilePicture(userID) {
@@ -355,7 +347,6 @@ async function setExpirationDate(days) {
 async function checkUploadLimit(userID) {
     var size = 0;
     var error, resultRead = await db.readDataPromise('settings', { User: "Admin" });
-    var limit = resultRead[0].limit
 
     var error2, result = await db.readDataPromise('file', { owner: userID });
     for (var i = 0; i < result.length; i++) {
@@ -444,7 +435,6 @@ async function share(itemID, expires, usages, callback) {
     } else {
         expires = null;
     }
-    usages = usages;
 
     db.createData("shared", {
         shareID: shareID,
@@ -544,7 +534,6 @@ module.exports = {
     createFolder: createFolder,
     addTag: addTag,
     getFile: getFile,
-    getFiles: getFiles,
     commentFile: commentFile,
     moveFile: moveFile,
     downloadFile: downloadFile,

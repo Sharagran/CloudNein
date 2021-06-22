@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
+import uuidv4 from 'uuid/v4'
 
 import Popup from 'reactjs-popup';
 import { useToasts } from 'react-toast-notifications';
@@ -87,7 +88,7 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
             <label>Tags:</label>
             <ul className='tag-list'>
                 {fileProperties.tags ? fileProperties.tags.map(tag => {
-                    return <li>
+                    return <li key={tag}>
                         <Link to="#">{tag}</Link>
                     </li>
                 }) : 'test'
@@ -110,7 +111,7 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
             <select id="folder" ref={moveTarget}>
             <option value="null">Move up</option>
                 {getFolders().map(folder => {
-                    return (<option value={folder.id}>{folder.name}</option>)
+                    return (<option key={folder.id} value={folder.id}>{folder.name}</option>)
                 })}
             </select>
         </div>
@@ -264,7 +265,7 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
         </div>
     ));
 
-
+    
     if(fileProperties.visible == false) return null;
 
     return (
@@ -289,7 +290,6 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
     )
 }
 
-
 function Modal({ label, title, content, buttons, ...args }) {
     return (
         <Popup
@@ -309,7 +309,7 @@ function Modal({ label, title, content, buttons, ...args }) {
                         {content}
                     </div>
                     {buttons && buttons.map(button => {
-                        return <button className="button" onClick={() => {
+                        return <button key={uuidv4()} className="button" onClick={() => {
                             button.onClick();
                             if (button.close) {
                                 close();
@@ -342,7 +342,7 @@ function AddTagModal({ label, title, content, buttons }) {
                         {content}
                     </div>
                     {buttons && buttons.map(button => {
-                        return <button className="button" onClick={() => {
+                        return <button key={uuidv4()} className="button" onClick={() => {
                             button.onClick();
                             if (button.close) {
                                 close();

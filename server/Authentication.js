@@ -53,15 +53,15 @@ function sendNewPassword(receiver, newPassword, callback) {
     } else {
       console.log('Email sent: ' + info.response);
       callback(error, info);
-    };
+    }
   });
-};
+}
 
 function generatePassword() {
   var newPW = generator.generate({ length: 6, numbers: true })
   console.log('Generated Password: ' + newPW);
-  return newPW
-};
+  return newPW;
+}
 
 async function changeUsername(userID, newUsername, previousUsername) {
   var error, usernameCheck = await db.readDataPromise('user', { username: newUsername })
@@ -106,7 +106,7 @@ async function login(username, password) {
       return user;
     } else {
       console.log("Matching password: false");
-    };
+    }
   }
   else {
     console.log(password, username);

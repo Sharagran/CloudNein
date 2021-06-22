@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-vars */
-
-const path = require("path");
 const multer = require('multer');
 const auth = require("./Authentication");
 const fm = require('./FileManager');
@@ -10,13 +7,13 @@ const express = require("express");
 var upload = multer({ dest: `${__dirname}/../UserFiles/` });
 var router = express.Router();
 
+
 router.post('/login', async (req, res) => {
     fm.createUploadSettings();
     var user = await auth.login(req.body.user.username, req.body.user.password);
     var token = auth.sign(user);
     res.send({ token: token, user: user });
 });
-
 
 //Verarbeitet die empfangenen Daten beim Registrieren
 router.post('/register', async (req, res) => {
@@ -153,25 +150,14 @@ router.post('/getShareInformation', async (req, res) => {
     res.send({ files: files, sharedFiles: sharedFiles })
 })
 
-router.get('/share/:id', function (req, res) {
-
-});
-
 router.get('/download/:id', async function (req, res) {
     fm.downloadFile(req.params.id, res);
-});
-
-//FIXME:Add download and adjust id
-router.get('/downloadZip/:id', async function (req, res) {
-    var path = await fm.getActualPath("53d9a7c6-b0c2-4032-9a06-2be9e7e0d04a")
-    fm.compressFolder(path, "53d9a7c6-b0c2-4032-9a06-2be9e7e0d04a")
 });
 
 router.post('/storage', async function (req, res) {
     var files = await fm.getFolderContent(req.body.folderid, req.user.id);
     res.json(files);
 });
-
 
 router.post('/getProfilePicture', function (req, res) {
     var img = fm.getProfilePicture(req.user.id)
@@ -221,32 +207,12 @@ router.post('/updateFileInformation', async (req, res) => {
 })
 
 
-// FIXME: Debug only (all get routes should be handled with react)
-router.get('/', function (req, res) {
-    console.log(__dirname + '/public/login.html');
-    console.log(path.join(__dirname + '/public/login.html'));
-    res.sendFile(__dirname + '/public/login.html');
-});
-
-router.get('/dbtest', async function (req, res) {
-    var file = await fm.getFile('7dfeba13-43c4-4463-bdb3-a5386c244794');
-    console.log(file);
-    res.send(200);
-});
-
-router.get('/upload', function (req, res) {
-    res.sendFile(__dirname + "/public/upload.html");
-});
-
-router.get('/error', function (req, res) {
-    fghfghfg.error();
-})
-
-router.get('/test', function (req, res) {
-    console.log("/test");
-    console.log(req.user);
-    res.send(req.user);
-})
+// FIXME: React dev server is handeling all routes
+// router.get('/', function (req, res) {
+//     console.log(__dirname + '/public/login.html');
+//     console.log(path.join(__dirname + '/public/login.html'));
+//     res.sendFile(__dirname + '/public/login.html');
+// });
 
 router.get('*', function (req, res) {
     res.status(404).sendFile(__dirname + '/public/error.html');

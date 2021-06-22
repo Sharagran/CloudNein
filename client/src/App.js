@@ -12,7 +12,6 @@ import Success from './pages/Success';
 import SendEmail from './pages/SendEmail';
 import Upload from './pages/Upload';
 import Admin from './pages/Admin';
-import Storage from './pages/Storage';
 import ShareFile from './pages/ShareFile';
 import Fileexplorer from "./components/Fileexplorer";
 

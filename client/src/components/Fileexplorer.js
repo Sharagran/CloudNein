@@ -68,7 +68,7 @@ export default function Fileexplorer() {
   function moveFile(fileID, folderID) {
 
     if(folderID === null){
-      folerID = folderHistory.slice(-2).id;
+      folderID = folderHistory.slice(-2).id; //FIXME: FolderID could be undefined in home directory
     }
     console.log(fileID, " ", folderID);
 
@@ -158,7 +158,7 @@ if (document.addEventListener) {
     e.preventDefault();
   }, false);
 } else {
-  document.attachEvent('oncontextmenu', function () {
+  document.attachEvent('oncontextmenu', function (e) {
     toggleMenu(e);
     window.event.returnValue = false;
   });

@@ -45,4 +45,4 @@ function authenticate (req, res, next) {
         //TODO: Send user to login page?
         next();
     }
-};
+}
