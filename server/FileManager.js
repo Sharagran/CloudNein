@@ -113,10 +113,11 @@ async function createFolder(parentID, name, userID) {
 
 async function getFolderContent(id, userid) {
     var files;
-    if(id) {
-        files = await db.readDataPromise('file', {parent: id});
+    if (id) {
+        files = await db.readDataPromise('file', { parent: id });
     } else {
-        files = await getFiles(userid);
+        //Home directory
+        files = await db.readDataPromise('file', { owner: userid, parent: null });
     }
     return files;
 }
@@ -194,10 +195,45 @@ async function moveFile(fileID, folderID) {
     return true;
 }
 
-async function deleteFile(fileID) {
-    await db.deleteDataPromise('file', { id: fileID }, function () {
-        console.log(`${fileID} deleted`);
+async function deleteItem(fileID) {
+    //TODO test if this works after folder changes
+    var file = await getFile(fileID);
+
+    if (file.isFolder) {
+        deleteFolder(fileID);
+    } else {
+        deleteFile(fileID)
+    }
+}
+
+async function deleteFolder(folderID) {
+    var files = await getFolderContent(folderID);
+
+    files.forEach(file => {
+        if (file.isFolder) {
+            deleteFolder(file.id);
+        } else {
+            deleteFile(file.id);
+        }
     });
+    // delete current folder
+    db.deleteData('file', { id: folderID });
+    console.log(`folder ${folderID} deleted`);
+}
+
+async function deleteFile(fileID) {
+    var path = await getActualPath(fileID);
+    // remove from disk
+    fs.unlink(path, function (error) {
+        if (error) {
+            console.error(error);
+            return;
+        }
+    });
+    // remove from db
+    db.deleteData('file', { id: fileID });
+
+    console.log(`${fileID}/${path} deleted`);
 }
 
 //#endregion
@@ -259,7 +295,7 @@ function checkFileExpirations(fileID) {
 
             // expired
             if (Date.now() >= fileExpiration) {
-                deleteFile(file.id);
+                deleteItem(file.id);
             }
         });
     });
@@ -289,9 +325,9 @@ async function spaceCheck(req, userID) {
 
     var folderSize = await checkUploadLimit(userID)
     var dataLimit = await getDataLimit() * 1000000
-    
 
-  
+
+
 
 
     if (folderSize + fileSize <= dataLimit) {
@@ -301,7 +337,7 @@ async function spaceCheck(req, userID) {
         console.log(("not enough space"));
         return false;
     }
-    
+
 }
 //#endregion
 
@@ -408,7 +444,7 @@ async function downloadFile(id, res) {
     }
 
     if (isExpired(file)) {
-        deleteFile(file.id);
+        deleteItem(file.id);
         return;
     }
 
@@ -578,5 +614,5 @@ module.exports = {
     getActualPath: getActualPath,
     getFolderContent: getFolderContent,
     increaseDownloads: increaseDownloads,
-    deleteFile: deleteFile,
+    deleteItem: deleteItem,
 }

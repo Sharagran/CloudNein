@@ -34,7 +34,7 @@ app.use(express.json())
 // logging all request (debug mode)
 app.use(function (req, res, next) {
     console.log(`${req.ip} ${req.method} ${req.url}`);
-    console.log(req.headers)
+    // console.log(req.headers)
     next();
 })
 

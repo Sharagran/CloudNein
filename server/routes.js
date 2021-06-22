@@ -138,7 +138,7 @@ router.post("/share", async function (req, res) {
 
 router.post('/deleteFile', async function (req, res) {
     var fileID = req.body.fileID;
-    fm.deleteFile(fileID).then(result => {
+    fm.deleteItem(fileID).then(result => {
         res.send(200);
     }).catch(error => {
         console.error(error);
