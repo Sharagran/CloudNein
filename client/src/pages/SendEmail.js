@@ -11,9 +11,9 @@ export default class SendEmail extends Component {
   // This following section will display the form that takes the input from the user.
   render() {
     return (
-      <>
-        <h1>Send Email</h1>
-      </>
+      <div className="login-form">
+        <h1>Send Mail</h1>
+      </div>
     );
   }
 }

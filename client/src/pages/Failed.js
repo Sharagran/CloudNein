@@ -12,7 +12,9 @@ export default class Failed extends Component {
     render() {
         return (
             <>
-                <h1>Failed</h1>
+                <div className="login-form">
+                    <h1>Failed</h1>
+                </div>
             </>
         );
     }

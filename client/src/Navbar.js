@@ -39,12 +39,16 @@ export default class Navbar extends Component {
 
         try {
             axios.post("http://localhost:80/getStorageSpaceInformation").then((res) => {
+                var freeSpaceRounded = res.data.dataLimit - res.data.usedSpace
+   
                 this.setState({
                     maxSpace: res.data.dataLimit,
                     usedSpace: res.data.usedSpace,
                     usedSpacePercent: 100 / res.data.dataLimit * res.data.usedSpace,
-                    freeSpace: res.data.dataLimit - res.data.usedSpace
+                    freeSpace: freeSpaceRounded.toFixed(2)
                 })
+
+                console.log(this.state.freeSpace);
             })
         } catch (error) {
             console.log(error);

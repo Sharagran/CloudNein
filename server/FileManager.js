@@ -331,12 +331,21 @@ async function deleteProfilePicture(userID) {
 
 function getProfilePicture(userID) {
     try {
-        var img = fs.readFileSync(`${__dirname}/../ProfilePictures/${userID}.png`)
-        var base64 = Buffer.from(img).toString('base64');
-        base64 = 'data:image/png;base64,' + base64;
-        return base64;
+
+        var fileNames = fs.readdirSync(`${__dirname}/../ProfilePictures/`)
+        var available;
+        fileNames.forEach(file => {
+            if (file == `${userID}.png`) { available = true }
+        })
+
+        if (available) {
+            var img = fs.readFileSync(`${__dirname}/../ProfilePictures/${userID}.png`)
+            var base64 = Buffer.from(img).toString('base64');
+            base64 = 'data:image/png;base64,' + base64;
+            return base64;
+        }
     } catch (error) {
-        console.log(error);
+        console.error(error.stack);
     }
 }
 //#endregion
