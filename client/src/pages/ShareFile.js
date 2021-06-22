@@ -2,12 +2,16 @@ import React, { Component } from "react";
 import axios from 'axios';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
+import FileList from "../components/FileList";
 
 var fileID;
 var shareID;
 var confirmCounter = 0;
 var usages;
 var expired;
+
+var file = {name: this.state.fileName, id: fileID};
+var files = [];
 
 export default class ShareFile extends Component {
 
@@ -18,7 +22,7 @@ export default class ShareFile extends Component {
 
     this.state = {
       message: "",
-      fileName: ""
+      fileName: "",
     };
   }
 
@@ -137,39 +141,29 @@ export default class ShareFile extends Component {
     }
   }
 
+  getFiles() {
+    axios.post("http://localhost:80/storage", { folderid: fileID }).then(res => {
+      var newFiles = res.data;
+      setFiles(newFiles);
+
+    }).catch(error => {
+      console.error(error.stack);
+      addToast(error.toString(), { appearance: 'error' });
+    });
+  }
+
   // This following section will display the form that takes the input from the user.
   render() {
-    if (usages == null) {
-      return (
-        <>
-          <div className="login-form">
-            <Popup trigger={<input value={"Download " + this.state.fileName}></input>} position="bottom center">
-              <div>
-                <form onSubmit={this.onUpdate}>
-                  <input type="submit" value="Download " onClick={this.onSubmit}></input>
-                </form>
-              </div>
-            </Popup>
-            <h1>{this.state.message}</h1>
-          </div>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <div className="login-form">
-            <Popup trigger={<input value={"Download " + this.state.fileName}></input>} position="bottom center" className='sharelink-modal'>
-              <div>
-                <form onSubmit={this.onUpdate}>
-                  <input type="submit" value="Download " onClick={this.onSubmit}></input>
-                  <input type="submit" value="Confirm successful download" onClick={this.onConfirmDownload}></input>
-                </form>
-              </div>
-            </Popup>
-            <h1>{this.state.message}</h1>
-          </div>
-        </>
-      );
-    }
+    var file = {name: this.state.fileName, id: fileID};
+    return (
+      <>
+      <div id='fileContainer'>
+        <FileList files={[file]} cd={() =>{}} getFolders={() =>{return []}} moveFile={() =>{}} areSharedFiles={true} shareDownload={this.onSubmit} shareConfirm={this.onConfirmDownload}/>
+      </div>
+      <div className="login-form">
+        <h1>{this.state.message}</h1>
+      </div>
+      </>
+    )
   }
 }

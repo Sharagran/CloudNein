@@ -23,7 +23,7 @@ const file_type = [
 
 var cachedTags;
 
-export default function File({ id, name, isFolder, comment, tags, cd, getFolders, moveFile }) {
+export default function File({ id, name, isFolder, comment, tags, cd, getFolders, moveFile, areSharedFiles, shareDownload, shareConfirm }) {
     // Hooks
     const { addToast } = useToasts();
     const commentRef = useRef();
@@ -320,12 +320,24 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
 
             <div className="file-menu">
                 {isFolder && <div className="menu-item" onClick={openClickHandler}>Open</div>}
+                {!areSharedFiles &&
+                <>
                 <div className="menu-item" onClick={download}>Download</div>
                 <Modal {...share_modal_props} title={`Share ${name}`} />
                 <Modal {...set_maxDownloads_props} />
                 <Modal {...edit_modal_props} title={`Edit ${name}`} />
                 <Modal {...move_modal_props} title={`move ${name}`} />
                 <Modal {...delete_modal_props} title={`Delete ${name}`} />
+                </>
+                }
+                {areSharedFiles &&
+                <>
+                <div className="menu-item" onClick={shareDownload}>Download</div>
+                <div className="menu-item" onClick={shareConfirm}>Confirm Download</div>
+                </>
+                }
+
+                
             </div>
 
         </Popup>
