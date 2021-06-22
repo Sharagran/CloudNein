@@ -32,6 +32,7 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
     const usagesRef = useRef();
     const tagRef = useRef();
     const moveTarget = useRef();
+    const maxDownloadsRef = useRef();
 
     const [fileProperties, setFileProperties] = useState({
         comment: comment,
@@ -41,8 +42,10 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
     useEffect(() => {
         setFileProperties({...fileProperties, tags: tags});
         cachedTags = tags;
+        getFileStats();
     }, []);
 
+    
 
     const share_modal_props = {
         label: 'Share',
@@ -126,6 +129,20 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
         title: `Delete file`,
         content: 'Are you sure that you want to permanently delete this file?',
         buttons: [{ label: 'confirm', close: true, onClick: _delete }]
+    }
+
+    const set_maxDownloads_props = {
+        label: 'Limit Downloads',
+        title: `Set Download limit`,
+        content: <>
+        <div className='label-container'>
+            <p>Current Downloads: {fileProperties.downloads}</p>
+            <p>Max Downloads: {fileProperties.maxDownloads}</p>
+            <label htmlFor='maxDownloads'>Download limit:</label>
+            <input id='maxDownloads' type="text" ref={maxDownloadsRef} placeholder='max downloads' />
+        </div>
+        </>,
+        buttons: [{ label: 'Set', close: true, onClick: setMaxDownloads }]
     }
 
     function openClickHandler() {
@@ -214,6 +231,32 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
 
     }
 
+    function setMaxDownloads() {
+        var maxDownloads = parseInt(maxDownloadsRef.current.value)
+        const data = {
+            fileID: id,
+            maxDownloads: maxDownloads
+        };
+
+        axios.post("http://localhost:80/setMaxDownloads", data).then(res => {
+            addToast('Download limit set', { appearance: 'success' });
+
+            var newFileProperties = {...fileProperties, maxDownloads: maxDownloads}
+            setFileProperties(newFileProperties);
+        }).catch(error => {
+            console.error(error.stack);
+            addToast('Failed setting download limit', { appearance: 'error' });
+        });
+    }
+
+    function getFileStats() {
+        axios.post("http://localhost:80/getFileStats", {fileID: id}).then(res => {
+            var newFileProperties = {...fileProperties, downloads: res.data.downloads, maxDownloads: res.data.maxDownloads}
+            setFileProperties(newFileProperties);
+        });
+        
+    }
+
     function editModalClosed() {
         var newFileProperties = {...fileProperties, tags: cachedTags};
         setFileProperties(newFileProperties);
@@ -279,6 +322,7 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
                 {isFolder && <div className="menu-item" onClick={openClickHandler}>Open</div>}
                 <div className="menu-item" onClick={download}>Download</div>
                 <Modal {...share_modal_props} title={`Share ${name}`} />
+                <Modal {...set_maxDownloads_props} />
                 <Modal {...edit_modal_props} title={`Edit ${name}`} />
                 <Modal {...move_modal_props} title={`move ${name}`} />
                 <Modal {...delete_modal_props} title={`Delete ${name}`} />

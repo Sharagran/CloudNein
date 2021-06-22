@@ -19,29 +19,6 @@ cron.schedule('0 * * * *', () => {
 
 //#region File management
 
-async function deleteProfilePicture(userID) {
-    var filename = fs.readdirSync(`${__dirname}/../ProfilePictures/`)
-    console.log(filename);
-    filename.forEach(file => {
-        if (file === userID + ".png") {
-            fs.unlinkSync(`${__dirname}/../ProfilePictures/${userID}.png`)
-        }
-    })
-}
-
-function uploadProfilePicture(req, userID) {
-    for (const key in req.files) {
-        const file = req.files[key];
-        file.originalname = userID;
-        const savePath = `${__dirname}/../ProfilePictures/${file.originalname}.png`;
-        fs.rename(file.path, savePath, function (error) {
-            if (error)
-                throw error;
-        })
-    }
-    return true
-}
-
 async function uploadFiles(req, userID, username, expires, tags = []) {
 
     var expirationDate = await db.readDataPromise('settings', { User: "Admin" })
@@ -83,7 +60,7 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
     return responseJSON;
 
 }
-//TODO: max downloads for files/folders
+
 async function createFolder(parentID, name, userID) {
     const id = uuidv4();
 
@@ -120,17 +97,6 @@ async function getFile(id) {
     return file[0];
 }
 
-function getProfilePicture(userID) {
-    try {
-        var img = fs.readFileSync(`${__dirname}/../ProfilePictures/${userID}.png`)
-        var base64 = Buffer.from(img).toString('base64');
-        base64 = 'data:image/png;base64,' + base64;
-        return base64;
-    } catch (error) {
-        console.log(error);
-    }
-}
-
 async function getActualPath(fileID) {
     var file = await getFile(fileID);
     var user = await db.readDataPromise('user', { id: file.owner });
@@ -146,21 +112,8 @@ async function getActualPath(fileID) {
 
 }
 
-async function moveFile(fileID, folderID) {
-    if (fileID == folderID) return false;
 
-    if (folderID == 'null') {
-        folderID = null;
-    } else {
-        var folder = await getFile(folderID);
-        if (folder.isFolder == false) return false;
-    }
-
-    await db.updateDataPromise('file', { id: fileID }, { $set: { parent: folderID } });
-
-    return true;
-}
-
+// Delete
 async function deleteItem(fileID) {
     var file = await getFile(fileID);
 
@@ -204,6 +157,21 @@ async function deleteFile(fileID) {
 //#endregion
 
 //#region File attributes
+async function moveFile(fileID, folderID) {
+    if (fileID == folderID) return false;
+
+    if (folderID == 'null') {
+        folderID = null;
+    } else {
+        var folder = await getFile(folderID);
+        if (folder.isFolder == false) return false;
+    }
+
+    await db.updateDataPromise('file', { id: fileID }, { $set: { parent: folderID } });
+
+    return true;
+}
+
 function commentFile(fileID, text) {
     db.updateData('file', { id: fileID }, { $set: { comment: text } })
 }
@@ -248,18 +216,14 @@ async function addTag(fileID, tag) {
     console.log("file tags updated");
 }
 
-async function spaceCheck(fileSize, userID) {
-    var folderSize = await checkUploadLimit(userID)
-    var dataLimit = await getDataLimit() * 1000000
-
-    if (folderSize + fileSize <= dataLimit) {
-        console.log("enough space")
+async function setMaxDownloads(fileID, maxDownloads) {
+    try {
+        await db.updateDataPromise('file', { id: fileID }, { $set: { maxDownloads: maxDownloads } });
         return true;
-    } else {
-        console.log(("not enough space"));
+    } catch (error) {
+        console.error(error.stack);
         return false;
     }
-
 }
 //#endregion
 
@@ -299,6 +263,20 @@ async function usedSpace(userID) {
     }
 }
 
+async function spaceCheck(fileSize, userID) {
+    var folderSize = await checkUploadLimit(userID)
+    var dataLimit = await getDataLimit() * 1000000
+
+    if (folderSize + fileSize <= dataLimit) {
+        console.log("enough space")
+        return true;
+    } else {
+        console.log(("not enough space"));
+        return false;
+    }
+
+}
+
 async function getExpirationDate() {
     var error, result = await db.readDataPromise('settings', { User: "Admin" });
     return result[0].days
@@ -324,6 +302,42 @@ async function checkUploadLimit(userID) {
     }
 
     return size
+}
+//#endregion
+
+//#region UserProfile
+function uploadProfilePicture(req, userID) {
+    for (const key in req.files) {
+        const file = req.files[key];
+        file.originalname = userID;
+        const savePath = `${__dirname}/../ProfilePictures/${file.originalname}.png`;
+        fs.rename(file.path, savePath, function (error) {
+            if (error)
+                throw error;
+        })
+    }
+    return true
+}
+
+async function deleteProfilePicture(userID) {
+    var filename = fs.readdirSync(`${__dirname}/../ProfilePictures/`)
+    console.log(filename);
+    filename.forEach(file => {
+        if (file === userID + ".png") {
+            fs.unlinkSync(`${__dirname}/../ProfilePictures/${userID}.png`)
+        }
+    })
+}
+
+function getProfilePicture(userID) {
+    try {
+        var img = fs.readFileSync(`${__dirname}/../ProfilePictures/${userID}.png`)
+        var base64 = Buffer.from(img).toString('base64');
+        base64 = 'data:image/png;base64,' + base64;
+        return base64;
+    } catch (error) {
+        console.log(error);
+    }
 }
 //#endregion
 
@@ -378,9 +392,6 @@ async function downloadFile(id, res) {
     } else {
         res.download(filePath);
     }
-
-    //countdown usages in db?
-    //check for deletion?
 }
 
 //#endregion
@@ -451,7 +462,6 @@ async function checkSharelinkUsages(shareID) {
     return shareLinkUsed;
 }
 
-//TODO: return result (call those functions before each item access)
 function checkFileExpirations(fileID) {
     var query = fileID ? { id: fileID } : {};
 
@@ -470,7 +480,7 @@ function checkFileExpirations(fileID) {
 function isExpired(shareEntry) {
     var expires = shareEntry.expires;
     var expiration = Date.parse(expires);
-    
+
     if (Date.now() >= expiration) {
         return true;
     } else {
@@ -547,4 +557,5 @@ module.exports = {
     getFolderContent: getFolderContent,
     increaseDownloads: increaseDownloads,
     deleteItem: deleteItem,
+    setMaxDownloads: setMaxDownloads,
 }

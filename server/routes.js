@@ -50,6 +50,26 @@ router.post('/setExpirationDate', async (req, res) => {
     await fm.setExpirationDate(req.body.settings.daysNew);
 });
 
+router.post('/setMaxDownloads', async function (req, res) {
+    var done = await fm.setMaxDownloads(req.body.fileID, req.body.maxDownloads);
+    if(done) {
+        res.send(200);
+    } else {
+        res.send(500);
+    }
+});
+
+router.post('/getFileStats', async function (req, res) {
+    try {
+        var file = await fm.getFile(req.body.fileID);
+        var data = { downloads: file.downloads, maxDownloads: file.maxDownloads };
+        res.send(data)
+    } catch (error) {
+        console.error(error.stack);
+        res.send(500);
+    }
+});
+
 router.post('/settings', async (req, res) => {
     var username = req.body.user.username
     var mail = req.body.user.mail
