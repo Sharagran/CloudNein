@@ -39,6 +39,8 @@ code {
     margin-bottom: 15px;
     box-sizing:border-box;
 }
+
+button,
 .login-form input[type="submit"],
 .register-form input[type="submit"],
 #register-btn,
@@ -53,7 +55,9 @@ code {
     color: #ffffff;
     margin-bottom: 15px;
 }
+
 .logoutLblPos{
+  width: auto;
 
   position:fixed;
   right:10px;
