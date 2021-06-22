@@ -48,16 +48,18 @@ export default class Registration extends Component {
       mail: this.state.mail
     };
 
-    axios.post("http://localhost:80/register", { user }).then((res) => {
-      if (res.data === true) {
-        this.props.history.push('/success');
-      } else {
-        this.props.history.push('/failed');
-      }
-    }).error(error => {
+    try {
+      axios.post("http://localhost:80/register", { user }).then(res => {
+        if (res.data === true) {
+          this.props.history.push('/success');
+        } else {
+          this.props.history.push('/failed');
+        }
+      });
+    } catch (error) {
       console.error(error.stack);
       this.setState({ message: "Error while registration" });
-    });
+    }
   }
 
   // This following section will display the form that takes the input from the user.
