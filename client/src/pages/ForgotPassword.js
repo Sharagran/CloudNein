@@ -5,10 +5,9 @@ export default class ForgotPassword extends Component {
   // This is the constructor that stores the data.
   constructor(props) {
     super(props);
-
     this.onChangeEmail = this.onChangeEmail.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
-    this.goBack = this.goBack.bind(this)
+    this.goBack = this.goBack.bind(this);
 
     this.state = {
       email: "",
@@ -19,7 +18,7 @@ export default class ForgotPassword extends Component {
   // These methods will update the state properties.
   onChangeEmail(e) {
     this.setState({
-      email: e.target.value,
+      email: e.target.value
     });
   }
 
@@ -33,24 +32,20 @@ export default class ForgotPassword extends Component {
   onSubmit(e) {
     e.preventDefault();
 
-    try {
-      const email = {
-        email: this.state.email,
-      };
-
-      axios
-        .post("http://localhost:80/forgotPassword", { email })
-        .then((res) => {
-          if (res.data === true) {
-            this.props.history.push('/sendEmail')
-          } else {
-            this.props.history.push('/failed')
-          }
-        });
-    } catch (error) {
-      console.log(error)
-      this.setState({ message: "Error while sending email" })
+    const email = {
+      email: this.state.email
     }
+
+    axios.post("http://localhost:80/forgotPassword", { email }).then((res) => {
+      if (res.data === true) {
+        this.props.history.push('/sendEmail');
+      } else {
+        this.props.history.push('/failed');
+      }
+    }).catch(error => {
+      console.error(error.stack);
+      this.setState({ message: "Error while sending email" });
+    });
   }
 
   // This following section will display the form that takes the input from the user.

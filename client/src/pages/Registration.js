@@ -6,12 +6,11 @@ export default class Registration extends Component {
 
   constructor(props) {
     super(props);
-
     this.onChangeUsername = this.onChangeUsername.bind(this);
     this.onChangePassword = this.onChangePassword.bind(this);
     this.onChangeMail = this.onChangeMail.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
-    this.goBack = this.goBack.bind(this)
+    this.goBack = this.goBack.bind(this);
 
     this.state = {
       username: "",
@@ -43,26 +42,22 @@ export default class Registration extends Component {
   onSubmit(e) {
     e.preventDefault();
 
-    try {
-      const user = {
-        username: this.state.username,
-        password: this.state.password,
-        mail: this.state.mail
-      };
+    const user = {
+      username: this.state.username,
+      password: this.state.password,
+      mail: this.state.mail
+    };
 
-      axios
-        .post("http://localhost:80/register", { user })
-        .then((res) => {
-          if (res.data === true) {
-            this.props.history.push('/success')
-          } else {
-            this.props.history.push('/failed')
-          }
-        });
-    } catch (error) {
-      console.log(error)
-      this.setState({ message: "Error while registration" })
-    }
+    axios.post("http://localhost:80/register", { user }).then((res) => {
+      if (res.data === true) {
+        this.props.history.push('/success');
+      } else {
+        this.props.history.push('/failed');
+      }
+    }).error(error => {
+      console.error(error.stack);
+      this.setState({ message: "Error while registration" });
+    });
   }
 
   // This following section will display the form that takes the input from the user.

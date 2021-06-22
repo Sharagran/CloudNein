@@ -7,11 +7,11 @@ export default class Admin extends Component {
 
   constructor(props) {
     super(props);
-    this.goBack = this.goBack.bind(this)
-    this.onChangeDataSize = this.onChangeDataSize.bind(this)
-    this.onSubmitDataSize = this.onSubmitDataSize.bind(this)
-    this.onSubmitDays = this.onSubmitDays.bind(this)
-    this.onChangeDays = this.onChangeDays.bind(this)
+    this.goBack = this.goBack.bind(this);
+    this.onChangeDataSize = this.onChangeDataSize.bind(this);
+    this.onSubmitDataSize = this.onSubmitDataSize.bind(this);
+    this.onSubmitDays = this.onSubmitDays.bind(this);
+    this.onChangeDays = this.onChangeDays.bind(this);
 
     this.state = {
       dataSize: "",
@@ -24,53 +24,51 @@ export default class Admin extends Component {
 
   onChangeDataSize(e) {
     this.setState({
-      dataSizeNew: e.target.value * 1000000,
+      dataSizeNew: e.target.value * 1000000
     });
   }
 
   onChangeDays(e) {
     this.setState({
-      daysNew: e.target.value,
+      daysNew: e.target.value
     });
   }
 
   onSubmitDataSize(e) {
     e.preventDefault();
-    try {
-      const settings = {
-        dataSizeNew: this.state.dataSizeNew
-      };
 
-      if (settings.dataSizeNew <= 0) {
-        this.setState({ message: "Invalid datalimit" })
-      } else {
-        axios.post("http://localhost:80/setDataLimit", { settings })
-        this.setState({ dataSize: settings.dataSizeNew / 1000000 })
-        this.setState({ message: "Updated datalimit" })
-      }
-    } catch (error) {
-      console.log(error)
-      this.setState({ message: "Error while updating datalimit" })
+    const settings = {
+      dataSizeNew: this.state.dataSizeNew
+    };
+
+    if (settings.dataSizeNew <= 0) {
+      this.setState({ message: "Invalid datalimit" });
+    } else {
+      axios.post("http://localhost:80/setDataLimit", { settings }).catch(error => {
+        console.error(error.stack);
+        this.setState({ message: "Error while updating datalimit" });
+      });
+      this.setState({ dataSize: settings.dataSizeNew / 1000000 });
+      this.setState({ message: "Updated datalimit" });
     }
   }
 
   onSubmitDays(e) {
     e.preventDefault();
-    try {
-      const settings = {
-        daysNew: this.state.daysNew
-      };
 
-      if (settings.daysNew <= 0) {
-        this.setState({ message: "Invalid exploration date" })
-      } else {
-        axios.post("http://localhost:80/setExpirationDate", { settings })
-        this.setState({ days: settings.daysNew })
-        this.setState({ message: "Updated exploration date" })
-      }
-    } catch (error) {
-      console.log(error)
-      this.setState({ message: "Error while updating exploration date" })
+    const settings = {
+      daysNew: this.state.daysNew
+    };
+
+    if (settings.daysNew <= 0) {
+      this.setState({ message: "Invalid exploration date" })
+    } else {
+      axios.post("http://localhost:80/setExpirationDate", { settings }).catch(error => {
+        console.error(error.stack);
+        this.setState({ message: "Error while updating exploration date" });
+      });
+      this.setState({ days: settings.daysNew });
+      this.setState({ message: "Updated exploration date" });
     }
   }
 
@@ -81,22 +79,24 @@ export default class Admin extends Component {
     GlobalVal.password = null;
     GlobalVal.loginState = null;
     GlobalVal.id = null;
-    this.props.history.push('/')
+    this.props.history.push('/');
   }
 
   UNSAFE_componentWillMount() {
-    try {
-      axios.post("http://localhost:80/getDataLimit").then((res) => {
-        this.setState({ dataSize: res.data })
-      });
 
-      axios.post("http://localhost:80/getExpirationDate").then((res) => {
-        this.setState({ days: res.data })
-      });
-    } catch (error) {
-      console.log(error)
-      this.setState({ message: "Error while loading datalimit or exploration date" })
-    }
+    axios.post("http://localhost:80/getDataLimit").then((res) => {
+      this.setState({ dataSize: res.data });
+    }).catch((error) => {
+      console.error(error.stack);
+      this.setState({ message: "Error while loading datalimit" });
+    });
+
+    axios.post("http://localhost:80/getExpirationDate").then((res) => {
+      this.setState({ days: res.data });
+    }).catch(error => {
+      console.error(error.stack);
+      this.setState({ message: "Error while loading exploration date" });
+    });
   }
 
   // This following section will display the form that takes the input from the user.

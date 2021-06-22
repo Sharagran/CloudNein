@@ -9,14 +9,13 @@ export default class Settings extends Component {
 
   constructor(props) {
     super(props);
-
     this.onChangeUsername = this.onChangeUsername.bind(this);
     this.onChangeMail = this.onChangeMail.bind(this);
     this.onSubmitUsername = this.onSubmitUsername.bind(this);
     this.onSubmitMail = this.onSubmitMail.bind(this);
-    this.goBack = this.goBack.bind(this)
-    this.onFileUpload = this.onFileUpload.bind(this)
-    this.onFileChange = this.onFileChange.bind(this)
+    this.goBack = this.goBack.bind(this);
+    this.onFileUpload = this.onFileUpload.bind(this);
+    this.onFileChange = this.onFileChange.bind(this);
 
     this.state = {
       username: "",
@@ -57,13 +56,18 @@ export default class Settings extends Component {
       previousUsername: GlobalVal.username
     };
 
-    try {
-      axios.post("http://localhost:80/settings", { user })
-      GlobalVal.username = user.username;
-      this.setState({ message: "Updated Username" })
-    } catch (error) {
-      console.log(error);
-    }
+
+    axios.post("http://localhost:80/settings", { user }).then(res => {
+      if (res.data) {
+        GlobalVal.username = user.username;
+        this.setState({ message: "Updated Username" });
+      } else {
+        this.setState({ message: "Username already taken" });
+      }
+    }).catch(error => {
+      console.error(error.stack);
+      this.setState({ message: "Error while updating username" });
+    })
   }
 
   onSubmitMail(e) {
@@ -73,33 +77,43 @@ export default class Settings extends Component {
     const user = {
       mail: this.state.mail,
     };
-    try {
-      axios.post("http://localhost:80/settings", { user })
-      GlobalVal.email = user.mail;
-      this.setState({ message: "Updated E-Mail" })
-    } catch (error) {
-      console.log(error);
-    }
+
+    axios.post("http://localhost:80/settings", { user }).then(res => {
+      if (res.data) {
+        GlobalVal.email = user.mail;
+        this.setState({ message: "Updated E-Mail" });
+      } else {
+        this.setState({ message: "Email is taken" });
+      }
+    }).catch(error => {
+      console.error(error.stack);
+      this.setState({ message: "Error while updating email" });
+    });
   }
 
   onFileUpload(e) {
     e.preventDefault();
+
     try {
       const formData = new FormData();
       for (var x = 0; x < this.state.selectedFile.length; x++) {
         formData.append("files", this.state.selectedFile[x])
       }
+
       axios.post("http://localhost:80/uploadProfilePicture", formData).then(res => {
         if (res.data) {
           this.setState({ message: "Uploaded Picture" })
-        } else {
-          this.setState({ message: "Error while uploading picture Picture" })
         }
+      }).catch(error => {
+        console.error(error.stack);
+        this.setState({ message: "Error while uploading picture Picture" })
       });
       document.getElementById("upload").value = "";
       this.setState({ selectedFile: null })
     } catch (error) {
       console.log(error);
+      document.getElementById("upload").value = "";
+      this.setState({ selectedFile: null })
       this.setState({ message: "Seleact a Picture" })
     }
   }
@@ -124,7 +138,7 @@ export default class Settings extends Component {
           <div className="register-form">
             <h1>Settings</h1> <button className="logoutLblPos" onClick={this.goBack}>Back</button>
             <form action="/settings" method="POST" onSubmit={this.onSubmitUsername}>
-              <input type="text" name="username" placeholder="Username (6 characters minimum)" minLength="6" onChange={this.onChangeUsername} required></input>
+              <input type="text" name="username" placeholder="Username (5 characters minimum)" minLength="5" onChange={this.onChangeUsername} required></input>
               <input type="submit" value="Update Username"></input>
             </form>
             <form onSubmit={this.onSubmitMail}>

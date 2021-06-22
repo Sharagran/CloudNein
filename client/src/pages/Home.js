@@ -8,10 +8,9 @@ const Navbar = React.lazy(() => import('../Navbar'));
 
 export default class Home extends Component {
 
-  // This is the constructor that stores the data.
   constructor(props) {
     super(props);
-    this.goBack = this.goBack.bind(this)
+    this.goBack = this.goBack.bind(this);
   }
 
   goBack(e) {
@@ -21,7 +20,7 @@ export default class Home extends Component {
     GlobalVal.password = null;
     GlobalVal.loginState = null;
     GlobalVal.id = null;
-    this.props.history.push('/')
+    this.props.history.push('/');
   }
 
   // This following section will display the form that takes the input from the user.

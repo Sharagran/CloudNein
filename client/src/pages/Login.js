@@ -8,7 +8,6 @@ export default class Login extends Component {
   // This is the constructor that stores the data.
   constructor(props) {
     super(props);
-
     this.onChangeUsername = this.onChangeUsername.bind(this);
     this.onChangePassword = this.onChangePassword.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -23,13 +22,13 @@ export default class Login extends Component {
   // These methods will update the state properties.
   onChangeUsername(e) {
     this.setState({
-      username: e.target.value,
+      username: e.target.value
     });
   }
 
   onChangePassword(e) {
     this.setState({
-      password: e.target.value,
+      password: e.target.value
     });
   }
 
@@ -37,33 +36,31 @@ export default class Login extends Component {
   onSubmit(e) {
     e.preventDefault();
 
-    try {
-      const user = {
-        username: this.state.username,
-        password: this.state.password,
-      };
+    const user = {
+      username: this.state.username,
+      password: this.state.password,
+    };
 
-      axios.post("http://localhost:80/login", { user }).then((res) => {
-        if (res.data.user.username === "Admin") {
-          setToken(res.data.token);
-          GlobalVal.username = res.data.user.username;
-          GlobalVal.email = res.data.user.email;
-          GlobalVal.loginState = true;
-          GlobalVal.id = res.data.user.id;
-          this.props.history.push('/Admin')
-        } else if (res.data.user.username !== undefined) {
-          setToken(res.data.token);
-          GlobalVal.username = res.data.user.username;
-          GlobalVal.email = res.data.user.email;
-          GlobalVal.loginState = true;
-          GlobalVal.id = res.data.user.id;
-          this.props.history.push('/home')
-        }
-      });
-    } catch (error) {
-      console.log(error);
-      this.setState({ message: "Error while login" })
-    }
+    axios.post("http://localhost:80/login", { user }).then((res) => {
+      if (res.data.user.username === "Admin") {
+        setToken(res.data.token);
+        GlobalVal.username = res.data.user.username;
+        GlobalVal.email = res.data.user.email;
+        GlobalVal.loginState = true;
+        GlobalVal.id = res.data.user.id;
+        this.props.history.push('/Admin')
+      } else if (res.data.user.username !== undefined) {
+        setToken(res.data.token);
+        GlobalVal.username = res.data.user.username;
+        GlobalVal.email = res.data.user.email;
+        GlobalVal.loginState = true;
+        GlobalVal.id = res.data.user.id;
+        this.props.history.push('/home');
+      }
+    }).catch(error => {
+      console.error(error.stack);
+      this.setState({ message: "Error while login" });
+    });
   }
 
   // This following section will display the form that takes the input from the user.
