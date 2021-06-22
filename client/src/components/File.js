@@ -36,7 +36,10 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
 
     const [fileProperties, setFileProperties] = useState({
         comment: comment,
-        visible: true
+        visible: true,
+        tags: tags,
+        downloads: null,
+        maxDownloads: null
     });
 
     useEffect(() => {
