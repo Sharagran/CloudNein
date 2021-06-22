@@ -100,7 +100,7 @@ export default class Navbar extends Component {
                 <Link to="/Settings"><FontAwesomeIcon icon='sliders-h' /> Settings</Link>
                 <a onClick={this.goBack}><FontAwesomeIcon icon='sign-out-alt' /> Logout</a>
 
-                <a href="javascript:void(0)" className="togglebtn" onClick={this.toggleNav}><FontAwesomeIcon icon='bars' /></a>
+                <a className="togglebtn" onClick={this.toggleNav}><FontAwesomeIcon icon='bars' /></a>
             </div>
         );
     }
