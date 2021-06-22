@@ -1,6 +1,6 @@
-* {
+/* * {
     user-select: none;
-}
+} */
 
 /* #region menubar */
 @media screen and (max-width: 425px) {
@@ -125,6 +125,13 @@
 
 .popup-content button {
     margin-top: 16px;
+}
+
+/* sharelink fix for ShareFile.js */
+.sharelink-modal-content input {
+    background-color: revert;
+    border: revert;
+    border-radius: revert;
 }
 
 /* #endregion */

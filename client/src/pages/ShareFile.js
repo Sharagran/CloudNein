@@ -158,7 +158,7 @@ export default class ShareFile extends Component {
       return (
         <>
           <div className="login-form">
-            <Popup trigger={<input value={"Download " + this.state.fileName}></input>} position="bottom center">
+            <Popup trigger={<input value={"Download " + this.state.fileName}></input>} position="bottom center" className='sharelink-modal'>
               <div>
                 <form onSubmit={this.onUpdate}>
                   <input type="submit" value="Download " onClick={this.onSubmit}></input>
