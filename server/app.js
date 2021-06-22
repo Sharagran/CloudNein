@@ -6,6 +6,8 @@ const cors = require("cors");
 const routes = require('./routes')
 const errorHandler = require('./error_handler');
 const verifier = require('./jwt_verifier');
+const fs = require('fs');
+const { join } = require("path");
 
 const PORT = 80;
 // public routes that don't require authentication
@@ -56,3 +58,16 @@ app.listen(PORT, () => {
     db.connect();
 });
 
+
+
+function createRequiredFolders() {
+    const folders = [`${__dirname}/../UserFiles/`, `${__dirname}/../ProfilePictures/`];
+    folders.forEach(folder => {
+        folder = join(folder);
+        if (!fs.existsSync(folder)){
+            fs.mkdirSync(folder);
+        }
+    });
+}
+
+createRequiredFolders();

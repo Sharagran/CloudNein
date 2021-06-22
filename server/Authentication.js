@@ -147,7 +147,6 @@ async function register(email, username, password) {
 }
 
 function createUserHomeDirectory(username) {
-  //var folderPath = join(__dirname, '../UserFiles', username);
   var folderPath = join(`${__dirname}/../UserFiles/${username}`);
   fs.mkdirSync(folderPath);
 }
