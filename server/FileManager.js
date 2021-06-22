@@ -161,12 +161,12 @@ async function getActualPath(fileID) {
     var homePath = `${__dirname}/../UserFiles/${username}/`;
     var filePath = file.name;
 
-    if(file.isFolder) {
+    if (file.isFolder) {
         return join(homePath);
     } else {
         return join(homePath + filePath);
     }
-    
+
 }
 
 async function getParentFolderpaths(fileID) {
@@ -184,12 +184,12 @@ async function getParentFolderpaths(fileID) {
 //#endregion
 
 async function moveFile(fileID, folderID) {
-    if(fileID == folderID) return false;
+    if (fileID == folderID) return false;
 
     var folder = await getFile(folderID);
-    if(folder.isFolder == false) return false;
+    if (folder.isFolder == false) return false;
 
-    await db.updateDataPromise('file', { id: fileID }, { $set: { parent: folderID }});
+    await db.updateDataPromise('file', { id: fileID }, { $set: { parent: folderID } });
 
     return true;
 }
@@ -210,7 +210,7 @@ function commentFile(fileID, text) {
 async function addTag(fileID, tag) {
     //TODO: fix callback hell & remove useless callbacks
     var file = await getFile(fileID);
-    if(file.tags.includes(tag)) {
+    if (file.tags.includes(tag)) {
         //FIXME untested
         // File already has tag -> tag already has file
         console.log(`tag: '${tag}' already linked to ${fileID}`);
@@ -280,14 +280,19 @@ function isExpired(shareEntry) {
 }
 
 async function spaceCheck(req, userID) {
-    var folderSize = await checkUploadLimit(userID)
-    var dataLimit = await getDataLimit() * 1000000
-
     var fileSize = 0
     for (const key in req.files) {
         const file = req.files[key];
         fileSize += file.size
+        console.log(fileSize);
     }
+
+    var folderSize = await checkUploadLimit(userID)
+    var dataLimit = await getDataLimit() * 1000000
+    
+
+  
+
 
     if (folderSize + fileSize <= dataLimit) {
         console.log("enough space")
@@ -296,6 +301,7 @@ async function spaceCheck(req, userID) {
         console.log(("not enough space"));
         return false;
     }
+    
 }
 //#endregion
 
@@ -354,7 +360,6 @@ async function checkUploadLimit(userID) {
     var size = 0;
     var error, resultRead = await db.readDataPromise('settings', { User: "Admin" });
     var limit = resultRead[0].limit
-    console.log(limit)
 
     var error2, result = await db.readDataPromise('file', { owner: userID });
     for (var i = 0; i < result.length; i++) {
@@ -383,7 +388,7 @@ async function compressFolder(path, folderID) {
 
     archive.pipe(output);
 
-    
+
     for (var i = 0; i < files.length; i++) {
         const file = files[i];
         archive.file(path + file.name, { name: file.name });
@@ -410,7 +415,7 @@ async function downloadFile(id, res) {
     var filePath = await getActualPath(file.id);
     console.log('filePath: ', filePath);
 
-    if(file.isFolder) {
+    if (file.isFolder) {
         var zipPath = await compressFolder(filePath, file.id);
         zipPath = join(zipPath);
         console.log(zipPath);
@@ -419,7 +424,7 @@ async function downloadFile(id, res) {
     } else {
         res.download(filePath);
     }
-    
+
     //countdown usages in db?
     //check for deletion?
 }
@@ -512,7 +517,7 @@ async function decreaseUsages(shareID) {
 }
 
 async function increaseDownloads(fileID) {
-    var file = await db.readDataPromise('file', { id: fileID})
+    var file = await db.readDataPromise('file', { id: fileID })
     await db.updateDataPromise('file', { id: fileID }, { $set: { downloads: file[0].downloads + 1 } })
     return true;
 }

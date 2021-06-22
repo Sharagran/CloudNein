@@ -99,6 +99,16 @@ router.post('/createFolder', async function (req, res) {
     }
 });
 
+router.post('/moveFolder', async function (req, res) {
+    try {
+        await fm.moveFile(req.body.fileID, req.body.folderID)
+        res.send(200);
+    } catch (error) {
+        console.error(error);
+        res.send(500);
+    }
+})
+
 router.post('/getStorageSpaceInformation', async function (req, res) {
     var dataLimit = await fm.getDataLimit()
     var usedSpace = await fm.usedSpace(req.user.id)

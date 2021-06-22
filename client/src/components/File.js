@@ -22,7 +22,7 @@ const file_type = [
 
 var cachedTags;
 
-export default function File({ id, name, isFolder, comment, tags, cd }) {
+export default function File({ id, name, isFolder, comment, tags, cd, getFolders, moveFile }) {
     const [fileProperties, setFileProperties] = useState({
         comment: comment,
         visible: true
@@ -39,6 +39,8 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
     const expiresRef = useRef();
     const usagesRef = useRef();
     const tagRef = useRef();
+    const moveTarget = useRef();
+    
 
     const share_modal_props = {
         label: 'Share',
@@ -98,6 +100,26 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
         onClose: editModalClosed
     }
 
+
+    const move_modal_props = {
+        label: 'Move',
+        title: `Add Tag to ${name}`,
+        content: <>
+        <div className='label-container'>
+            <label htmlFor='comment'>Folder:</label>
+            <select id="folder" ref={moveTarget}>
+            <option value="null">Move up</option>
+                {getFolders().map(folder => {
+                    return (<option value={folder.id}>{folder.name}</option>)
+                })}
+            </select>
+        </div>
+        </>,
+        buttons: [{ label: 'Move', close: true, onClick: () => { 
+            moveFile(id, moveTarget.current.value)
+        }}]
+    }
+
     const delete_modal_props = {
         label: 'Delete',
         title: `Delete file`,
@@ -108,6 +130,8 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
     function openClickHandler() {
         cd({id: id, name: name});
     }
+
+    
 
     function download() {
         axios({
@@ -257,6 +281,7 @@ export default function File({ id, name, isFolder, comment, tags, cd }) {
                 <div className="menu-item" onClick={download}>Download</div>
                 <Modal {...share_modal_props} title={`Share ${name}`} />
                 <Modal {...edit_modal_props} title={`Edit ${name}`} />
+                <Modal {...move_modal_props} title={`move ${name}`} />
                 <Modal {...delete_modal_props} title={`Delete ${name}`} />
             </div>
 
