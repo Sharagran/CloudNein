@@ -149,7 +149,7 @@ async function getActualPath(fileID) {
 async function moveFile(fileID, folderID) {
     if (fileID == folderID) return false;
 
-    if(folderID == 'null') {
+    if (folderID == 'null') {
         folderID = null;
     } else {
         var folder = await getFile(folderID);
@@ -248,40 +248,10 @@ async function addTag(fileID, tag) {
     console.log("file tags updated");
 }
 
-//TODO: return result (call those functions before each item access)
-function checkFileExpirations(fileID) {
-    var query = fileID ? { id: fileID } : {};
-
-    db.readData('file', query, function (error, result) {
-        result.forEach(file => {
-            var fileExpiration = Date.parse(file.expires);
-
-            // expired
-            if (Date.now() >= fileExpiration) {
-                deleteItem(file.id);
-            }
-        });
-    });
-}
-
-function isExpired(shareEntry) {
-    var expires = shareEntry.expires;
-    if (expires) {
-        var expiration = Date.parse(expires);
-        if (Date.now() >= expiration) {
-            return true;
-        }
-
-    }
-
-    // expires == null || Date.now < expiration
-    return false;
-}
-
 async function spaceCheck(fileSize, userID) {
     var folderSize = await checkUploadLimit(userID)
     var dataLimit = await getDataLimit() * 1000000
-    
+
     if (folderSize + fileSize <= dataLimit) {
         console.log("enough space")
         return true;
@@ -417,24 +387,16 @@ async function downloadFile(id, res) {
 
 //#region Share
 
-// react route https://ncoughlin.com/posts/react-router-variable-route-parameters/
 async function share(itemID, expires, usages, callback) {
     //TODO: delete file/folder after X downloads
-    //TODO: link usages
-
-    //TODO: @Filip make expires/usages == null work (no limit)
     var file = await getFile(itemID);
     console.log(file);
 
 
     const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
-    if (expires && expires > 0) {
-        var date = new Date();
-        date.setDate(date.getDate() + expires)
-        expires = date.toISOString();
-    } else {
-        expires = null;
-    }
+    var date = new Date();
+    date.setDate(date.getDate() + expires)
+    expires = date.toISOString();
 
     db.createData("shared", {
         shareID: shareID,
@@ -479,16 +441,41 @@ async function checkSharelinkUsages(shareID) {
     var error, result = await db.readDataPromise('shared', query)
     result.forEach(shareEntry => {
         var usages = shareEntry.usages;
-        if (usages != null) {
-            if (usages == 0) {
-                shareLinkUsed = true;
-                db.deleteDataPromise('shared', { _id: shareEntry._id }, function () {
-                    console.log(`share link "${shareEntry.shareID}" deleted`);
-                });
-            }
+        if (usages <= 0) {
+            shareLinkUsed = true;
+            db.deleteDataPromise('shared', { _id: shareEntry._id }, function () {
+                console.log(`share link "${shareEntry.shareID}" deleted`);
+            });
         }
     });
     return shareLinkUsed;
+}
+
+//TODO: return result (call those functions before each item access)
+function checkFileExpirations(fileID) {
+    var query = fileID ? { id: fileID } : {};
+
+    db.readData('file', query, function (error, result) {
+        result.forEach(file => {
+            var fileExpiration = Date.parse(file.expires);
+
+            // expired
+            if (Date.now() >= fileExpiration) {
+                deleteItem(file.id);
+            }
+        });
+    });
+}
+
+function isExpired(shareEntry) {
+    var expires = shareEntry.expires;
+    var expiration = Date.parse(expires);
+    
+    if (Date.now() >= expiration) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 async function decreaseUsages(shareID) {

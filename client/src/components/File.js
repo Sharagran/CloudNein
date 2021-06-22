@@ -55,11 +55,11 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
                 </div>
                 <div className='label-container'>
                     <label htmlFor='expires'>Expires:</label>
-                    <input type="number" id='expires' ref={expiresRef} placeholder="Days" min="1" max="30"></input>
+                    <input type="number" id='expires' ref={expiresRef} placeholder="Days" min="1" max="30" required></input>
                 </div>
                 <div className='label-container'>
                     <label htmlFor='usages'>Usages:</label>
-                    <input type="number" id='usages' ref={usagesRef} placeholder="Usages" min="1"></input>
+                    <input type="number" id='usages' ref={usagesRef} placeholder="Usages" min="1" required></input>
                 </div>
                 <button type='submit'>Share</button>
             </form>
