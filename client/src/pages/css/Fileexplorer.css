@@ -1,12 +1,6 @@
-/* * {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-} */
-
-/* * {
+* {
     user-select: none;
-} */
+}
 
 /* #region menubar */
 @media screen and (max-width: 425px) {
@@ -56,7 +50,6 @@
 
 /* #region Files */
 #fileContainer {
-    /* border: 1px dashed #ff0000; */
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -75,8 +68,6 @@
     cursor: pointer;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
     transition: 0.3s;
-
-    /* border: 1px dashed black; */
 }
 
 .file:hover, .file-menu div:hover, .create-folder:hover {
@@ -115,6 +106,27 @@
     background-color: #2B2B2B;
     padding: 8px;
 }
+
+.modal-content select {
+    color: black;
+}
+
+.label-container input {
+    width: 100%;
+}
+
+
+.popup-content input, .popup-content button {
+    background-color: #474747;
+    
+    border: 1px solid black;
+    border-radius: 2px;
+}
+
+.popup-content button {
+    margin-top: 16px;
+}
+
 /* #endregion */
 
 /* #region Tags */
@@ -157,22 +169,6 @@
 }
 
 /* #endregion */
-
-.popup-content input, .popup-content button {
-    background-color: #474747;
-    
-    border: 1px solid black;
-    border-radius: 2px;
-}
-
-.popup-content button {
-    margin-top: 16px;
-}
-
-
-.label-container input {
-    width: 100%;
-}
 
 .copy-to-clipboard {
     color: blue;

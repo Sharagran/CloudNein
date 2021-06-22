@@ -24,6 +24,15 @@ const file_type = [
 var cachedTags;
 
 export default function File({ id, name, isFolder, comment, tags, cd, getFolders, moveFile }) {
+    // Hooks
+    const { addToast } = useToasts();
+    const commentRef = useRef();
+    const emailRef = useRef();
+    const expiresRef = useRef();
+    const usagesRef = useRef();
+    const tagRef = useRef();
+    const moveTarget = useRef();
+
     const [fileProperties, setFileProperties] = useState({
         comment: comment,
         visible: true
@@ -34,14 +43,6 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
         cachedTags = tags;
     }, []);
 
-    const { addToast } = useToasts();
-    const commentRef = useRef();
-    const emailRef = useRef();
-    const expiresRef = useRef();
-    const usagesRef = useRef();
-    const tagRef = useRef();
-    const moveTarget = useRef();
-    
 
     const share_modal_props = {
         label: 'Share',
@@ -101,7 +102,6 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
         onClose: editModalClosed
     }
 
-
     const move_modal_props = {
         label: 'Move',
         title: `Add Tag to ${name}`,
@@ -131,8 +131,6 @@ export default function File({ id, name, isFolder, comment, tags, cd, getFolders
     function openClickHandler() {
         cd({id: id, name: name});
     }
-
-    
 
     function download() {
         axios({
