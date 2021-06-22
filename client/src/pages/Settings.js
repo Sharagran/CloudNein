@@ -5,7 +5,6 @@ import { getToken } from "../Authenticator";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Navbar from "../Navbar";
 
-
 export default class Settings extends Component {
 
   constructor(props) {

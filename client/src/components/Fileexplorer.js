@@ -25,6 +25,8 @@ export default function Fileexplorer() {
     cd(home);
   }, []);
 
+
+
   function cd(folder) {
     axios.post("http://localhost:80/storage", { folderid: folder.id }).then(res => {
       var newFiles = res.data;
@@ -57,6 +59,29 @@ export default function Fileexplorer() {
     });
   }
 
+  function getFolders() {
+
+    var folder = files.filter(f => f.isFolder)
+    return folder
+}
+
+//FIXME: Move up doesen't work
+  function moveFile(fileID, folderID) {
+
+    if(folderID === null){
+      folerID = folderHistory.slice(-2).id //FIXME: FolderID could be undefined in home directory
+    }
+
+    console.log(fileID, " ", folderID);
+
+    axios.post("http://localhost:80/moveFolder", { folderID: folderID, fileID: fileID}).then(res => {
+      addToast('File/Folder moved', { appearance: 'success' });
+    }).catch(error => {
+      console.error(error);
+      addToast(error.toString(), { appearance: 'error' });
+    });
+  }
+
   function navigateBack() {
     //current folder
     folderHistory.pop();
@@ -76,7 +101,7 @@ export default function Fileexplorer() {
       <div id='main'>
         <Menubar path={path} navigateBack={navigateBack} />
         <div id='fileContainer'>
-          <FileList files={files} cd={cd} />
+          <FileList files={files} cd={cd} getFolders={getFolders} moveFile={moveFile} />
         </div>
       </div>
 

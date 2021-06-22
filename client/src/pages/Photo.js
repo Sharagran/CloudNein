@@ -75,15 +75,18 @@ export default class Photo extends Component {
                 <React.Suspense fallback={<FontAwesomeIcon icon='spinner' pulse />}>
                     <Navbar />
                 </React.Suspense>
-                <div id='main'>
+                <div className="login-form">
                     <h1>Take Photo</h1>
+                </div>
+                <div id='main'>
                     <button className="logoutLblPos" onClick={this.goBack}>Back</button>
                     <Camera
                         onTakePhoto={(dataUri) => { this.handleTakePhoto(dataUri); }}
                     />
+                </div>
+                <div className="login-form">
                     <h1>{this.state.message}</h1>
                 </div>
-
             </>
         );
 
