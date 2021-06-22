@@ -39,7 +39,12 @@ export default class Photo extends Component {
             const formData = new FormData();
             formData.append("files", photo, dateTime + ".png")
 
-            axios.post("http://localhost:80/uploadCheck").then((res => {
+
+            const fileSize = {
+                fileSize: photo.size
+            }
+
+            axios.post("http://localhost:80/uploadCheck", { fileSize }).then((res => {
                 spaceCheck = res.data
                 console.log(spaceCheck)
                 if (spaceCheck) {

@@ -44,7 +44,11 @@ export default class Record extends Component {
       // Request made to the backend api
       // Send formData object
 
-      axios.post("http://localhost:80/uploadCheck").then((res => {
+      const fileSize = {
+        fileSize: file.size
+      }
+
+      axios.post("http://localhost:80/uploadCheck", { fileSize }).then((res => {
         spaceCheck = res.data
         if (spaceCheck) {
           axios.post("http://localhost:80/upload", formData)

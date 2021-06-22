@@ -66,7 +66,8 @@ router.post('/settings', async (req, res) => {
 })
 
 router.post('/uploadCheck', async function (req, res) {
-    var spaceCheck = await fm.spaceCheck(req, req.user.id)
+
+    var spaceCheck = await fm.spaceCheck(req.body.fileSize.fileSize, req.user.id)
     if (spaceCheck) {
         res.send(spaceCheck)
     } else {
