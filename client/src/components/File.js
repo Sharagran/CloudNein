@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
-import uuidv4 from 'uuid/v4'
+import { v4 as uuidv4 } from 'uuid';
 
 import Popup from 'reactjs-popup';
 import { useToasts } from 'react-toast-notifications';
