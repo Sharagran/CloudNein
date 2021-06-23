@@ -1,9 +1,14 @@
 import React, { Component } from "react";
 import axios from 'axios';
 
+/**
+ * Page to create an account.
+ */
 export default class Registration extends Component {
-  // This is the constructor that stores the data.
-
+  /**
+  * Constructor that stores the data.
+  * @param {*} props 
+  */
   constructor(props) {
     super(props);
     this.onChangeUsername = this.onChangeUsername.bind(this);
@@ -20,25 +25,42 @@ export default class Registration extends Component {
     };
   }
 
-  // These methods will update the state properties.
+  /**
+   * Adjusts the value in the state for username in terms of the user input.
+   * @param {*} e trigger event.
+   */
   onChangeUsername(e) {
     this.setState({ username: e.target.value });
   }
 
+  /**
+  * Adjusts the value in the state for mail in terms of the user input.
+  * @param {*} e trigger event.
+  */
   onChangeMail(e) {
     this.setState({ mail: e.target.value });
   }
 
+  /**
+  * Adjusts the value in the state for password in terms of the user input.
+  * @param {*} e trigger event.
+  */
   onChangePassword(e) {
     this.setState({ password: e.target.value });
   }
 
-  goBack(e) {
-    e.preventDefault();
+  /**
+  * Redirects the user to the "login" page.
+  */
+  goBack() {
     this.props.history.push('/');
   }
 
-  // This function will handle the submission.
+  /**
+  * Sends the user input from username, password and mail to the sever to check
+  * if the username or email is already taken in the database. If not redirect to success page else to failed page
+  * @param {*} e trigger event.
+  */
   onSubmit(e) {
     e.preventDefault();
 
@@ -62,7 +84,10 @@ export default class Registration extends Component {
     }
   }
 
-  // This following section will display the form that takes the input from the user.
+  /**
+  * Display the page that takes the input from the user.
+  * @returns If no token is present an "Access Denied" page is displayed , otherwise the regular "registration" page.
+  */
   render() {
     return (
       <>

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import axios from 'axios';
 
 /**
- * Page to send a new password to the user
+ * Page to send a new password to the user.
  */
 export default class ForgotPassword extends Component {
   /**
@@ -20,17 +20,6 @@ export default class ForgotPassword extends Component {
       message: ""
     };
   }
-
-  /**
-  * Adjusts the value in the state for the email in terms of the user input .
-  * @param {*} e specific html input tag.
-  */
-  onChangeEmail(e) {
-    this.setState({
-      email: e.target.value
-    });
-  }
-
   /**
   * Returns the user to the login page.
   */
@@ -38,12 +27,25 @@ export default class ForgotPassword extends Component {
     this.props.history.push('/');
   }
 
+  /**
+  * Adjusts the value in the state for the email in terms of the user input .
+  * @param {*} e trigger event.
+  */
+  onChangeEmail(e) {
+    this.setState({
+      email: e.target.value
+    });
+  }
+
+
   // This function will handle the submission.
   /**
    * The email specified by the user is sent to the server and it looks if there is an entry in the database. 
    * If yes, then the user is redirected to the "sendEmail" page, otherwise to the "failed" page.
+   * @param {*} e trigger event.
    */
-  onSubmit() {
+  onSubmit(e) {
+    e.preventDefault();
 
     const email = {
       email: this.state.email
@@ -62,8 +64,8 @@ export default class ForgotPassword extends Component {
   }
 
   /**
-  * Display the form that takes the input from the user
-  * @returns The regular forgot password page
+  * Display the form that takes the input from the user.
+  * @returns The regular forgot password page.
   */
   render() {
     return (

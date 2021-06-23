@@ -7,8 +7,14 @@ import Navbar from "../Navbar";
 
 var spaceCheck;
 
+/**
+ * Page to upload files to the server and redirect the user to the apges "photo" and "audio".
+ */
 export default class Upload extends Component {
-
+  /**
+  * Constructor that stores the data.
+  * @param {*} props 
+  */
   constructor(props) {
     super(props);
     this.goBack = this.goBack.bind(this);
@@ -16,23 +22,30 @@ export default class Upload extends Component {
     this.onFileUpload = this.onFileUpload.bind(this);
 
     this.state = {
-      // Initially, no file is selected
       selectedFile: null,
       message: ""
     };
   }
 
-  // Update the state
+  /**
+   * Adjusts the value in the state for selected files in terms of the file input.
+   * @param {*} e trigger event.
+   */
   onFileChange(e) {
     this.setState({ selectedFile: e.target.files });
   }
 
-  goBack(e) {
-    e.preventDefault();
+  /**
+  * Redirects the user to the "home" page.
+  */
+  goBack() {
     this.props.history.push("/home");
   }
 
-  // On file upload (click the upload button)
+  /**
+   * Sends files that was selected from the user to store it at the server.
+   * @param {*} e trigger event.
+   */
   onFileUpload(e) {
     e.preventDefault();
 
@@ -74,7 +87,10 @@ export default class Upload extends Component {
     }
   }
 
-  // This following section will display the form that takes the input from the user.
+  /**
+  * Display the page that takes the input from the user.
+  * @returns If no token is present an "Access Denied" page is displayed , otherwise the regular "upload" page.
+  */
   render() {
     if (getToken() === "") {
       return (

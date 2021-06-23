@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import axios from 'axios';
-import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import FileList from "../components/FileList";
 
@@ -10,8 +9,14 @@ var confirmCounter = 0;
 var usages;
 var expired;
 
+/**
+ * Page to download shared files from an user.
+ */
 export default class ShareFile extends Component {
-
+  /**
+   * Constructor that stores the data.
+   * @param {*} props 
+   */
   constructor(props) {
     super(props);
     this.onSubmit = this.onSubmit.bind(this);
@@ -24,6 +29,9 @@ export default class ShareFile extends Component {
     };
   }
 
+  /**
+   * Checks if the share link is expired and fetches the file information with the shareID
+   */
   UNSAFE_componentWillMount() {
     const queryParams = new URLSearchParams(window.location.search);
     shareID = queryParams.get('shareID');
@@ -47,10 +55,10 @@ export default class ShareFile extends Component {
         usages = res.data.sharedFiles.usages
         var isFolder = res.data.isFolder;
         this.setState({ fileName: res.data.files.name })
-        if(isFolder) {
+        if (isFolder) {
           this.getFiles(fileID);
         } else {
-          this.setState({...this.state, files: [{name: this.state.fileName, id: fileID}]});
+          this.setState({ ...this.state, files: [{ name: this.state.fileName, id: fileID }] });
         }
       })
 
@@ -62,6 +70,14 @@ export default class ShareFile extends Component {
     }
   }
 
+  /**
+   * Checks wether usages are available. If yes the user is alowed to download the files.
+   * Chekks wether the download was already confirmed. If yes the user isn't alowed to download the files.
+   * If the links is expired the the user isn't alowed to download the files.
+   * @param {*} fileID 
+   * @param {*} fileName 
+   * @returns void to ending the function.
+   */
   onSubmit(fileID, fileName) {
     try {
       if (expired) {
@@ -108,6 +124,13 @@ export default class ShareFile extends Component {
     }
   }
 
+  /**
+   * Sends the confirmation to the server to decrease the usages in the database.
+   * If the links is expired the the user isn't alowed to confirm the download.
+   * If the download was elready confiremd the user isn't alowed to confirm it again.
+   * if the usage counter is at 0 the user will be redirectet to the "home" page.
+   * @returns void to ending the function.
+   */
   onConfirmDownload() {
     try {
       if (expired) {
@@ -119,7 +142,6 @@ export default class ShareFile extends Component {
         shareID: shareID,
         fileID: fileID
       }
-      console.log(shareInformation);
 
       if (confirmCounter === 0) {
         axios.post("http://localhost:80/adjustUsages", { shareInformation }).then((res) => {
@@ -143,28 +165,35 @@ export default class ShareFile extends Component {
     }
   }
 
+  /**
+   * Get all file information when a complete folder is shared
+   * @param {*} fileID 
+   */
   getFiles(fileID) {
     axios.post("http://localhost:80/storage", { folderid: fileID }).then(res => {
+      console.log(res.data);
       var newFiles = res.data;
-      this.setState({...this.state, files: newFiles});
-
+      this.setState({ ...this.state, files: newFiles });
     }).catch(error => {
       console.error(error.stack);
       addToast(error.toString(), { appearance: 'error' });
     });
   }
 
-  // This following section will display the form that takes the input from the user.
+  /**
+  * Display the page that takes the input from the user.
+  * @returns The shareFile page is displayed.
+  */
   render() {
     return (
       <>
-      <div id='fileContainer'>
-        <FileList files={this.state.files} cd={() =>{}} getFolders={() =>{return []}} moveFile={() =>{}} areSharedFiles={true} shareDownload={this.onSubmit} />
-      </div>
-      <div className="shareLink-container">
-        <button onClick={this.onConfirmDownload}>Confirm Download</button>
-        <h1>{this.state.message}</h1>
-      </div>
+        <div id='fileContainer'>
+          <FileList files={this.state.files} cd={() => { }} getFolders={() => { return [] }} moveFile={() => { }} areSharedFiles={true} shareDownload={this.onSubmit} />
+        </div>
+        <div className="shareLink-container">
+          <button onClick={this.onConfirmDownload}>Confirm Download</button>
+          <h1>{this.state.message}</h1>
+        </div>
       </>
     )
   }

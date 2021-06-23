@@ -5,8 +5,14 @@ import { getToken } from "../Authenticator";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Navbar from "../Navbar";
 
+/**
+ * Page to change the username, email and upload an profile picture
+ */
 export default class Settings extends Component {
-
+  /**
+  * Constructor that stores the data.
+  * @param {*} props 
+  */
   constructor(props) {
     super(props);
     this.onChangeUsername = this.onChangeUsername.bind(this);
@@ -27,30 +33,46 @@ export default class Settings extends Component {
     };
   }
 
-  // These methods will update the state properties.
+  /**
+   * Adjusts the value in the state for username in terms of the user input .
+   * @param {*} e trigger event.
+   */
   onChangeUsername(e) {
     this.setState({ username: e.target.value });
   }
 
+  /**
+  * Adjusts the value in the state for mail in terms of the user input.
+  * @param {*} e trigger event.
+  */
   onChangeMail(e) {
     this.setState({ mail: e.target.value });
   }
 
-  goBack(e) {
-    e.preventDefault();
+  /**
+  * Redirects the user to the "home" page.
+  */
+  goBack() {
     this.props.history.push("/home");
   }
 
+  /**
+   * Adjusts the value in the state for the selected file in terms of the file input.
+   * @param {*} e trigger event.
+   */
   onFileChange(e) {
     e.preventDefault();
     this.setState({ selectedFile: e.target.files });
   }
 
-  // This function will handle the submission.
+  /**
+   * Sends the user input from username to the sever to check in the databse wether it's used or not. 
+   * If not the username will be updated otherwise it's taken.
+   * @param {*} e trigger event.
+   */
   onSubmitUsername(e) {
     e.preventDefault();
 
-    // When post request is sent to the create url, axios will add a new record(user) to the database.
     const user = {
       username: this.state.username,
       previousUsername: GlobalVal.username
@@ -70,10 +92,14 @@ export default class Settings extends Component {
     })
   }
 
+  /**
+   * Sends the user input from mail to the sever to check in the databse wether it's used or not. 
+   * If not the email will be updated otherwise it's taken.
+   * @param {*} e trigger event.
+   */
   onSubmitMail(e) {
     e.preventDefault();
 
-    // When post request is sent to the create url, axios will add a new record(user) to the database.
     const user = {
       mail: this.state.mail,
     };
@@ -91,6 +117,10 @@ export default class Settings extends Component {
     });
   }
 
+  /**
+   * Sends a png that was selected from the user to store it at the server.
+   * @param {*} e trigger event.
+   */
   onFileUpload(e) {
     e.preventDefault();
 
@@ -118,7 +148,10 @@ export default class Settings extends Component {
     }
   }
 
-  // This following section will display the form that takes the input from the user.
+  /**
+  * Display the page that takes the input from the user.
+  * @returns If no token is present an "Access Denied" page is displayed , otherwise the regular "settings" page.
+  */
   render() {
     if (getToken === "") {
       return (

@@ -2,19 +2,27 @@ import React, { Component } from "react";
 import { Link } from 'react-router-dom';
 import GlobalVal from "./GlobalVal";
 import { getToken } from "../Authenticator";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const Navbar = React.lazy(() => import('../Navbar'));
 
+/**
+ * Home page to navigate the user to the "storage", "upload" or "settings".
+ */
 export default class Home extends Component {
-
+  /**
+  * Constructor that stores the data.
+  * @param {*} props 
+  */
   constructor(props) {
     super(props);
     this.goBack = this.goBack.bind(this);
   }
 
-  goBack(e) {
-    e.preventDefault();
+  /**
+ * Returns the admin to the login page. The cookie is deleted and all user information .
+ * and all user information will be reseted.
+ */
+  goBack() {
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
     GlobalVal.username = null;
     GlobalVal.password = null;
@@ -23,7 +31,10 @@ export default class Home extends Component {
     this.props.history.push('/');
   }
 
-  // This following section will display the form that takes the input from the user.
+  /**
+  * Display the page that takes the input from the user.
+  * @returns If no token is present an "Access Denied" page is displayed , otherwise the regular "home" page.
+  */
   render() {
     if (getToken() === "") {
       return (

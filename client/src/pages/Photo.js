@@ -8,8 +8,14 @@ import Navbar from "../Navbar";
 
 var spaceCheck;
 
+/**
+ * Page to take photos in the application.
+ */
 export default class Photo extends Component {
-
+    /**
+    * Constructor that stores the data.
+    * @param {*} props 
+    */
     constructor(props) {
         super(props);
         this.goBack = this.goBack.bind(this);
@@ -20,6 +26,11 @@ export default class Photo extends Component {
         };
     }
 
+    /**
+     * A photo is created from the application that is transcoded to send it to the server after storage space check is true.
+     * The name of the file consists of year - month - day @ hour - minute - second.
+     * @param {*} dataUri Photo information
+     */
     handleTakePhoto(dataUri) {
 
         var today = new Date();
@@ -56,11 +67,17 @@ export default class Photo extends Component {
         });
     }
 
-    goBack(e) {
-        e.preventDefault();
+    /**
+     * Redirects the user to the "upload" page.
+     */
+    goBack() {
         this.props.history.push("/upload");
     }
 
+    /**
+    * Display the page that takes the input from the user.
+    * @returns If no token is present an "Access Denied" page is displayed , otherwise the regular "photo" page.
+    */
     render() {
         if (getToken() === "") {
             return (

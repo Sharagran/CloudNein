@@ -4,8 +4,14 @@ import axios from 'axios';
 import { getToken, setToken } from "../Authenticator";
 import GlobalVal from "./GlobalVal";
 
+/**
+ * Login page to verify the user. Can direct the user to registration or forget password.
+ */
 export default class Login extends Component {
-  // This is the constructor that stores the data.
+  /**
+   * Constructor that stores the data.
+   * @param {*} props 
+   */
   constructor(props) {
     super(props);
     this.onChangeUsername = this.onChangeUsername.bind(this);
@@ -19,23 +25,35 @@ export default class Login extends Component {
     };
   }
 
-  // These methods will update the state properties.
+
+  /**
+   * Adjusts the value in the state for username in terms of the user input.
+   * @param {*} e trigger event.
+   */
   onChangeUsername(e) {
     this.setState({
       username: e.target.value
     });
   }
 
+  /**
+  * Adjusts the value in the state for password in terms of the user input.
+  * @param {*} e specific html input tag.
+  */
   onChangePassword(e) {
     this.setState({
       password: e.target.value
     });
   }
 
-  // This function will handle the submission.
+  /**
+   * Sends the username and password specified by user to the server. 
+   * If the data matches the data in the database, the user will be logged in and sent to the Home or Admin page. Depending on the username.
+   * @param {*} e trigger event.
+   */
   onSubmit(e) {
     e.preventDefault();
-
+    
     const user = {
       username: this.state.username,
       password: this.state.password,
@@ -63,7 +81,10 @@ export default class Login extends Component {
     });
   }
 
-  // This following section will display the form that takes the input from the user.
+  /**
+  * Display the page that takes the input from the user.
+  * @returns If no token is present the login page is displayed , otherwise the home page.
+  */
   render() {
     if (getToken() === "") {
       return (

@@ -7,8 +7,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Navbar from "../Navbar";
 
 var spaceCheck;
+
+/**
+ * Page to take audio records in the application.
+ */
 export default class Record extends Component {
 
+  /**
+  * Constructor that stores the data.
+  * @param {*} props 
+  */
   constructor(props) {
     super(props);
     this.goBack = this.goBack.bind(this);
@@ -28,25 +36,32 @@ export default class Record extends Component {
     };
   }
 
+  /**
+   * Ends the audio recording and adjust the data to the state
+   * @param {*} data Recorded audio data
+   */
   handleAudioStop(data) {
     this.setState({ audioDetails: data });
   }
 
-  handleAudioUpload(file) {
+  /**
+   * A audio record is created from the application and send it to the server after storage space check is true.
+   * The name of the file consists of year - month - day @ hour - minute - second.
+   * @param {*} data Recorded audio data
+   */
+  handleAudioUpload(data) {
 
     var today = new Date();
     var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
     var time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
     var dateTime = date + "@" + time;
 
-
-
     try {
       const formData = new FormData();
-      formData.append("files", file, dateTime + ".webm");
+      formData.append("files", data, dateTime + ".webm");
 
       const fileSize = {
-        fileSize: file.size
+        fileSize: data.size
       };
 
       axios.post("http://localhost:80/uploadCheck", { fileSize }).then((res => {
@@ -67,6 +82,9 @@ export default class Record extends Component {
     }
   }
 
+  /**
+   * Resets the audo data from the state
+   */
   handleReset() {
     const reset = {
       url: null,
@@ -81,11 +99,17 @@ export default class Record extends Component {
     this.setState({ audioDetails: reset });
   }
 
-  goBack(e) {
-    e.preventDefault();
+  /**
+  * Redirects the user to the "upload" page.
+  */
+  goBack() {
     this.props.history.push("/upload");
   }
 
+  /**
+  * Display the page that takes the input from the user.
+  * @returns If no token is present an "Access Denied" page is displayed , otherwise the regular "record" page.
+  */
   render() {
     if (getToken() === "") {
       return (

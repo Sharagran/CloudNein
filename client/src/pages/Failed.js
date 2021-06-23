@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 
 /**
- * Page that will shown to the user if something failed
+ * Page that will shown to the user if the registration failed.
  */
 export default class Failed extends Component {
     /**
-     * Redirects the user after 2 seconds to the login page
+     * Redirects the user after 2 seconds to the login page.
      */
     UNSAFE_componentWillMount() {
         setTimeout(() => {
@@ -14,8 +14,8 @@ export default class Failed extends Component {
     }
 
   /**
-  * Display the page with the word "Failed"
-  * @returns Page with the information that something failed
+  * Display the page with the word "Failed".
+  * @returns Page with the information that something failed while registration.
   */
     render() {
         return (
