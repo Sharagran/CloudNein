@@ -47,8 +47,6 @@ export default class Navbar extends Component {
                     usedSpacePercent: 100 / res.data.dataLimit * res.data.usedSpace,
                     freeSpace: freeSpaceRounded.toFixed(2)
                 })
-
-                console.log(this.state.freeSpace);
             })
         } catch (error) {
             console.log(error);

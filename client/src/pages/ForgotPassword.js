@@ -1,8 +1,14 @@
 import React, { Component } from "react";
 import axios from 'axios';
 
+/**
+ * Page to send a new password to the user
+ */
 export default class ForgotPassword extends Component {
-  // This is the constructor that stores the data.
+  /**
+   * Constructor that stores the data.
+   * @param {*} props 
+   */
   constructor(props) {
     super(props);
     this.onChangeEmail = this.onChangeEmail.bind(this);
@@ -15,22 +21,29 @@ export default class ForgotPassword extends Component {
     };
   }
 
-  // These methods will update the state properties.
+  /**
+  * Adjusts the value in the state for the email in terms of the user input .
+  * @param {*} e specific html input tag.
+  */
   onChangeEmail(e) {
     this.setState({
       email: e.target.value
     });
   }
 
-  goBack(e) {
-    e.preventDefault();
+  /**
+  * Returns the user to the login page.
+  */
+  goBack() {
     this.props.history.push('/');
   }
 
-
   // This function will handle the submission.
-  onSubmit(e) {
-    e.preventDefault();
+  /**
+   * The email specified by the user is sent to the server and it looks if there is an entry in the database. 
+   * If yes, then the user is redirected to the "sendEmail" page, otherwise to the "failed" page.
+   */
+  onSubmit() {
 
     const email = {
       email: this.state.email
@@ -48,7 +61,10 @@ export default class ForgotPassword extends Component {
     });
   }
 
-  // This following section will display the form that takes the input from the user.
+  /**
+  * Display the form that takes the input from the user
+  * @returns The regular forgot password page
+  */
   render() {
     return (
       <>

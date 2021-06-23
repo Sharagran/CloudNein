@@ -3,8 +3,14 @@ import axios from 'axios';
 import { getToken } from "../Authenticator";
 import GlobalVal from "./GlobalVal";
 
+/**
+* Admin page to set the maximum upload limit and expiration date.
+*/
 export default class Admin extends Component {
-
+  /**
+   * Constructor fot the class Admin.
+   * @param {*} props 
+   */
   constructor(props) {
     super(props);
     this.goBack = this.goBack.bind(this);
@@ -22,20 +28,31 @@ export default class Admin extends Component {
     };
   }
 
+  /**
+   * Adjusts the value in the state for dataSizeNew in byte in terms of the user input .
+   * @param {*} e specific html input tag.
+   */
   onChangeDataSize(e) {
     this.setState({
       dataSizeNew: e.target.value * 1000000
     });
   }
 
+  /**
+ * Adjusts the value in the state for daysNew in byte in terms of the user input .
+ * @param {*} e specific html input tag.
+ */
   onChangeDays(e) {
     this.setState({
       daysNew: e.target.value
     });
   }
 
-  onSubmitDataSize(e) {
-    e.preventDefault();
+  /**
+   * Sends the new data limit to the server and adjusts it in the database. 
+   * The limit is adjusted to the entered limit on the admin's side.
+   */
+  onSubmitDataSize() {
 
     const settings = {
       dataSizeNew: this.state.dataSizeNew
@@ -53,8 +70,11 @@ export default class Admin extends Component {
     }
   }
 
-  onSubmitDays(e) {
-    e.preventDefault();
+  /**
+ * Sends the new expiration date to the server and adjusts it in the database. 
+ * The days are adjusted to the entered days on the admin's side.
+ */
+  onSubmitDays() {
 
     const settings = {
       daysNew: this.state.daysNew
@@ -72,8 +92,11 @@ export default class Admin extends Component {
     }
   }
 
-  goBack(e) {
-    e.preventDefault();
+  /**
+   * Returns the admin to the login page. The cookie is deleted and all user information 
+   * and all user information will be reseted.
+   */
+  goBack() {
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
     GlobalVal.username = null;
     GlobalVal.password = null;
@@ -82,6 +105,10 @@ export default class Admin extends Component {
     this.props.history.push('/');
   }
 
+  /**
+ * When you open the page, the data limit and expiration date in days are retrieved 
+ * from the database and displayed on the admin page.
+ */
   UNSAFE_componentWillMount() {
 
     axios.post("http://localhost:80/getDataLimit").then((res) => {
@@ -99,7 +126,10 @@ export default class Admin extends Component {
     });
   }
 
-  // This following section will display the form that takes the input from the user.
+  /**
+  * Display the page that takes the input from the user.
+  * @returns If no token is present an "Access Denied" page is displayed , otherwise the regular admin page.
+  */
   render() {
     if (getToken() === "") {
       return (
