@@ -40,11 +40,8 @@ code {
     box-sizing:border-box;
 }
 
-button,
-.login-form input[type="submit"],
-.register-form input[type="submit"],
-#register-btn,
-#forgotPassword-btn {
+.shareLink-container button, .login-form button, .register-form button,
+.login-form input[type="submit"], .register-form input[type="submit"] {
     width: 100%;
     padding: 15px;
     background-color: #535b63;
@@ -56,8 +53,8 @@ button,
     margin-bottom: 15px;
 }
 
-.logoutLblPos{
-  width: auto;
+.logoutLblPos {
+  width: auto !important;
 
   position:fixed;
   right:10px;
