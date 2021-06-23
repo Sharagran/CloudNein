@@ -114,7 +114,7 @@ export default class Record extends Component {
     if (getToken() === "") {
       return (
         <>
-          <div className="login-form">
+          <div className="container-center">
             no Permission
           </div>
         </>
@@ -126,7 +126,7 @@ export default class Record extends Component {
           <Navbar />
         </React.Suspense>
         <div id='main'>
-          <div className="login-form" >
+          <div className="container-center" >
             <button className="logoutLblPos" onClick={this.goBack}>Back</button>
             <Recorder
               record={true}

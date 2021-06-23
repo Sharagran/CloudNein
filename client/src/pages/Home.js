@@ -39,7 +39,7 @@ export default class Home extends Component {
     if (getToken() === "") {
       return (
         <>
-          <div className="login-form">
+          <div className="container-center">
             no Permission
           </div>
         </>
@@ -51,7 +51,7 @@ export default class Home extends Component {
           <Navbar />
         </React.Suspense>
         <div id="main">
-          <div className="login-form">
+          <div className="container-center">
             <h1>Home</h1>  <button className="logoutLblPos" onClick={this.goBack}>Logout</button>
             <Link to="/Storage"><button id="forgotPassword-btn" type="submit" >Storage</button></Link>
             <Link to="/Upload"><button id="forgotPassword-btn" type="submit" >Upload</button></Link>

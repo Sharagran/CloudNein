@@ -156,7 +156,7 @@ export default class Settings extends Component {
     if (getToken === "") {
       return (
         <>
-          <div className="login-form">
+          <div className="container-center">
             no Permission
           </div>
         </>

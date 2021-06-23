@@ -70,7 +70,7 @@ export default class ForgotPassword extends Component {
   render() {
     return (
       <>
-        <div className="login-form">
+        <div className="container-center">
           <h1>Forgot Password</h1> <button className="logoutLblPos" onClick={this.goBack}>Back</button>
           <form action="/forgotPassword" method="POST" onSubmit={this.onSubmit}>
             <input type="text" name="email" placeholder="Email" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" onChange={this.onChangeEmail} required></input>

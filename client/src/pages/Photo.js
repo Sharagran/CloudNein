@@ -82,7 +82,7 @@ export default class Photo extends Component {
         if (getToken() === "") {
             return (
                 <>
-                    <div className="login-form">
+                    <div className="container-center">
                         no Permission
                     </div>
                 </>
@@ -93,7 +93,7 @@ export default class Photo extends Component {
                 <React.Suspense fallback={<FontAwesomeIcon icon='spinner' pulse />}>
                     <Navbar />
                 </React.Suspense>
-                <div className="login-form">
+                <div className="container-center">
                     <h1>Take Photo</h1>
                 </div>
                 <div id='main'>
@@ -102,7 +102,7 @@ export default class Photo extends Component {
                         onTakePhoto={(dataUri) => { this.handleTakePhoto(dataUri); }}
                     />
                 </div>
-                <div className="login-form">
+                <div className="container-center">
                     <h1>{this.state.message}</h1>
                 </div>
             </>

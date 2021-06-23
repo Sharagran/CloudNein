@@ -91,7 +91,7 @@ export default class Registration extends Component {
   render() {
     return (
       <>
-        <div className="register-form">
+        <div className="container-center">
           <h1>Registration</h1> <button className="logoutLblPos" onClick={this.goBack}>Back</button>
           <form action="/Registration" method="POST" onSubmit={this.onSubmit}>
             <input type="text" name="username" placeholder="Username (5 characters minimum)" minLength="5" onChange={this.onChangeUsername} required></input>

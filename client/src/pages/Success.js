@@ -20,7 +20,7 @@ export default class Success extends Component {
     render() {
         return (
             <>
-                <div className="login-form">
+                <div className="container-center">
                     <h1>Success</h1>
                 </div>
             </>

@@ -89,7 +89,7 @@ export default class Login extends Component {
     if (getToken() === "") {
       return (
         <>
-          <div className="login-form">
+          <div className="container-center">
             <h1>Login</h1>
             <form action="/login" method="POST" onSubmit={this.onSubmit}>
               <input type="text" name="username" placeholder="Username" minLength="5" onChange={this.onChangeUsername} required></input>
@@ -97,7 +97,7 @@ export default class Login extends Component {
               <button id="register-btn" type="submit" value="login">Login</button>
             </form>
           </div>
-          <div className="login-form">
+          <div className="container-center">
             <Link to="/Registration"><button id="register-btn" type="submit" >Create Account</button></Link>
             <Link to="/ForgotPassword"><button id="forgotPassword-btn" type="submit" >Forgot Password?</button></Link>
             <h1>{this.state.message}</h1>

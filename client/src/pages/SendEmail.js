@@ -19,7 +19,7 @@ export default class SendEmail extends Component {
   */
   render() {
     return (
-      <div className="login-form">
+      <div className="container-center">
         <h1>Send Mail</h1>
       </div>
     );

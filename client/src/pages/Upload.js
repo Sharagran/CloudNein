@@ -95,7 +95,7 @@ export default class Upload extends Component {
     if (getToken() === "") {
       return (
         <>
-          <div className="login-form">
+          <div className="container-center">
             no Permission
           </div>
         </>
@@ -107,7 +107,7 @@ export default class Upload extends Component {
           <Navbar />
         </React.Suspense>
         <div id='main'>
-          <div className="login-form">
+          <div className="container-center">
             <h1>Upload</h1> <button className="logoutLblPos" onClick={this.goBack}>Back</button>
             <div>
               <input id="upload" type="file" name="files" onChange={this.onFileChange} multiple />

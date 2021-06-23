@@ -138,7 +138,7 @@ export default class Admin extends Component {
     if (getToken() === "") {
       return (
         <>
-          <div className="login-form">
+          <div className="container-center">
             no Permission
           </div>
         </>
@@ -146,7 +146,7 @@ export default class Admin extends Component {
     }
     return (
       <>
-        <div className="login-form">
+        <div className="container-center">
           <h1>Admin</h1>
           <button className="logoutLblPos" onClick={this.goBack}>Back</button>
           <table>
