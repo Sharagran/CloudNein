@@ -1,7 +1,6 @@
 const mongo = require("mongodb").MongoClient;
 const util = require('util');
 let db;
-
 const create = util.promisify(createData);
 const read = util.promisify(readData);
 const update = util.promisify(updateData);
