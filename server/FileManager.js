@@ -524,6 +524,8 @@ async function downloadFile(id, res) {
         zipPath = join(zipPath);
         await new Promise(r => setTimeout(r, 500)); // 500ms delay need or downloaded zip file will be invalid
         res.download(zipPath);
+        await new Promise(r => setTimeout(r, 10000));
+        fs.unlinkSync(zipPath)
     } else {
         res.download(filePath);
     }
