@@ -70,7 +70,6 @@ export default function Fileexplorer() {
     if(folderID === null){
       folderID = folderHistory.slice(-2).id; //FIXME: FolderID could be undefined in home directory
     }
-    console.log(fileID, " ", folderID);
 
     axios.post("http://localhost:80/moveFolder", { folderID: folderID, fileID: fileID}).then(res => {
       addToast('File/Folder moved', { appearance: 'success' });

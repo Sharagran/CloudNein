@@ -10,16 +10,15 @@ const fs = require('fs');
 const { join } = require("path");
 
 const PORT = 80;
-// public routes that don't require authentication
+const DEBUG_MODE = false;
+// public routes which don't require authentication
 const excluded_urls = [
     '/',
-    '/login',
-    '/register',
-    '/forgotPassword',
-
-    // '/dbtest',
-    // '/test',
-    '/error'
+    '/Registration',
+    '/ForgotPassword',
+    '/Success',
+    '/Failed',
+    '/ShareFile'
 ];
 
 
@@ -30,15 +29,17 @@ app.use(parser.urlencoded({ extended: true, limit: "50mb" }));
 app.use(parser.json({ extended: true, limit: "50mb" }))
 app.use(express.json())
 
-// FIXME: debug only
-// logging all request (debug mode)
-app.use(function (req, res, next) {
-    console.log(`${req.ip} ${req.method} ${req.url}`);
-    // console.log(req.headers)
-    next();
-})
 
-// FIXME: Wahrscheinlich überflüssig da Frontend von react gehandelt wird.
+// logging all request (debug mode)
+if(DEBUG_MODE) {
+    app.use(function (req, res, next) {
+        console.log(`${req.ip} ${req.method} ${req.url}`);
+        console.log(req.headers)
+        next();
+    });
+}
+
+// FIXME: Wahrscheinlich überflüssig da webserver von react gehandelt wird.
 // Wird vieleicht später nützlich wenn react über express gehostet wird und nicht mehr über den development server (nach dem build)
 
 // app.use(expressJwt({ secret: config.secret, algorithms: ['HS256'] }).unless({

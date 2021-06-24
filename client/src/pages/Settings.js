@@ -141,7 +141,7 @@ export default class Settings extends Component {
       document.getElementById("upload").value = "";
       this.setState({ selectedFile: null })
     } catch (error) {
-      console.log(error);
+      console.error(error.stack);
       document.getElementById("upload").value = "";
       this.setState({ selectedFile: null })
       this.setState({ message: "Seleact a Picture" })

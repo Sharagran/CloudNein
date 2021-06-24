@@ -82,7 +82,7 @@ export default class Upload extends Component {
         this.setState({ message: "Error while uploading file" });
       });
     } catch (error) {
-      console.log(error);
+      console.error(error.stack);
       this.setState({ message: "Select a File" });
     }
   }

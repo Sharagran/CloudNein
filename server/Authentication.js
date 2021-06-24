@@ -19,7 +19,6 @@ function hash_password(password, callback) {
     if (error) {
       throw error;
     }
-    console.log('Your hash: ', hash);
     callback(error, hash);
   });
 }
@@ -59,21 +58,20 @@ function sendNewPassword(receiver, newPassword, callback) {
 
 function generatePassword() {
   var newPW = generator.generate({ length: 6, numbers: true })
-  console.log('Generated Password: ' + newPW);
   return newPW;
 }
 
 async function changeUsername(userID, newUsername, previousUsername) {
   var error, usernameCheck = await db.readDataPromise('user', { username: newUsername })
-  console.log(usernameCheck);
+
   if (usernameCheck.length == 0) {
     var error, result = await db.updateDataPromise('user', { id: userID }, { $set: { username: newUsername } })
-    console.log(result);
+
     fs.rename("../UserFiles/" + previousUsername, "../UserFiles/" + newUsername, function (err) {
       if (err) {
         console.error(error.stack)
       } else {
-        console.log("Successfully renamed the directory.")
+        console.log(`Renamed ${previousUsername} to ${newUsername}`);
       }
     })
     return true;
@@ -102,19 +100,10 @@ async function login(username, password) {
     var user = result[0];
 
     var error, match = await comp_hash(password, user.password);
-    if (error)
-      throw error;
 
-    if (match) {
-      console.log("Matching password: true");
-      return user;
-    } else {
-      console.log("Matching password: false");
-    }
-  }
-  else {
-    console.log(password, username);
-    console.log("Login fehlgeschlagen");
+    if (error) throw error;
+
+    if (match) return user;
   }
 }
 
@@ -124,7 +113,7 @@ async function register(email, username, password) {
     var error, resultUsername = await db.readDataPromise("user", { username: username });
     if (resultUsername.length > 0) {
       console.log("Username already taken");
-      return false
+      return false;
     } else {
       var error, resultEmail = await readDataPromise("user", { email: email });
       if (resultEmail.length > 0) {
@@ -146,7 +135,7 @@ async function register(email, username, password) {
       }
     }
   } catch (error) {
-    console.log(error);
+    console.error(error.stack);
   }
 }
 
