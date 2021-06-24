@@ -7,11 +7,8 @@ const nodemailer = require("nodemailer");
 var archiver = require('archiver');
 
 
-//TODO: Filip
-/**
- * 
- */
-// every minute==0 (every hour)
+
+/** checks for expired files & shareLinks every hour (minute==0) */
 cron.schedule('0 * * * *', () => {
     try {
         checkFileExpirations();
@@ -23,17 +20,15 @@ cron.schedule('0 * * * *', () => {
 });
 
 //#region File management
-//TODO: Filip
 /**
- * 
- * @param {*} req 
- * @param {*} userID 
- * @param {*} username 
- * @param {*} expires 
- * @param {*} tags 
- * @returns 
+ * uploads a file to the server, saves it to the disk & database and sets the maximum save duration
+ * @param req express request
+ * @param userID userID
+ * @param username username
+ * @param tags file tags
+ * @returns json response
  */
-async function uploadFiles(req, userID, username, expires, tags = []) {
+async function uploadFiles(req, userID, username, tags = []) {
 
     var expirationDate = await db.readDataPromise('settings', { User: "Admin" })
     for (const key in req.files) {
@@ -47,7 +42,7 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
             const id = uuidv4();
             var date = new Date();
             date.setDate(date.getDate() + parseInt(expirationDate[0].days))
-            expires = date.toISOString();
+            var expires = date.toISOString();
 
             db.createData("file", {
                 id: id,
@@ -73,9 +68,9 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
 
 /**
  * Creates a new Folder and stores the information in the database.
- * @param {*} parentID null if ther is no parten otherwise the partent fileID
- * @param {*} name name of the folder.
- * @param {*} userID 
+ * @param  parentID null if ther is no parten otherwise the partent fileID
+ * @param  name name of the folder.
+ * @param  userID 
  * @returns 
  */
 async function createFolder(parentID, name, userID) {
@@ -100,8 +95,8 @@ async function createFolder(parentID, name, userID) {
 
 /**
  * Get all files that stored in a folder.
- * @param {*} id id of the folder.
- * @param {*} userid 
+ * @param  id id of the folder.
+ * @param  userid 
  * @returns array with the stored file information.
  */
 async function getFolderContent(id, userid) {
@@ -117,7 +112,7 @@ async function getFolderContent(id, userid) {
 
 /**
  * Get all information from a file
- * @param {*} id fileID
+ * @param  id fileID
  * @returns stored file information
  */
 async function getFile(id) {
@@ -127,7 +122,7 @@ async function getFile(id) {
 
 /**
  * Get the path from an file
- * @param {*} fileID 
+ * @param  fileID 
  * @returns Path to the users folder if the id is a foler otherwise path to the users folder with the file path
  */
 async function getActualPath(fileID) {
@@ -146,10 +141,9 @@ async function getActualPath(fileID) {
 }
 
 
-//TODO: Filip
 /**
- * 
- * @param {*} fileID 
+ * Deletes a file/folder
+ * @param fileID fileID
  */
 async function deleteItem(fileID) {
     var file = await getFile(fileID);
@@ -161,11 +155,7 @@ async function deleteItem(fileID) {
     }
 }
 
-//TODO: Filip
-/**
- * 
- * @param {*} folderID 
- */
+  /** recursive function to delete a folder from db & all its content from db & disk */
 async function deleteFolder(folderID) {
     var files = await getFolderContent(folderID);
 
@@ -181,11 +171,7 @@ async function deleteFolder(folderID) {
     console.log(`folder ${folderID} deleted`);
 }
 
-//TODO: Filip
-/**
- * 
- * @param {*} fileID 
- */
+/** function to remove file from db & disk */
 async function deleteFile(fileID) {
     var path = await getActualPath(fileID);
     // remove from disk
@@ -204,13 +190,11 @@ async function deleteFile(fileID) {
 //#endregion
 
 //#region File attributes
-//TODO: Filip
 /**
- * 
- * @param {*} fileID 
- * @param {*} folderID 
- * @returns 
- */
+ * Moves a file inside a folder
+ * @param fileID id of the file that is supposed to be moved
+ * @param folderID id of the folder which the file is supposed to be moved in
+*/
 async function moveFile(fileID, folderID) {
     if (fileID == folderID) return false;
 
@@ -228,8 +212,8 @@ async function moveFile(fileID, folderID) {
 
 /**
  * Add a comment to a file or folder and store it in the database
- * @param {*} fileID 
- * @param {*} text The comment.
+ * @param  fileID 
+ * @param  text The comment.
  */
 function commentFile(fileID, text) {
     db.updateData('file', { id: fileID }, { $set: { comment: text } })
@@ -237,8 +221,8 @@ function commentFile(fileID, text) {
 
 /**
  * Add a comment to a file or folder and store it in the database
- * @param {*} fileID 
- * @param {*} tag 
+ * @param  fileID 
+ * @param  tag 
  * @returns 
  */
 async function addTag(fileID, tag) {
@@ -281,11 +265,9 @@ async function addTag(fileID, tag) {
     console.log("file tags updated");
 }
 
-//TODO: Filip
 /**
- * 
- * @param {*} fileID 
- * @param {*} maxDownloads 
+ * @param fileID fileID
+ * @param maxDownloads new maximum downloads for the specified file
  * @returns 
  */
 async function setMaxDownloads(fileID, maxDownloads) {
@@ -331,7 +313,7 @@ async function getDataLimit() {
 
 /**
  * Calculates the used space from a user from the database enties.
- * @param {*} userID 
+ * @param  userID 
  * @returns used space from the user
  */
 async function usedSpace(userID) {
@@ -350,8 +332,8 @@ async function usedSpace(userID) {
 
 /**
  * Checks if the used space and the to uploaded file size bigger than the upload limit.
- * @param {*} fileSize size of the files that should be uploaded
- * @param {*} userID 
+ * @param  fileSize size of the files that should be uploaded
+ * @param  userID 
  * @returns True if the folder size and the file size lesser than the upload limit otherwise false.
  */
 async function spaceCheck(fileSize, userID) {
@@ -378,7 +360,7 @@ async function getExpirationDate() {
 
 /**
  * Set the upload data limit
- * @param {*} limit upload limit in byte
+ * @param  limit upload limit in byte
  */
 async function setDataLimit(limit) {
     await db.updateDataPromise('settings', { User: "Admin" }, { $set: { limit: limit } });
@@ -387,7 +369,7 @@ async function setDataLimit(limit) {
 
 /**
  * Set the number for the exporation date
- * @param {*} days number of days
+ * @param  days number of days
  */
 async function setExpirationDate(days) {
     await db.updateDataPromise('settings', { User: "Admin" }, { $set: { days: days } });
@@ -410,8 +392,8 @@ async function checkUploadLimit(userID) {
 
 /**
  * Uploads a png to the server and store it with the userID as the name.
- * @param {*} req includes a png 
- * @param {*} userID 
+ * @param  req includes a png 
+ * @param  userID 
  * @returns true if the png is stored at the server
  */
 function uploadProfilePicture(req, userID) {
@@ -429,7 +411,7 @@ function uploadProfilePicture(req, userID) {
 
 /**
  * Delete the current profile picture to store a new one.
- * @param {*} userID 
+ * @param  userID 
  */
 async function deleteProfilePicture(userID) {
     var filename = fs.readdirSync(`${__dirname}/../ProfilePictures/`)
@@ -442,7 +424,7 @@ async function deleteProfilePicture(userID) {
 
 /**
  * Checks if a profile picture is available and sends
- * @param {*} userID 
+ * @param  userID 
  * @returns the users profile picture
  */
 function getProfilePicture(userID) {
@@ -469,8 +451,8 @@ function getProfilePicture(userID) {
 //#region Download
 /**
  * Create a .zip file from the files that are stored in a folder.
- * @param {*} path location of the files.
- * @param {*} folderID 
+ * @param  path location of the files.
+ * @param  folderID 
  * @returns path where the .zip is stored.
  */
 async function compressFolder(path, folderID) {
@@ -501,8 +483,8 @@ async function compressFolder(path, folderID) {
 /**
  * Download a file if the file isn't expired and the actual downloads lesser than max downloads.
  * Download a zip if it's a folder-
- * @param {*} id 
- * @param {*} res 
+ * @param  id 
+ * @param  res 
  * @returns 
  */
 async function downloadFile(id, res) {
@@ -535,13 +517,13 @@ async function downloadFile(id, res) {
 
 /**
  * Create the information which are required for the share link and store them in the database.
- * @param {*} itemID file or folder 
- * @param {*} expires 
- * @param {*} usages counter how man the download can be confirmed
- * @param {*} callback shareID
+ * @param  itemID file or folder 
+ * @param  expires 
+ * @param  usages counter how man the download can be confirmed
+ * @param  callback shareID
  */
 async function share(itemID, expires, usages, callback) {
-    const shareID = uuidv4(); 
+    const shareID = uuidv4();
     var date = new Date();
     date.setDate(date.getDate() + expires)
     expires = date.toISOString();
@@ -561,7 +543,7 @@ async function share(itemID, expires, usages, callback) {
 
 /**
  * Get the fileID information which are stored in the shareID in the database.
- * @param {*} shareID 
+ * @param  shareID 
  * @returns array with shared files.
  */
 async function getSharedFiles(shareID) {
@@ -588,7 +570,7 @@ async function checkSharelinkExpirations(shareID) {
 
 /**
  * Checks if the usages are available. If not deletes the database entry.
- * @param {*} shareID 
+ * @param  shareID 
  * @returns false by default. True if the usages counter is lesser than 0.
  */
 async function checkSharelinkUsages(shareID) {
@@ -611,7 +593,7 @@ async function checkSharelinkUsages(shareID) {
 
 /**
  * Checks if a file in the database is expired and delte the entry
- * @param {*} fileID 
+ * @param  fileID 
  */
 function checkFileExpirations(fileID) {
     var query = fileID ? { id: fileID } : {};
@@ -630,7 +612,7 @@ function checkFileExpirations(fileID) {
 
 /**
  * Checks if a database entry is expired.
- * @param {*} shareEntry 
+ * @param  shareEntry 
  * @returns true if the actual date is greater than the exopration data otherwise false
  */
 function isExpired(shareEntry) {
@@ -646,7 +628,7 @@ function isExpired(shareEntry) {
 
 /**
  * Decrease the usage counter by 1 if it's greater than 0.
- * @param {*} shareID 
+ * @param  shareID 
  * @returns true if the decrement is done.
  */
 async function decreaseUsages(shareID) {
@@ -659,7 +641,7 @@ async function decreaseUsages(shareID) {
 
 /**
  * Increase the download counter of a file by 1.
- * @param {*} fileID 
+ * @param  fileID 
  * @returns true if the increment is done
  */
 async function increaseDownloads(fileID) {
@@ -670,9 +652,9 @@ async function increaseDownloads(fileID) {
 
 /**
  * Sends the share link to a selected email.
- * @param {*} receiver email
- * @param {*} shareID 
- * @param {*} callback 
+ * @param  receiver email
+ * @param  shareID 
+ * @param  callback 
  */
 function sendLink(receiver, shareID, callback) {
 
