@@ -35,3 +35,7 @@ foo@bar:CloudNein/client$ serve -s build
 ```console
 foo@bar:CloudNein/server$ npm start
 ```
+
+### Important users:
+Create a user with the name "Admin" the password and email is up to you.
+Create a second user with your desired information and an email address to which you have access.
