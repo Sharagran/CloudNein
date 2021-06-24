@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+//TODO: Filip kommentieren
+
 // Updates header and saves token in cookies
 export function setToken(token) {
     setCookie(token);
