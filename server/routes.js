@@ -18,7 +18,7 @@ router.post('/login', async (req, res) => {
 //Verarbeitet die empfangenen Daten beim Registrieren
 router.post('/register', async (req, res) => {
     var success = await auth.register(req.body.user.mail, req.body.user.username, req.body.user.password);
-    console.log(success);
+    
     if (success === true) {
         res.send(true)
     } else {
@@ -193,8 +193,7 @@ router.post('/checkSharelinkExpiration', async function (req, res) {
 })
 
 router.post('/checkSharelinkUsages', async function (req, res) {
-    var result = await fm.checkSharelinkUsages(req.body.shareInformation.shareID)
-    console.log(result);
+    var result = await fm.checkSharelinkUsages(req.body.shareInformation.shareID);
     res.send(result);
 })
 
@@ -232,8 +231,6 @@ router.post('/updateFileInformation', async (req, res) => {
 
 // FIXME: React dev server is handeling all routes
 // router.get('/', function (req, res) {
-//     console.log(__dirname + '/public/login.html');
-//     console.log(path.join(__dirname + '/public/login.html'));
 //     res.sendFile(__dirname + '/public/login.html');
 // });
 

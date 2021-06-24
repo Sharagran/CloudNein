@@ -36,7 +36,6 @@ async function uploadFiles(req, userID, username, expires, tags = []) {
             var date = new Date();
             date.setDate(date.getDate() + parseInt(expirationDate[0].days))
             expires = date.toISOString();
-            console.log(expires);
 
             db.createData("file", {
                 id: id,
@@ -151,7 +150,7 @@ async function deleteFile(fileID) {
     // remove from db
     db.deleteData('file', { id: fileID });
 
-    console.log(`${fileID}/${path} deleted`);
+    console.log(`${fileID} deleted`);
 }
 
 //#endregion
@@ -245,7 +244,7 @@ async function getDataLimit() {
         var error, result = await db.readDataPromise('settings', { User: "Admin" });
         return result[0].limit / 1000000;
     } catch (error) {
-        console.log(error);
+        console.error(error.stack);
     }
 }
 
@@ -259,7 +258,7 @@ async function usedSpace(userID) {
         })
         return parseFloat(size / 1000000).toFixed(2);
     } catch (error) {
-        console.log(error);
+        console.error(error.stack);
     }
 }
 
@@ -268,7 +267,6 @@ async function spaceCheck(fileSize, userID) {
     var dataLimit = await getDataLimit() * 1000000
 
     if (folderSize + fileSize <= dataLimit) {
-        console.log("enough space")
         return true;
     } else {
         console.log(("not enough space"));
@@ -283,15 +281,16 @@ async function getExpirationDate() {
 }
 
 async function setDataLimit(limit) {
-    var error, result = await db.updateDataPromise('settings', { User: "Admin" }, { $set: { limit: limit } });
+    await db.updateDataPromise('settings', { User: "Admin" }, { $set: { limit: limit } });
     console.log("DataLimit updated");
 }
 
 async function setExpirationDate(days) {
-    var error, result = await db.updateDataPromise('settings', { User: "Admin" }, { $set: { days: days } });
-    console.log("Expiratio nDate updated");
+    await db.updateDataPromise('settings', { User: "Admin" }, { $set: { days: days } });
+    console.log("Expiration Date updated");
 }
 
+//FIXME: wtf andre
 async function checkUploadLimit(userID) {
     var size = 0;
     var error, resultRead = await db.readDataPromise('settings', { User: "Admin" });
@@ -321,7 +320,6 @@ function uploadProfilePicture(req, userID) {
 
 async function deleteProfilePicture(userID) {
     var filename = fs.readdirSync(`${__dirname}/../ProfilePictures/`)
-    console.log(filename);
     filename.forEach(file => {
         if (file === userID + ".png") {
             fs.unlinkSync(`${__dirname}/../ProfilePictures/${userID}.png`)
@@ -390,12 +388,11 @@ async function downloadFile(id, res) {
     }
 
     var filePath = await getActualPath(file.id);
-    console.log('filePath: ', filePath);
+    console.log('download: ', filePath);
 
     if (file.isFolder) {
         var zipPath = await compressFolder(filePath, file.id);
         zipPath = join(zipPath);
-        console.log(zipPath);
         await new Promise(r => setTimeout(r, 500)); // 500ms delay need or downloaded zip file will be invalid
         res.download(zipPath);
     } else {
@@ -408,11 +405,6 @@ async function downloadFile(id, res) {
 //#region Share
 
 async function share(itemID, expires, usages, callback) {
-    //TODO: delete file/folder after X downloads
-    var file = await getFile(itemID);
-    console.log(file);
-
-
     const shareID = uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
     var date = new Date();
     date.setDate(date.getDate() + expires)

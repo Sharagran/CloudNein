@@ -55,7 +55,7 @@ function deleteData(collectionName, query = {}, callback = defaultCallBack) {
 }
 
 function defaultCallBack(result) {
-    console.log("default callback: " + result);
+    console.log(result);
 }
 
 async function createDataPromise(collectionName, data) {

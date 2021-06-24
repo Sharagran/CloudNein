@@ -65,7 +65,7 @@ export default class ShareFile extends Component {
 
 
     } catch (error) {
-      console.log(error)
+      console.error(error.stack)
       this.setState({ message: "Error while checking link information" })
     }
   }
@@ -119,7 +119,7 @@ export default class ShareFile extends Component {
         }
       })
     } catch (error) {
-      console.log(error)
+      console.error(error.stack)
       this.setState({ message: "Error while preparing download" })
     }
   }
@@ -160,7 +160,7 @@ export default class ShareFile extends Component {
         this.setState({ message: "You have already confirmed the download" })
       }
     } catch (error) {
-      console.log(error);
+      console.error(error.stack);
       this.setState({ message: "Error while confirmation" })
     }
   }
@@ -171,7 +171,6 @@ export default class ShareFile extends Component {
    */
   getFiles(fileID) {
     axios.post("http://localhost:80/storage", { folderid: fileID }).then(res => {
-      console.log(res.data);
       var newFiles = res.data;
       this.setState({ ...this.state, files: newFiles });
     }).catch(error => {

@@ -29,7 +29,7 @@ function authenticate (req, res, next) {
         jwt.verify(token, config.secret, (err, user) => {
             if (err) {
                 if(err.name == 'TokenExpiredError') {
-                    console.log("Expired");
+                    console.log("Token expired");
                     return next(); //TODO: redirect to login page (login expired)
                 } else {
                     console.error(err.stack);
