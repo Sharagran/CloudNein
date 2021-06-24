@@ -1,14 +1,12 @@
 import axios from 'axios';
 
-//TODO: Filip kommentieren
-
-// Updates header and saves token in cookies
+/** Updates header and saves token in cookies */ 
 export function setToken(token) {
     setCookie(token);
     updateHeader(token);
 }
 
-// Updates header and reads token from cookies
+/** Updates header and reads token from cookies */ 
 export function getToken() {
     var token = getCookie("token");
     updateHeader(token);

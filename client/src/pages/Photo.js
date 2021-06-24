@@ -14,7 +14,7 @@ var spaceCheck;
 export default class Photo extends Component {
     /**
     * Constructor that stores the data.
-    * @param {*} props 
+    * @param  props 
     */
     constructor(props) {
         super(props);
@@ -29,7 +29,7 @@ export default class Photo extends Component {
     /**
      * A photo is created from the application that is transcoded to send it to the server after storage space check is true.
      * The name of the file consists of year - month - day @ hour - minute - second.
-     * @param {*} dataUri Photo information
+     * @param  dataUri Photo information
      */
     handleTakePhoto(dataUri) {
 

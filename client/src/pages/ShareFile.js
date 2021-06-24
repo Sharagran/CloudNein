@@ -15,7 +15,7 @@ var expired;
 export default class ShareFile extends Component {
   /**
    * Constructor that stores the data.
-   * @param {*} props 
+   * @param  props 
    */
   constructor(props) {
     super(props);
@@ -74,8 +74,8 @@ export default class ShareFile extends Component {
    * Checks wether usages are available. If yes the user is alowed to download the files.
    * Chekks wether the download was already confirmed. If yes the user isn't alowed to download the files.
    * If the links is expired the the user isn't alowed to download the files.
-   * @param {*} fileID 
-   * @param {*} fileName 
+   * @param  fileID 
+   * @param  fileName 
    * @returns void to ending the function.
    */
   onSubmit(fileID, fileName) {
@@ -167,7 +167,7 @@ export default class ShareFile extends Component {
 
   /**
    * Get all file information when a complete folder is shared
-   * @param {*} fileID 
+   * @param  fileID 
    */
   getFiles(fileID) {
     axios.post("http://localhost:80/storage", { folderid: fileID }).then(res => {

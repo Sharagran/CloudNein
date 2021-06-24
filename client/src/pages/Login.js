@@ -10,7 +10,7 @@ import GlobalVal from "./GlobalVal";
 export default class Login extends Component {
   /**
    * Constructor that stores the data.
-   * @param {*} props 
+   * @param  props 
    */
   constructor(props) {
     super(props);
@@ -28,7 +28,7 @@ export default class Login extends Component {
 
   /**
    * Adjusts the value in the state for username in terms of the user input.
-   * @param {*} e trigger event.
+   * @param  e trigger event.
    */
   onChangeUsername(e) {
     this.setState({
@@ -38,7 +38,7 @@ export default class Login extends Component {
 
   /**
   * Adjusts the value in the state for password in terms of the user input.
-  * @param {*} e specific html input tag.
+  * @param  e specific html input tag.
   */
   onChangePassword(e) {
     this.setState({
@@ -49,7 +49,7 @@ export default class Login extends Component {
   /**
    * Sends the username and password specified by user to the server. 
    * If the data matches the data in the database, the user will be logged in and sent to the Home or Admin page. Depending on the username.
-   * @param {*} e trigger event.
+   * @param  e trigger event.
    */
   onSubmit(e) {
     e.preventDefault();

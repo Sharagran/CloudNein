@@ -7,7 +7,7 @@ import axios from 'axios';
 export default class ForgotPassword extends Component {
   /**
    * Constructor that stores the data.
-   * @param {*} props 
+   * @param  props 
    */
   constructor(props) {
     super(props);
@@ -29,7 +29,7 @@ export default class ForgotPassword extends Component {
 
   /**
   * Adjusts the value in the state for the email in terms of the user input .
-  * @param {*} e trigger event.
+  * @param  e trigger event.
   */
   onChangeEmail(e) {
     this.setState({
@@ -42,7 +42,7 @@ export default class ForgotPassword extends Component {
   /**
    * The email specified by the user is sent to the server and it looks if there is an entry in the database. 
    * If yes, then the user is redirected to the "sendEmail" page, otherwise to the "failed" page.
-   * @param {*} e trigger event.
+   * @param  e trigger event.
    */
   onSubmit(e) {
     e.preventDefault();

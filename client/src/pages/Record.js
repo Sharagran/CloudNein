@@ -15,7 +15,7 @@ export default class Record extends Component {
 
   /**
   * Constructor that stores the data.
-  * @param {*} props 
+  * @param  props 
   */
   constructor(props) {
     super(props);
@@ -38,7 +38,7 @@ export default class Record extends Component {
 
   /**
    * Ends the audio recording and adjust the data to the state
-   * @param {*} data Recorded audio data
+   * @param  data Recorded audio data
    */
   handleAudioStop(data) {
     this.setState({ audioDetails: data });
@@ -47,7 +47,7 @@ export default class Record extends Component {
   /**
    * A audio record is created from the application and send it to the server after storage space check is true.
    * The name of the file consists of year - month - day @ hour - minute - second.
-   * @param {*} data Recorded audio data
+   * @param  data Recorded audio data
    */
   handleAudioUpload(data) {
 

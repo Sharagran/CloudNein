@@ -11,7 +11,7 @@ const Navbar = React.lazy(() => import('../components/Navbar'));
 export default class Home extends Component {
   /**
   * Constructor that stores the data.
-  * @param {*} props 
+  * @param  props 
   */
   constructor(props) {
     super(props);
