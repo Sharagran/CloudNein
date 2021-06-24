@@ -164,7 +164,7 @@ async function forgotPassword(email) {
 
 function sign(user) {
   const payload = { id: user.id, username: user.username, email: user.email };
-  const token = jwt.sign(payload, config.secret); //FIXME: expiresIn
+  const token = jwt.sign(payload, config.secret); //TODO: expiresIn (implement 30min login timeout)
 
   return token;
 }

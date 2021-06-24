@@ -290,17 +290,15 @@ async function setExpirationDate(days) {
     console.log("Expiration Date updated");
 }
 
-//FIXME: wtf andre
 async function checkUploadLimit(userID) {
     var size = 0;
-    var error, resultRead = await db.readDataPromise('settings', { User: "Admin" });
 
-    var error2, result = await db.readDataPromise('file', { owner: userID });
+    var error, result = await db.readDataPromise('file', { owner: userID });
     for (var i = 0; i < result.length; i++) {
         size += result[i].fileSize
     }
 
-    return size
+    return size;
 }
 //#endregion
 
@@ -376,7 +374,6 @@ async function compressFolder(path, folderID) {
 
 
 async function downloadFile(id, res) {
-    //TODO: check usages
     var file = await getFile(id);
     if (file.maxDownloads && file.downloads >= file.maxDownloads) {
         return;
@@ -428,7 +425,6 @@ async function getSharedFiles(shareID) {
     return result[0]
 }
 
-//TODO: check before every download @Andre
 async function checkSharelinkExpirations(shareID) {
     var query = shareID ? { shareID: shareID } : {};
     var shareLinkExpired = true;

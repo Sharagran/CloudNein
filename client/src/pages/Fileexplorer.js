@@ -68,7 +68,7 @@ export default function Fileexplorer() {
   function moveFile(fileID, folderID) {
 
     if(folderID === null){
-      folderID = folderHistory.slice(-2).id; //FIXME: FolderID could be undefined in home directory
+      folderID = folderHistory.slice(-2).id;
     }
 
     axios.post("http://localhost:80/moveFolder", { folderID: folderID, fileID: fileID}).then(res => {
