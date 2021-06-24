@@ -1,13 +1,17 @@
 const express = require("express");
 const app = express();
-const db = require("./Database");
-const parser = require("body-parser");
-const cors = require("cors");
 const routes = require('./routes')
-const errorHandler = require('./error_handler');
-const verifier = require('./jwt_verifier');
+
+const db = require("./Database");
 const fs = require('fs');
 const { join } = require("path");
+const verifier = require('./jwt_verifier');
+// const expressJwt = require('express-jwt');
+
+const parser = require("body-parser");
+const cors = require("cors");
+const errorHandler = require('./error_handler');
+
 
 const PORT = 80;
 const DEBUG_MODE = false;

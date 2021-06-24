@@ -1,13 +1,13 @@
 const bcrypt = require('bcrypt');
-const nodemailer = require("nodemailer");
 const generator = require('generate-password');
-const db = require("./Database");
-const fs = require("fs");
-const config = require('./config.json');
 const jwt = require('jsonwebtoken');
+
+const nodemailer = require("nodemailer");
+const db = require("./Database");
+const config = require('./config.json');
 const util = require('util');
-const { readDataPromise } = require('./Database');
 const uuidv4 = require('uuid').v4;
+const fs = require("fs");
 const { join } = require('path');
 
 const readData = util.promisify(db.readData);
@@ -115,7 +115,7 @@ async function register(email, username, password) {
       console.log("Username already taken");
       return false;
     } else {
-      var error, resultEmail = await readDataPromise("user", { email: email });
+      var error, resultEmail = await db.readDataPromise("user", { email: email });
       if (resultEmail.length > 0) {
         console.log("Mail already taken");
         return false
