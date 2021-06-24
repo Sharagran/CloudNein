@@ -1,14 +1,9 @@
 const express = require("express");
 const multer = require('multer');
-
 const auth = require("./Authentication");
 const fm = require('./FileManager');
-
-
-
 var upload = multer({ dest: `${__dirname}/../UserFiles/` });
 var router = express.Router();
-
 
 router.post('/login', async (req, res) => {
     fm.createUploadSettings();

@@ -1,17 +1,14 @@
 const express = require("express");
 const app = express();
 const routes = require('./routes')
-
 const db = require("./Database");
 const fs = require('fs');
 const { join } = require("path");
 const verifier = require('./jwt_verifier');
 // const expressJwt = require('express-jwt');
-
 const parser = require("body-parser");
 const cors = require("cors");
 const errorHandler = require('./error_handler');
-
 
 const PORT = 80;
 const DEBUG_MODE = false;
@@ -25,14 +22,12 @@ const excluded_urls = [
     '/ShareFile'
 ];
 
-
 // Middleware
 app.use(express.static("public"));
 app.use(cors());
 app.use(parser.urlencoded({ extended: true, limit: "50mb" }));
 app.use(parser.json({ extended: true, limit: "50mb" }))
 app.use(express.json())
-
 
 // logging all request (debug mode)
 if(DEBUG_MODE) {
@@ -54,7 +49,6 @@ app.use(verifier(excluded_urls));
 
 app.use('/', routes);
 
-
 // handles all code errors (error middleware must be the last middleware)
 app.use(errorHandler);
 
@@ -62,8 +56,6 @@ app.listen(PORT, () => {
     console.log(`app listening at ${PORT}`);
     db.connect();
 });
-
-
 
 function createRequiredFolders() {
     const folders = [`${__dirname}/../UserFiles/`, `${__dirname}/../ProfilePictures/`];
