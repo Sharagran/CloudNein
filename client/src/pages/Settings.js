@@ -168,7 +168,7 @@ export default class Settings extends Component {
           <Navbar />
         </React.Suspense>
         <div id='main'>
-          <div className="register-form">
+          <div className="container-center">
             <h1>Settings</h1> <button className="logoutLblPos" onClick={this.goBack}>Back</button>
             <form action="/settings" method="POST" onSubmit={this.onSubmitUsername}>
               <input type="text" name="username" placeholder="Username (5 characters minimum)" minLength="5" onChange={this.onChangeUsername} required></input>
