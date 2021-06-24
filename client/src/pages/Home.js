@@ -19,9 +19,10 @@ export default class Home extends Component {
   }
 
   /**
- * Returns the admin to the login page. The cookie is deleted and all user information .
- * and all user information will be reseted.
- */
+   * Returns the admin to the login page. The cookie is deleted and all user information.
+   * and all user information will be reseted.
+   * User will be redirectet to the "login" page
+   */
   goBack() {
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
     GlobalVal.username = null;

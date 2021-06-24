@@ -7,6 +7,10 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class Navbar extends Component {
+    /**
+    * Constructor that stores the data.
+    * @param {*} props 
+    */
     constructor(props) {
         super(props);
         this.state = {
@@ -21,9 +25,11 @@ export default class Navbar extends Component {
 
     }
 
-
+    /**
+     * Get the users profile picture from the server it's available.
+     * Get the total upload data limit and the used space  to calculate the free space.
+     */
     UNSAFE_componentWillMount() {
-        //Holt sich das Profilbild
         try {
             axios.post("http://localhost:80/getProfilePicture").then((res) => {
                 if (res.data) {
@@ -33,14 +39,13 @@ export default class Navbar extends Component {
                 }
             });
         } catch (error) {
-            console.log(error);
+            console.error(error.stack);
         }
-        //Holt sich den gesamten Speicher und den aktuell verwendeten speicher
 
         try {
             axios.post("http://localhost:80/getStorageSpaceInformation").then((res) => {
                 var freeSpaceRounded = res.data.dataLimit - res.data.usedSpace
-   
+
                 this.setState({
                     maxSpace: res.data.dataLimit,
                     usedSpace: res.data.usedSpace,
@@ -49,13 +54,16 @@ export default class Navbar extends Component {
                 })
             })
         } catch (error) {
-            console.log(error);
+            console.error(error.stack);
         }
-
     }
 
-    goBack(e) {
-        e.preventDefault();
+    /**
+   * Returns the admin to the login page. The cookie is deleted and all user information.
+   * and all user information will be reseted.
+   * User will be redirectet to the "login" page
+   */
+    goBack() {
         document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
         GlobalVal.username = null;
         GlobalVal.password = null;
