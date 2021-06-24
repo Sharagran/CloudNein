@@ -6,11 +6,10 @@ import axios from 'axios';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+/**
+ * Sidebar for navigation
+ */
 export default class Navbar extends Component {
-    /**
-    * Constructor that stores the data.
-    * @param {*} props 
-    */
     constructor(props) {
         super(props);
         this.state = {
@@ -22,7 +21,6 @@ export default class Navbar extends Component {
             freeSpace: ""
         };
         this.toggleNav = this.toggleNav.bind(this)
-
     }
 
     /**
@@ -72,6 +70,7 @@ export default class Navbar extends Component {
         window.location = '/';
     }
 
+    /** Toggles (expands/collapse) the side/navigation bar */
     toggleNav() {
         var extOnly = document.querySelectorAll('.ext-only');
 
@@ -92,6 +91,7 @@ export default class Navbar extends Component {
         }
     }
 
+    /** Force a re-render */
     updateUI() {
         this.forceUpdate();
     }
@@ -99,17 +99,20 @@ export default class Navbar extends Component {
     render() {
         return (
             <div id="sideNav" className="sidenav">
+                {/* Data about the user */}
                 <div className="userdata">
                     <span className="ext-only fade-out">{GlobalVal.username}</span>
                     <img className="ext-only fade-out" src={this.state.image} width="64" height="64" />
                     <progress className="ext-only fade-out" id="file" max="100" value={this.state.usedSpacePercent}></progress>
                     <span className="ext-only fade-out">{this.state.freeSpace}MB free of {this.state.maxSpace}MB </span>
                 </div>
+                {/* Navigation links */}
                 <Link to="/Storage"><FontAwesomeIcon icon='folder-open' /> Files</Link>
                 <Link to="/Upload"><FontAwesomeIcon icon='file-upload' /> Upload</Link>
                 <Link to="/Settings"><FontAwesomeIcon icon='sliders-h' /> Settings</Link>
                 <a onClick={this.goBack}><FontAwesomeIcon icon='sign-out-alt' /> Logout</a>
 
+                {/* Toggle side/navigation bar */}
                 <a className="togglebtn" onClick={this.toggleNav}><FontAwesomeIcon icon='bars' /></a>
             </div>
         );

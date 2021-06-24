@@ -10,7 +10,9 @@ import FileList from "../components/FileList";
 import axios from 'axios';
 import './css/Fileexplorer.css';
 
+// folderHistory used for navigating back up
 var folderHistory;
+// Data of the home directory folder
 const home = { id: null, name: '/home' };
 
 export default function Fileexplorer() {
@@ -20,19 +22,26 @@ export default function Fileexplorer() {
   const [path, setPath] = useState('');
   const foldernameRef = useRef();
 
+  // only executed once
   useEffect(() => {
     folderHistory = [];
     cd(home);
   }, []);
 
 
-
+  /**
+   * Change directory
+   * @param folder folder object to navigate in
+  */
   function cd(folder) {
     axios.post("http://localhost:80/storage", { folderid: folder.id }).then(res => {
+      // show contents of new directory
       var newFiles = res.data;
       setFiles(newFiles);
 
+      // add new directory to folderHistory
       folderHistory.push(folder);
+      // update path
       var p = '';
       folderHistory.forEach(folder => {
         p += folder.name + '/';
@@ -45,13 +54,18 @@ export default function Fileexplorer() {
     });
   }
 
+  /**
+   * Create a folder
+   * @param name name of the new folder
+  */
   function createFolder(name) {
     var currentFolder = folderHistory.slice(-1); //last element in array
-    if(currentFolder === null) currentFolder = home;
+    if (currentFolder === null) currentFolder = home;
 
-    axios.post("http://localhost:80/createFolder", {parentID: currentFolder.id, folderName: name}).then(res => {
+    axios.post("http://localhost:80/createFolder", { parentID: currentFolder.id, folderName: name }).then(res => {
       addToast('Folder created', { appearance: 'success' });
-      folderHistory.pop();
+       // reload folder contents by navigating in the same folder again
+      folderHistory.pop(); // prevent the same folder to appear twice in folderHistory
       cd(currentFolder);
     }).catch(error => {
       console.error(error.stack);
@@ -59,19 +73,26 @@ export default function Fileexplorer() {
     });
   }
 
+  /**
+   * @returns all folders inside the files state
+  */
   function getFolders() {
-
     var folder = files.filter(f => f.isFolder)
     return folder
-}
+  }
 
+  /**
+   * Moves a file inside a folder
+   * @param fileID id of the file that is supposed to be moved
+   * @param folderID id of the folder which the file is supposed to be moved in
+  */
   function moveFile(fileID, folderID) {
 
-    if(folderID === null){
+    if (folderID === null) {
       folderID = folderHistory.slice(-2).id;
     }
 
-    axios.post("http://localhost:80/moveFolder", { folderID: folderID, fileID: fileID}).then(res => {
+    axios.post("http://localhost:80/moveFolder", { folderID: folderID, fileID: fileID }).then(res => {
       addToast('File/Folder moved', { appearance: 'success' });
       //reload folder
       var currentFolder = folderHistory.pop();
@@ -82,6 +103,7 @@ export default function Fileexplorer() {
     });
   }
 
+  /** Navigate back/one directory up */
   function navigateBack() {
     //current folder
     folderHistory.pop();
@@ -95,56 +117,61 @@ export default function Fileexplorer() {
 
   return (
     <>
+    {/* left Navigation bar */}
       <React.Suspense fallback={<FontAwesomeIcon icon='spinner' pulse />}>
         <Navbar />
       </React.Suspense>
       <div id='main'>
+        {/* top Menubar */}
         <Menubar path={path} navigateBack={navigateBack} />
+        {/* Render files/folders */}
         <div id='fileContainer'>
           <FileList files={files} cd={cd} getFolders={getFolders} moveFile={moveFile} />
         </div>
       </div>
-
+      {/* Context/right-click menu */}
       <MyContextMenu createFolder={createFolder} foldernameRef={foldernameRef} />
     </>
   )
 }
 
-function MyContextMenu({createFolder, foldernameRef}) {
+//#region Context/right-click Menu
+function MyContextMenu({ createFolder, foldernameRef }) {
   return <>
-  <ContextMenuTrigger ref={c => contextTrigger = c} id="fileexplorer-context-menu">
-      </ContextMenuTrigger>
-      <ContextMenu id="fileexplorer-context-menu" className='fileexplorer-context-menu'>
-        <MenuItem attributes={{ className: 'create-folder' }} >
-          <Popup trigger={<div>Create Folder</div>} modal closeOnDocumentClick={false}>
-            {close => (
-              <div className="modal-content">
-                <button className="close" onClick={close}>
-                  &times;
-                </button>
-                <div className="header">Create Folder</div>
-                <div className="content">
-                  <div className='label-container'>
-                    <label htmlFor='folder'>Folder name:</label>
-                    <input id='folder' type="text" ref={foldernameRef} placeholder='Folder name' />
-                  </div>
+    <ContextMenuTrigger ref={c => contextTrigger = c} id="fileexplorer-context-menu">
+    </ContextMenuTrigger>
+    <ContextMenu id="fileexplorer-context-menu" className='fileexplorer-context-menu'>
+      <MenuItem attributes={{ className: 'create-folder' }} >
+        <Popup trigger={<div>Create Folder</div>} modal closeOnDocumentClick={false}>
+          {close => (
+            <div className="modal-content">
+              <button className="close" onClick={close}>
+                &times;
+              </button>
+              <div className="header">Create Folder</div>
+              <div className="content">
+                <div className='label-container'>
+                  <label htmlFor='folder'>Folder name:</label>
+                  <input id='folder' type="text" ref={foldernameRef} placeholder='Folder name' />
                 </div>
-                <button className="button" onClick={() => {
-                  var folderName = foldernameRef.current.value;
-                  createFolder(folderName);
-                  close();
-                }}>
-                  Create Folder
-                </button>
               </div>
-            )}
-          </Popup>
-        </MenuItem>
-      </ContextMenu>
-      </>
+              <button className="button" onClick={() => {
+                var folderName = foldernameRef.current.value;
+                createFolder(folderName);
+                close();
+              }}>
+                Create Folder
+              </button>
+            </div>
+          )}
+        </Popup>
+      </MenuItem>
+    </ContextMenu>
+  </>
 }
 
 var contextTrigger = null;
+/** Toggle Context/right-click Menu */
 function toggleMenu(e) {
   if (contextTrigger) {
     contextTrigger.handleContextClick(e);
@@ -162,3 +189,4 @@ if (document.addEventListener) {
     window.event.returnValue = false;
   });
 }
+//#endregion
