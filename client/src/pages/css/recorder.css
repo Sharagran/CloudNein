@@ -242,3 +242,8 @@ body {
     height: 30px;
     display: flex;
 }
+
+/* Button fix */
+._1Pz2d {
+    width: auto !important;
+}
