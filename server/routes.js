@@ -22,9 +22,9 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.post('/forgotPassword', (req, res) => {
-    auth.forgotPassword(req.body.email.email);
-    res.send(true);
+router.post('/forgotPassword', async (req, res) => {
+    var result = await auth.forgotPassword(req.body.email.email);
+    res.send(result);
 });
 
 router.post('/getDataLimit', async (req, res) => {
