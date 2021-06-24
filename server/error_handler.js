@@ -1,7 +1,7 @@
 module.exports = errorHandler;
 
 function errorHandler(err, req, res, next) {
-    console.error(err.stack);
+    // console.error(err.stack);
 
     if (typeof (err) === 'string') {
         // custom application error
