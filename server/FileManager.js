@@ -286,16 +286,13 @@ async function setMaxDownloads(fileID, maxDownloads) {
 /**
  * Create admin settings to set the upload limit and the expiration date.
  */
-function createUploadSettings() {
-    db.readData('settings', { User: "Admin" }, (error, result) => {
-        if (error) throw error;
+async function createUploadSettings() {
+    var result = await db.readDataPromise('settings', { User: "Admin" })
         if (result.length == 0) {
-            db.createData('settings', { User: "Admin", limit: 100000000, days: 7 })
-
+            await db.createDataPromise('settings', { User: "Admin", limit: 100000000, days: 7 })
         } else {
             console.log("Settings are already available");
         }
-    })
 }
 
 /**
