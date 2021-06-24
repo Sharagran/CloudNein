@@ -11,7 +11,7 @@ import Navbar from "../components/Navbar";
 export default class Settings extends Component {
   /**
   * Constructor that stores the data.
-  * @param {*} props 
+  * @param  props 
   */
   constructor(props) {
     super(props);
@@ -35,7 +35,7 @@ export default class Settings extends Component {
 
   /**
    * Adjusts the value in the state for username in terms of the user input .
-   * @param {*} e trigger event.
+   * @param  e trigger event.
    */
   onChangeUsername(e) {
     this.setState({ username: e.target.value });
@@ -43,7 +43,7 @@ export default class Settings extends Component {
 
   /**
   * Adjusts the value in the state for mail in terms of the user input.
-  * @param {*} e trigger event.
+  * @param  e trigger event.
   */
   onChangeMail(e) {
     this.setState({ mail: e.target.value });
@@ -58,7 +58,7 @@ export default class Settings extends Component {
 
   /**
    * Adjusts the value in the state for the selected file in terms of the file input.
-   * @param {*} e trigger event.
+   * @param  e trigger event.
    */
   onFileChange(e) {
     e.preventDefault();
@@ -68,7 +68,7 @@ export default class Settings extends Component {
   /**
    * Sends the user input from username to the sever to check in the databse wether it's used or not. 
    * If not the username will be updated otherwise it's taken.
-   * @param {*} e trigger event.
+   * @param  e trigger event.
    */
   onSubmitUsername(e) {
     e.preventDefault();
@@ -95,7 +95,7 @@ export default class Settings extends Component {
   /**
    * Sends the user input from mail to the sever to check in the databse wether it's used or not. 
    * If not the email will be updated otherwise it's taken.
-   * @param {*} e trigger event.
+   * @param  e trigger event.
    */
   onSubmitMail(e) {
     e.preventDefault();
@@ -119,7 +119,7 @@ export default class Settings extends Component {
 
   /**
    * Sends a png that was selected from the user to store it at the server.
-   * @param {*} e trigger event.
+   * @param  e trigger event.
    */
   onFileUpload(e) {
     e.preventDefault();

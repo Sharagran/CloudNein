@@ -9,7 +9,7 @@ import GlobalVal from "./GlobalVal";
 export default class Admin extends Component {
   /**
    * Constructor that stores the data.
-   * @param {*} props 
+   * @param  props 
    */
   constructor(props) {
     super(props);
@@ -64,7 +64,7 @@ export default class Admin extends Component {
 
   /**
    * Adjusts the value in the state for dataSizeNew in byte in terms of the user input.
-   * @param {*} e trigger event.
+   * @param  e trigger event.
    */
   onChangeDataSize(e) {
     this.setState({
@@ -74,7 +74,7 @@ export default class Admin extends Component {
 
   /**
  * Adjusts the value in the state for daysNew in byte in terms of the user input.
- * @param {*} e trigger event.
+ * @param  e trigger event.
  */
   onChangeDays(e) {
     this.setState({
@@ -85,7 +85,7 @@ export default class Admin extends Component {
   /**
    * Sends the new data limit to the server and adjusts it in the database. 
    * The limit is adjusted to the entered limit on the admin's side.
-   * @param {*} e trigger event.
+   * @param  e trigger event.
    */
   onSubmitDataSize(e) {
     e.preventDefault();
@@ -109,7 +109,7 @@ export default class Admin extends Component {
   /**
  * Sends the new expiration date to the server and adjusts it in the database. 
  * The days are adjusted to the entered days on the admin's side.
- * @param {*} e trigger event.
+ * @param  e trigger event.
  */
   onSubmitDays(e) {
     e.preventDefault();

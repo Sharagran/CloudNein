@@ -13,7 +13,7 @@ var spaceCheck;
 export default class Upload extends Component {
   /**
   * Constructor that stores the data.
-  * @param {*} props 
+  * @param  props 
   */
   constructor(props) {
     super(props);
@@ -29,7 +29,7 @@ export default class Upload extends Component {
 
   /**
    * Adjusts the value in the state for selected files in terms of the file input.
-   * @param {*} e trigger event.
+   * @param  e trigger event.
    */
   onFileChange(e) {
     this.setState({ selectedFile: e.target.files });
@@ -44,7 +44,7 @@ export default class Upload extends Component {
 
   /**
    * Sends files that was selected from the user to store it at the server.
-   * @param {*} e trigger event.
+   * @param  e trigger event.
    */
   onFileUpload(e) {
     e.preventDefault();

@@ -15,8 +15,8 @@ const comp_hash = util.promisify(compare_hash);
 
 /**
  * Password will be hased
- * @param {*} password 
- * @param {*} callback hashed password.
+ * @param password password
+ * @param callback callback with error,hashed_password as parameters
  */
 function hash_password(password, callback) {
   bcrypt.hash(password, 10, function (error, hash) {
@@ -29,9 +29,9 @@ function hash_password(password, callback) {
 
 /**
  * Compares a password with a hash from a database
- * @param {*} password 
- * @param {*} hashFromDB 
- * @param {*} callback true if hashes are machting. false if not
+ * @param password  password
+ * @param hashFromDB password hash from database
+ * @param callback callback with error,match | match is true if hashes are machting. false if not
  */
 function compare_hash(password, hashFromDB, callback) {
   bcrypt.compare(password, hashFromDB, function (error, match) {
@@ -45,9 +45,9 @@ function compare_hash(password, hashFromDB, callback) {
 
 /**
  * Sends the new generated password to the reciever(email).
- * @param {*} receiver Email reciever
- * @param {*} newPassword New generated password
- * @param {*} callback Information wether it's send or not
+ * @param receiver Email reciever
+ * @param newPassword New generated password
+ * @param callback Information wether it's send or not
  */
 function sendNewPassword(receiver, newPassword, callback) {
 
@@ -82,9 +82,9 @@ function generatePassword() {
 /**
  * Checks if the new username is stored on the database. if not the previous username will be updated to the new username.
  * Also the users folder will be renamed with the new username.
- * @param {*} userID The users uuid.
- * @param {*} newUsername 
- * @param {*} previousUsername 
+ * @param  userID The users uuid.
+ * @param  newUsername 
+ * @param  previousUsername 
  * @returns True if the username was updated in the databse. False if the username was taken.
  */
 async function changeUsername(userID, newUsername, previousUsername) {
@@ -106,8 +106,8 @@ async function changeUsername(userID, newUsername, previousUsername) {
 
 /**
  * Checks if the new email is stored on the database. if not the previous stored email will be updated to the new email.
- * @param {*} userID The users uuid.
- * @param {*} newMail
+ * @param  userID The users uuid.
+ * @param  newMail
  * @returns True if the email was updated in the databse. False if the email was taken.
  */
 async function changeMail(userID, newMail) {
@@ -122,8 +122,8 @@ async function changeMail(userID, newMail) {
 
 /**
  * Checks if the username and the password matches with the information from the database.
- * @param {*} username 
- * @param {*} password 
+ * @param  username 
+ * @param  password 
  * @returns The user information
  */
 async function login(username, password) {
@@ -145,9 +145,9 @@ async function login(username, password) {
 
 /**
  * Create a user and store the information in the database. Also creates a folder with the user name.
- * @param {*} email 
- * @param {*} username 
- * @param {*} password 
+ * @param  email 
+ * @param  username 
+ * @param  password 
  * @returns False if the username is taken. Falseif the email is taken. True if none of the is taken and a folder with the users name is created.
  */
 async function register(email, username, password) {
@@ -183,7 +183,7 @@ async function register(email, username, password) {
 
 /**
  * Create a folder with the username.
- * @param {*} username 
+ * @param  username 
  */
 function createUserHomeDirectory(username) {
   var folderPath = join(`${__dirname}/../UserFiles/${username}`);
@@ -193,7 +193,7 @@ function createUserHomeDirectory(username) {
 /**
  * Sends a random six-digit password the the entered email if the email i stored in the database.
  * Also the new password will be hashed and updated in the database.
- * @param {*} email 
+ * @param  email 
  */
 async function forgotPassword(email) {
 
@@ -215,7 +215,7 @@ async function forgotPassword(email) {
 
 /**
  * Creates a token in terms of the users id, username and email.
- * @param {*} user 
+ * @param  user 
  * @returns Generated token.
  */
 function sign(user) {
@@ -227,7 +227,7 @@ function sign(user) {
 
 /**
  * Verifies a token.
- * @param {*} token 
+ * @param  token 
  * @returns Token information.
  */
 function verify(token) {

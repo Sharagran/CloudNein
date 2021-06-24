@@ -7,7 +7,7 @@ import axios from 'axios';
 export default class Registration extends Component {
   /**
   * Constructor that stores the data.
-  * @param {*} props 
+  * @param  props 
   */
   constructor(props) {
     super(props);
@@ -27,7 +27,7 @@ export default class Registration extends Component {
 
   /**
    * Adjusts the value in the state for username in terms of the user input.
-   * @param {*} e trigger event.
+   * @param  e trigger event.
    */
   onChangeUsername(e) {
     this.setState({ username: e.target.value });
@@ -35,7 +35,7 @@ export default class Registration extends Component {
 
   /**
   * Adjusts the value in the state for mail in terms of the user input.
-  * @param {*} e trigger event.
+  * @param  e trigger event.
   */
   onChangeMail(e) {
     this.setState({ mail: e.target.value });
@@ -43,7 +43,7 @@ export default class Registration extends Component {
 
   /**
   * Adjusts the value in the state for password in terms of the user input.
-  * @param {*} e trigger event.
+  * @param  e trigger event.
   */
   onChangePassword(e) {
     this.setState({ password: e.target.value });
@@ -59,7 +59,7 @@ export default class Registration extends Component {
   /**
   * Sends the user input from username, password and mail to the sever to check
   * if the username or email is already taken in the database. If not redirect to success page else to failed page
-  * @param {*} e trigger event.
+  * @param  e trigger event.
   */
   onSubmit(e) {
     e.preventDefault();
