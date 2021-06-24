@@ -17,18 +17,16 @@ router.post('/login', async (req, res) => {
     res.send({ token: token, user: user });
 });
 
-//Verarbeitet die empfangenen Daten beim Registrieren
 router.post('/register', async (req, res) => {
     var success = await auth.register(req.body.user.mail, req.body.user.username, req.body.user.password);
-    
+
     if (success === true) {
-        res.send(true)
+        res.send(true);
     } else {
-        res.send(false)
+        res.send(false);
     }
 });
 
-//Erzeugt ein neues Passwort, updatet dies in der DB und sendet eine Mail an den User
 router.post('/forgotPassword', (req, res) => {
     auth.forgotPassword(req.body.email.email);
     res.send(true);
@@ -42,7 +40,7 @@ router.post('/getDataLimit', async (req, res) => {
 router.post('/getExpirationDate', async (req, res) => {
     var expirationDate = await fm.getExpirationDate();
     res.json(expirationDate);
-})
+});
 
 router.post('/setDataLimit', async (req, res) => {
     await fm.setDataLimit(req.body.settings.dataSizeNew);
@@ -54,7 +52,7 @@ router.post('/setExpirationDate', async (req, res) => {
 
 router.post('/setMaxDownloads', async function (req, res) {
     var done = await fm.setMaxDownloads(req.body.fileID, req.body.maxDownloads);
-    if(done) {
+    if (done) {
         res.send(200);
     } else {
         res.send(500);
@@ -65,7 +63,7 @@ router.post('/getFileStats', async function (req, res) {
     try {
         var file = await fm.getFile(req.body.fileID);
         var data = { downloads: file.downloads, maxDownloads: file.maxDownloads };
-        res.send(data)
+        res.send(data);
     } catch (error) {
         console.error(error.stack);
         res.send(500);
@@ -73,27 +71,26 @@ router.post('/getFileStats', async function (req, res) {
 });
 
 router.post('/settings', async (req, res) => {
-    var username = req.body.user.username
-    var mail = req.body.user.mail
-    var previousUsername = req.body.user.previousUsername
+    var username = req.body.user.username;
+    var mail = req.body.user.mail;
+    var previousUsername = req.body.user.previousUsername;
 
     if (username) {
         var resultUsername = await auth.changeUsername(req.user.id, username, previousUsername);
         res.send(resultUsername);
     }
     if (mail) {
-        var resultEmail = await auth.changeMail(req.user.id, mail)
+        var resultEmail = await auth.changeMail(req.user.id, mail);
         res.send(resultEmail);
     }
 })
 
 router.post('/uploadCheck', async function (req, res) {
-
-    var spaceCheck = await fm.spaceCheck(req.body.fileSize.fileSize, req.user.id)
+    var spaceCheck = await fm.spaceCheck(req.body.fileSize.fileSize, req.user.id);
     if (spaceCheck) {
-        res.send(spaceCheck)
+        res.send(spaceCheck);
     } else {
-        res.send(false)
+        res.send(false);
     }
 });
 
@@ -103,9 +100,9 @@ router.post('/upload', upload.array("files"), function (req, res) {
 });
 
 router.post('/uploadProfilePicture', upload.array("files"), async function (req, res) {
-    await fm.deleteProfilePicture(req.user.id)
+    await fm.deleteProfilePicture(req.user.id);
     var result = fm.uploadProfilePicture(req, req.user.id);
-    res.send(result)
+    res.send(result);
 });
 
 router.post('/createFolder', async function (req, res) {
@@ -133,16 +130,16 @@ router.post('/moveFolder', async function (req, res) {
 })
 
 router.post('/getStorageSpaceInformation', async function (req, res) {
-    var dataLimit = await fm.getDataLimit()
-    var usedSpace = await fm.usedSpace(req.user.id)
-    res.send({ dataLimit, usedSpace })
+    var dataLimit = await fm.getDataLimit();
+    var usedSpace = await fm.usedSpace(req.user.id);
+    res.send({ dataLimit, usedSpace });
 });
 
 router.post("/share", async function (req, res) {
-    var days = parseInt(req.body.shareInformation.days)
-    var fileID = req.body.shareInformation.fileID
-    var email = req.body.shareInformation.email
-    var usages = req.body.shareInformation.usages
+    var days = parseInt(req.body.shareInformation.days);
+    var fileID = req.body.shareInformation.fileID;
+    var email = req.body.shareInformation.email;
+    var usages = req.body.shareInformation.usages;
 
     fm.share(fileID, days, usages, function (error, shareID) {
         if (error) {
@@ -154,7 +151,6 @@ router.post("/share", async function (req, res) {
                 console.error(error.stack);
             }
         })
-
         res.send({ shareID: shareID });
     });
 });
@@ -185,8 +181,8 @@ router.post('/storage', async function (req, res) {
 });
 
 router.post('/getProfilePicture', function (req, res) {
-    var img = fm.getProfilePicture(req.user.id)
-    res.send(img)
+    var img = fm.getProfilePicture(req.user.id);
+    res.send(img);
 })
 
 router.post('/checkSharelinkExpiration', async function (req, res) {
@@ -200,15 +196,14 @@ router.post('/checkSharelinkUsages', async function (req, res) {
 })
 
 router.post('/adjustUsages', async function (req, res) {
-    var decrease = await fm.decreaseUsages(req.body.shareInformation.shareID)
-    var increase = await fm.increaseDownloads(req.body.shareInformation.fileID)
+    var decrease = await fm.decreaseUsages(req.body.shareInformation.shareID);
+    var increase = await fm.increaseDownloads(req.body.shareInformation.fileID);
 
     if (increase && decrease) {
-        res.send(true)
+        res.send(true);
     } else {
-        res.send(false)
+        res.send(false);
     }
-
 })
 
 router.post('/updateFileInformation', async (req, res) => {
