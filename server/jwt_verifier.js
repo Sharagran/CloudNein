@@ -11,7 +11,7 @@ function jwt_verifier(exluded_urls) {
 
     return function (req, res, next) {
         if(exluded_urls.includes(req.originalUrl)) {
-            console.log("skip verifier");   //FIXME: debug only
+            console.log("skip verifier for " + req.url);
             return next();
         } else {
             return authenticate(req, res, next);
