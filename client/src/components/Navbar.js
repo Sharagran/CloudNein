@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from 'react-router-dom';
 import './Navbar.css';
-import GlobalVal from "./pages/GlobalVal";
+import GlobalVal from "../pages/GlobalVal";
 import axios from 'axios';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

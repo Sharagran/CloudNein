@@ -4,7 +4,7 @@ import './css/recorder.css'
 import axios from 'axios';
 import { getToken } from "../Authenticator";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Navbar from "../Navbar";
+import Navbar from "../components/Navbar";
 
 var spaceCheck;
 

@@ -4,11 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 import Popup from 'reactjs-popup';
 
-import Navbar from "../Navbar";
-import Menubar from "./Menubar";
-import FileList from "./FileList";
+import Navbar from "../components/Navbar";
+import Menubar from "../components/Menubar";
+import FileList from "../components/FileList";
 import axios from 'axios';
-import '../pages/css/Fileexplorer.css';
+import './css/Fileexplorer.css';
 
 var folderHistory;
 const home = { id: null, name: '/home' };

@@ -3,7 +3,7 @@ import axios from 'axios';
 import GlobalVal from "./GlobalVal";
 import { getToken } from "../Authenticator";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Navbar from "../Navbar";
+import Navbar from "../components/Navbar";
 
 /**
  * Page to change the username, email and upload an profile picture

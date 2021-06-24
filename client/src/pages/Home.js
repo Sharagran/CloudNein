@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import GlobalVal from "./GlobalVal";
 import { getToken } from "../Authenticator";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-const Navbar = React.lazy(() => import('../Navbar'));
+const Navbar = React.lazy(() => import('../components/Navbar'));
 
 /**
  * Home page to navigate the user to the "storage", "upload" or "settings".
