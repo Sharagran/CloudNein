@@ -77,7 +77,7 @@ export default class Login extends Component {
       }
     }).catch(error => {
       console.error(error.stack);
-      this.setState({ message: "Error while login" });
+      this.setState({ message: "Invalid login" });
     });
   }
 

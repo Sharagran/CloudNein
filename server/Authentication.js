@@ -220,10 +220,14 @@ async function forgotPassword(email) {
  * @returns Generated token.
  */
 function sign(user) {
-  const payload = { id: user.id, username: user.username, email: user.email };
-  const token = jwt.sign(payload, config.secret); //TODO: expiresIn (implement 30min login timeout)
-
-  return token;
+  try {
+    const payload = { id: user.id, username: user.username, email: user.email };
+    const token = jwt.sign(payload, config.secret); //TODO: expiresIn (implement 30min login timeout)
+    return token;
+  } catch (error) {
+    console.error(error.stack);
+    return;
+  }
 }
 
 /**
