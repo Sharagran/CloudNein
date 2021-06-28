@@ -33,7 +33,7 @@ foo@bar:CloudNein/client$ serve -s build
 
 ### Starting the server (NodeJS Express):
 ```console
-foo@bar:CloudNein/server$ npm start
+foo@bar:CloudNein/server$ node app.js
 ```
 
 ### Important users:
