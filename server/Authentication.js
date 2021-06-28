@@ -198,8 +198,9 @@ function createUserHomeDirectory(username) {
 async function forgotPassword(email) {
 
   var emailCheck = await db.readDataPromise('user', { email: email })
+  console.log(emailCheck);
   if (emailCheck.length < 1) {
-    console.log("Email nicht gefunden");
+    return false
   } else {
     var newPassword = generatePassword();
     hash_password(newPassword, async (error, hash) => {
@@ -207,9 +208,9 @@ async function forgotPassword(email) {
       await db.updateDataPromise("user", { email: email }, { $set: { password: hash } })
       sendNewPassword(email, newPassword, (error, info) => {
         if (error) throw error;
-        return true;
       });
     })
+    return true;
   }
 }
 
@@ -219,10 +220,14 @@ async function forgotPassword(email) {
  * @returns Generated token.
  */
 function sign(user) {
-  const payload = { id: user.id, username: user.username, email: user.email };
-  const token = jwt.sign(payload, config.secret); //TODO: expiresIn (implement 30min login timeout)
-
-  return token;
+  try {
+    const payload = { id: user.id, username: user.username, email: user.email };
+    const token = jwt.sign(payload, config.secret); //TODO: expiresIn (implement 30min login timeout)
+    return token;
+  } catch (error) {
+    console.error(error.stack);
+    return;
+  }
 }
 
 /**

@@ -4,9 +4,9 @@ import React, { Component } from "react";
  * Page that will shown to the user if an email was send
  */
 export default class SendEmail extends Component {
-    /**
-     * Redirects the user after 2 seconds to the login page
-     */
+  /**
+   * Redirects the user after 2 seconds to the login page
+   */
   UNSAFE_componentWillMount() {
     setTimeout(() => {
       this.props.history.push('/');
@@ -21,6 +21,7 @@ export default class SendEmail extends Component {
     return (
       <div className="container-center">
         <h1>Send Mail</h1>
+        <h1>Redirect after 2 seconds</h1>
       </div>
     );
   }

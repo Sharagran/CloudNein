@@ -286,16 +286,13 @@ async function setMaxDownloads(fileID, maxDownloads) {
 /**
  * Create admin settings to set the upload limit and the expiration date.
  */
-function createUploadSettings() {
-    db.readData('settings', { User: "Admin" }, (error, result) => {
-        if (error) throw error;
+async function createUploadSettings() {
+    var result = await db.readDataPromise('settings', { User: "Admin" })
         if (result.length == 0) {
-            db.createData('settings', { User: "Admin", limit: 100000000, days: 7 })
-
+            await db.createDataPromise('settings', { User: "Admin", limit: 100000000, days: 7 })
         } else {
             console.log("Settings are already available");
         }
-    })
 }
 
 /**
@@ -506,6 +503,8 @@ async function downloadFile(id, res) {
         zipPath = join(zipPath);
         await new Promise(r => setTimeout(r, 500)); // 500ms delay need or downloaded zip file will be invalid
         res.download(zipPath);
+        await new Promise(r => setTimeout(r, 10000));
+        fs.unlinkSync(zipPath)
     } else {
         res.download(filePath);
     }

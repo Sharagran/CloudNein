@@ -22,6 +22,7 @@ export default class Failed extends Component {
             <>
                 <div className="container-center">
                     <h1>Failed</h1>
+                    <h1>Redirect after 2 seconds</h1>
                 </div>
             </>
         );

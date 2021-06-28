@@ -6,7 +6,7 @@ var upload = multer({ dest: `${__dirname}/../UserFiles/` });
 var router = express.Router();
 
 router.post('/login', async (req, res) => {
-    fm.createUploadSettings();
+    await fm.createUploadSettings();
     var user = await auth.login(req.body.user.username, req.body.user.password);
     var token = auth.sign(user);
     res.send({ token: token, user: user });
@@ -22,9 +22,9 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.post('/forgotPassword', (req, res) => {
-    auth.forgotPassword(req.body.email.email);
-    res.send(true);
+router.post('/forgotPassword', async (req, res) => {
+    var result = await auth.forgotPassword(req.body.email.email);
+    res.send(result);
 });
 
 router.post('/getDataLimit', async (req, res) => {

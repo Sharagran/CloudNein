@@ -22,6 +22,7 @@ export default class Success extends Component {
             <>
                 <div className="container-center">
                     <h1>Success</h1>
+                    <h1>Redirect after 2 seconds</h1>
                 </div>
             </>
         );
