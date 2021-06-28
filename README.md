@@ -1,7 +1,9 @@
 # CloudNein
 
 ## Installation
-### Option 1:
+
+### Step 1:
+#### Option 1:
 ```console
 foo@bar:CloudNein/server$ npm install
 ```
@@ -11,22 +13,24 @@ foo@bar:CloudNein/client$ npm install
 ```console
 foo@bar:CloudNein/client$ npm run build
 ```
-### Option 2:
+#### Option 2:
 
 Run default VSCode Build task: 'npm install client + server'
 
-Shortcut: CTRL+SHIFT+B
+( Shortcut: CTRL+SHIFT+B )
+
+### Step 2:
 ```console
 foo@bar:CloudNein/client$ npm run build
 ```
 ## Run
 ### Starting the client (React server):
 
-Step 1 (Optional - only required if 'serve' is not installed):
+#### Step 1 (Optional - only required if 'serve' is not installed):
 ```console
 foo@bar:CloudNein/client$ npm install -g serve
 ```
-Step 2:
+#### Step 2:
 ```console
 foo@bar:CloudNein/client$ serve -s build
 ```
